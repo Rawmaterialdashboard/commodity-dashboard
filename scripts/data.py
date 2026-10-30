@@ -134,3 +134,44 @@ def fetch_and_update():
 
 if __name__ == "__main__":
     fetch_and_update()
+
+
+2. GitHub Actions Daily Schedule Workflow (.github/workflows/daily_sync.yml)
+
+name: Daily World Bank Pink Sheet & FX Auto-Sync
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas openpyxl requests
+
+      - name: Run ETL Script
+        run: python scripts/update_data.py
+
+      - name: Commit and Push if updated
+        run: |
+          git config user.name "MarketData-Sync-Bot"
+          git config user.email "actions@github.com"
+          git add data/commodities.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update Pink Sheet and FX data [$(date +'%Y-%m-%d')]" && git push)
