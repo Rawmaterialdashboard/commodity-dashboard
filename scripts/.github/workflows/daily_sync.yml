@@ -1,0 +1,38 @@
+name: Daily World Bank Pink Sheet Auto-Sync
+
+on:
+  schedule:
+    # Runs daily at 02:00 UTC (10:00 AM Beijing / Singapore / Perth time)
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allows manual trigger anytime via a button on GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  sync-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas openpyxl requests
+
+      - name: Run World Bank ETL Script
+        run: python scripts/update_data.py
+
+      - name: Commit and Push if updated
+        run: |
+          git config user.name "WorldBank-Sync-Bot"
+          git config user.email "actions@github.com"
+          git add data/commodities.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update World Bank Pink Sheet data [$(date +'%Y-%m-%d')]" && git push)
