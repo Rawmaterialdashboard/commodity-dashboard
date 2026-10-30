@@ -577,3 +577,236 @@
             legendContainer.appendChild(tag);
         });
     }
+
+    function drawChart() {
+        const canvas = document.getElementById('chart-canvas');
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+
+        const w = rect.width;
+        const h = rect.height;
+        const pad = { top: 30, right: 40, bottom: 40, left: 60 };
+
+        ctx.clearRect(0, 0, w, h);
+
+        const activeMats = materials.filter(m => m.active);
+        if (activeMats.length === 0 || filteredDataset.length === 0) {
+            ctx.fillStyle = "#94a3b8";
+            ctx.font = "14px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText("Please select at least one raw material from the legend below.", w / 2, h / 2);
+            return;
+        }
+
+        const normalize = document.getElementById('normalize-check').checked;
+
+        let minVal = Infinity, maxVal = -Infinity;
+        activeMats.forEach(m => {
+            const base = filteredDataset[0][m.id] || 1;
+            filteredDataset.forEach(row => {
+                const rawV = row[m.id];
+                if (rawV !== undefined && !isNaN(rawV)) {
+                    const v = normalize ? (rawV / base) * 100 : rawV;
+                    if (v < minVal) minVal = v;
+                    if (v > maxVal) maxVal = v;
+                }
+            });
+        });
+
+        minVal = Math.max(0, minVal * 0.9);
+        maxVal = maxVal * 1.1;
+
+        const chartW = w - pad.left - pad.right;
+        const chartH = h - pad.top - pad.bottom;
+
+        const getX = (idx) => pad.left + (idx / (filteredDataset.length - 1)) * chartW;
+        const getY = (val) => pad.top + chartH - ((val - minVal) / (maxVal - minVal)) * chartH;
+
+        // Grid lines
+        ctx.strokeStyle = "#e2e8f0";
+        ctx.lineWidth = 1;
+        ctx.fillStyle = "#64748b";
+        ctx.font = "11px sans-serif";
+        ctx.textAlign = "right";
+
+        const ySteps = 5;
+        for (let i = 0; i <= ySteps; i++) {
+            const yVal = minVal + (maxVal - minVal) * (i / ySteps);
+            const py = getY(yVal);
+            ctx.beginPath();
+            ctx.moveTo(pad.left, py);
+            ctx.lineTo(w - pad.right, py);
+            ctx.stroke();
+            ctx.fillText(normalize ? yVal.toFixed(0) : (yVal >= 1000 ? (yVal/1000).toFixed(1) + 'k' : yVal.toFixed(1)), pad.left - 8, py + 4);
+        }
+
+        // X Labels
+        ctx.textAlign = "center";
+        const stepX = Math.ceil(filteredDataset.length / 8);
+        filteredDataset.forEach((d, idx) => {
+            if (idx % stepX === 0 || idx === filteredDataset.length - 1) {
+                const px = getX(idx);
+                ctx.fillText(d.date, px, h - pad.bottom + 18);
+            }
+        });
+
+        // Price Lines
+        activeMats.forEach(m => {
+            const base = filteredDataset[0][m.id] || 1;
+            ctx.strokeStyle = m.color;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+
+            filteredDataset.forEach((row, idx) => {
+                const rawV = row[m.id];
+                const v = normalize ? (rawV / base) * 100 : rawV;
+                const px = getX(idx);
+                const py = getY(v);
+                if (idx === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            });
+            ctx.stroke();
+        });
+
+        // Hover Crosshair & Tooltip
+        if (mousePos && mousePos.x >= pad.left && mousePos.x <= w - pad.right) {
+            const ratio = (mousePos.x - pad.left) / chartW;
+            const nearestIdx = Math.round(ratio * (filteredDataset.length - 1));
+            const clampedIdx = Math.max(0, Math.min(filteredDataset.length - 1, nearestIdx));
+            const hoverX = getX(clampedIdx);
+            const rowData = filteredDataset[clampedIdx];
+
+            ctx.strokeStyle = "#94a3b8";
+            ctx.beginPath();
+            ctx.moveTo(hoverX, pad.top);
+            ctx.lineTo(hoverX, h - pad.bottom);
+            ctx.stroke();
+
+            activeMats.forEach(m => {
+                const base = filteredDataset[0][m.id] || 1;
+                const v = normalize ? (rowData[m.id] / base) * 100 : rowData[m.id];
+                const py = getY(v);
+                ctx.fillStyle = "#ffffff";
+                ctx.strokeStyle = m.color;
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.arc(hoverX, py, 4.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            });
+
+            const boxW = 200, boxH = 26 + activeMats.length * 20;
+            let tipX = hoverX + 12;
+            if (tipX + boxW > w - 10) tipX = hoverX - boxW - 12;
+            let tipY = pad.top + 10;
+
+            ctx.fillStyle = "rgba(15, 23, 42, 0.94)";
+            ctx.fillRect(tipX, tipY, boxW, boxH);
+            ctx.strokeStyle = "#334155";
+            ctx.strokeRect(tipX, tipY, boxW, boxH);
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 12px sans-serif";
+            ctx.textAlign = "left";
+            ctx.fillText(`Period: ${rowData.date}`, tipX + 10, tipY + 18);
+
+            ctx.font = "11px sans-serif";
+            activeMats.forEach((m, i) => {
+                ctx.fillStyle = m.color;
+                const base = filteredDataset[0][m.id] || 1;
+                const showVal = normalize ? ((rowData[m.id] / base) * 100).toFixed(1) + '%' : fmtVal(rowData[m.id]);
+                ctx.fillText(`${m.name}: ${showVal}`, tipX + 10, tipY + 36 + i * 19);
+            });
+        }
+    }
+
+    function renderTable() {
+        const thead = document.getElementById('tbl-head');
+        const tbody = document.getElementById('tbl-body');
+
+        let headHtml = `<tr><th>Date (Month)</th>`;
+        materials.forEach(m => {
+            headHtml += `<th>${m.name} (${m.unit})</th>`;
+        });
+        headHtml += `</tr>`;
+        thead.innerHTML = headHtml;
+
+        let bodyHtml = "";
+        [...filteredDataset].reverse().forEach(row => {
+            bodyHtml += `<tr><td>${row.date}</td>`;
+            materials.forEach(m => {
+                bodyHtml += `<td>${fmtVal(row[m.id])}</td>`;
+            });
+            bodyHtml += `</tr>`;
+        });
+        tbody.innerHTML = bodyHtml;
+    }
+
+    function updateView() {
+        const startY = document.getElementById('start-year').value;
+        const endY = document.getElementById('end-year').value;
+
+        filteredDataset = rawDatabase.filter(d => {
+            const yr = d.date.split('-')[0];
+            return yr >= startY && yr <= endY;
+        });
+
+        drawChart();
+        renderTable();
+    }
+
+    function resetFilters() {
+        document.getElementById('start-year').value = "2016";
+        document.getElementById('end-year').value = "2026";
+        document.getElementById('normalize-check').checked = false;
+        materials.forEach(m => m.active = true);
+        renderLegend();
+        updateView();
+    }
+
+    function exportDatabaseCSV() {
+        let csv = "\uFEFF";
+        const headers = ["Date (Month)"];
+        materials.forEach(m => headers.push(`${m.name} (${m.unit})`));
+        csv += headers.join(",") + "\r\n";
+
+        rawDatabase.forEach(row => {
+            const line = [row.date];
+            materials.forEach(m => line.push(row[m.id] || ""));
+            csv += line.join(",") + "\r\n";
+        });
+
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `WorldBank_PinkSheet_Commodities_2016_2026_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    const canvas = document.getElementById('chart-canvas');
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mousePos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        drawChart();
+    });
+    canvas.addEventListener('mouseleave', () => {
+        mousePos = null;
+        drawChart();
+    });
+    window.addEventListener('resize', () => drawChart());
+
+    renderLegend();
+    syncLatestData();
+</script>
+
+</body>
+</html>
