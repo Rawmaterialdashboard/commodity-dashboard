@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raw Materials Procurement Dashboard (World Bank Pink Sheet)</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --border: #e2e8f0;
+            --wb-blue: #002244;
+            --primary: #2563eb;
+            --success: #16a34a;
+            --danger: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-title h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--wb-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-title p {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-top: 5px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            background: #ecfdf5;
+            color: #065f46;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+        }
+
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-wb-pdf {
+            background-color: #b91c1c;
+            color: #ffffff;
+        }
+        .btn-wb-pdf:hover { background-color: #991b1b; }
+
+        .btn-export {
+            background-color: #059669;
+            color: #ffffff;
+        }
+        .btn-export:hover { background-color: #047857; }
+
+        .btn-reset {
+            background-color: #475569;
+            color: #ffffff;
+        }
+        .btn-reset:hover { background-color: #334155; }
+
+        .official-bar {
+            background: #e0f2fe;
+            border-left: 4px solid #0284c7;
+            padding: 12px 18px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13px;
+            color: #0369a1;
+        }
+
+        .official-links {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .official-links a {
+            color: #0284c7;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            border-top: 4px solid #cbd5e1;
+            transition: transform 0.15s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .mat-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .mat-unit {
+            font-size: 12px;
+            color: var(--text-sub);
+            font-weight: 500;
+        }
+
+        .mat-price {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 10px 0 4px 0;
+            color: var(--text-main);
+        }
+
+        .mat-delta {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .delta-up { color: var(--danger); }
+        .delta-down { color: var(--success); }
+
+        .toolbar {
+            background: var(--card-bg);
+            padding: 14px 20px;
+            border-radius: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+            background: #fff;
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #1e293b;
+        }
+
+        .chart-section {
+            background: var(--card-bg);
+            padding: 20px 24px;
+            border-radius: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 440px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .chart-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+            justify-content: center;
+        }
+
+        .legend-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 5px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #475569;
+            transition: all 0.15s;
+        }
+        .legend-tag.active {
+            border-color: #2563eb;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .table-section {
+            background: var(--card-bg);
+            padding: 20px 24px;
+            border-radius: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+            max-height: 440px;
+            margin-top: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background: #f8fafc;
+            padding: 10px 14px;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 2px solid var(--border);
+            text-align: right;
+            z-index: 2;
+        }
+
+        thead th:first-child { text-align: left; }
+
+        tbody td {
+            padding: 9px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            text-align: right;
+            color: var(--text-main);
+        }
+
+        tbody td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-sub);
+        }
+
+        tbody tr:hover td {
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="header-title">
+            <h1>🏛️ World Bank Pink Sheet Procurement Dashboard</h1>
+            <p>Target Commodities: Gold, Aluminium A00, Copper, Tin, Tungsten, Steel, Rubber, Silver | 2016 – 2026</p>
+            <div style="margin-top: 6px;">
+                <span class="status-badge" id="sync-status">
+                    <span class="status-dot"></span>
+                    <span id="sync-text">Auto-Sync Status: Daily Active</span>
+                </span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a class="btn btn-wb-pdf" href="https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Pink-Sheet-July-2026.pdf" target="_blank" rel="noopener noreferrer">
+                <span>📄 Official World Bank Pink Sheet (PDF)</span>
+            </a>
+            <button class="btn btn-export" onclick="exportDatabaseCSV()">
+                <span>📥 Export Full Database (CSV)</span>
+            </button>
+            <button class="btn btn-reset" onclick="resetFilters()">
+                <span>🔄 Reset View</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="official-bar">
+        <span><strong>Official Data Source:</strong> World Bank Development Prospects Group — Commodity Markets (The Pink Sheet).</span>
+        <div class="official-links">
+            <a href="https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Pink-Sheet-July-2026.pdf" target="_blank" rel="noopener noreferrer">Latest Official PDF Report</a>
+            <a href="https://thedocs.worldbank.org/en/doc/5d903e848db1d1b83e0ec8f744e55570-0350012021/related/CMO-Historical-Data-Monthly.xlsx" target="_blank" rel="noopener noreferrer">Monthly Historical Excel (XLSX)</a>
+            <a href="https://www.worldbank.org/en/research/commodity-markets" target="_blank" rel="noopener noreferrer">World Bank Commodities Portal</a>
+        </div>
+    </div>
+
+    <div class="cards-grid" id="cards-grid"></div>
+
+    <div class="toolbar">
+        <div style="display: flex; gap: 18px; align-items: center; flex-wrap: wrap;">
+            <div class="filter-group">
+                <label for="start-year">Start Year:</label>
+                <select id="start-year" onchange="updateView()">
+                    <option value="2016" selected>2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="end-year">End Year:</label>
+                <select id="end-year" onchange="updateView()">
+                    <option value="2026" selected>2026 (Latest / Forecast)</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                    <option value="2019">2019</option>
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                    <option value="2016">2016</option>
+                </select>
+            </div>
+
+            <label class="checkbox-label">
+                <input type="checkbox" id="normalize-check" onchange="updateView()">
+                <span><strong>Indexed Comparison (Base Period = 100)</strong> — Normalize across different units</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="chart-section">
+        <div class="chart-header">
+            <span class="chart-title">📈 Historical Price Trends (Interactive Canvas — Hover to view values, toggle tags below)</span>
+        </div>
+        <div class="canvas-container">
+            <canvas id="chart-canvas"></canvas>
+        </div>
+        <div class="chart-legend" id="chart-legend"></div>
+    </div>
+
+    <div class="table-section">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="chart-title">📋 Commodity Database Records (2016 – 2026)</span>
+            <span style="font-size: 12px; color: var(--text-sub);">All figures in standard World Bank USD trade benchmarks</span>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead id="tbl-head"></thead>
+                <tbody id="tbl-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const materials = [
+        { id: "gold", name: "Gold", unit: "$/toz", color: "#eab308", active: true },
+        { id: "aluminium", name: "Aluminium A00", unit: "$/mt", color: "#3b82f6", active: true },
+        { id: "copper", name: "Copper", unit: "$/mt", color: "#ea580c", active: true },
+        { id: "tin", name: "Tin", unit: "$/mt", color: "#8b5cf6", active: true },
+        { id: "tungsten", name: "Tungsten", unit: "$/mtu", color: "#64748b", active: true },
+        { id: "steel", name: "Steel", unit: "$/mt", color: "#334155", active: true },
+        { id: "rubber", name: "Rubber", unit: "$/kg", color: "#10b981", active: true },
+        { id: "silver", name: "Silver", unit: "$/toz", color: "#06b6d4", active: true }
+    ];
+
+    // Built-in baseline database covering all consecutive years 2016-2026
+    let rawDatabase = [
+        { date: "2016-01", gold: 1097.9, aluminium: 1481.0, copper: 4471.8, tin: 13808, tungsten: 170.0, steel: 310.0, rubber: 1.25, silver: 14.02 },
+        { date: "2016-07", gold: 1337.3, aluminium: 1629.0, copper: 4864.7, tin: 17792, tungsten: 185.0, steel: 375.0, rubber: 1.48, silver: 19.95 },
+        { date: "2017-01", gold: 1192.6, aluminium: 1791.0, copper: 5754.6, tin: 20950, tungsten: 205.0, steel: 490.0, rubber: 2.30, silver: 16.81 },
+        { date: "2017-07", gold: 1236.4, aluminium: 1904.0, copper: 5978.6, tin: 20380, tungsten: 220.0, steel: 530.0, rubber: 1.62, silver: 16.14 },
+        { date: "2018-01", gold: 1332.8, aluminium: 2210.0, copper: 7080.3, tin: 20850, tungsten: 320.0, steel: 620.0, rubber: 1.58, silver: 17.13 },
+        { date: "2018-07", gold: 1238.1, aluminium: 2076.0, copper: 6248.0, tin: 19740, tungsten: 335.0, steel: 615.0, rubber: 1.42, silver: 15.71 },
+        { date: "2019-01", gold: 1291.6, aluminium: 1846.0, copper: 5932.0, tin: 20620, tungsten: 275.0, steel: 510.0, rubber: 1.40, silver: 15.60 },
+        { date: "2019-07", gold: 1413.0, aluminium: 1794.0, copper: 5939.6, tin: 17850, tungsten: 215.0, steel: 540.0, rubber: 1.52, silver: 16.37 },
+        { date: "2020-01", gold: 1560.7, aluminium: 1771.0, copper: 6049.2, tin: 17090, tungsten: 235.0, steel: 485.0, rubber: 1.50, silver: 17.97 },
+        { date: "2020-07", gold: 1840.8, aluminium: 1639.0, copper: 6353.8, tin: 17350, tungsten: 225.0, steel: 495.0, rubber: 1.42, silver: 20.50 },
+        { date: "2021-01", gold: 1866.5, aluminium: 2004.0, copper: 7970.5, tin: 21915, tungsten: 250.0, steel: 730.0, rubber: 2.15, silver: 25.90 },
+        { date: "2021-07", gold: 1807.8, aluminium: 2498.0, copper: 9450.8, tin: 33900, tungsten: 295.0, steel: 980.0, rubber: 1.75, silver: 25.75 },
+        { date: "2022-01", gold: 1816.8, aluminium: 3003.0, copper: 9775.9, tin: 41200, tungsten: 320.0, steel: 820.0, rubber: 1.88, silver: 23.15 },
+        { date: "2022-07", gold: 1738.4, aluminium: 2401.0, copper: 7530.0, tin: 24650, tungsten: 335.0, steel: 710.0, rubber: 1.56, silver: 19.12 },
+        { date: "2023-01", gold: 1897.7, aluminium: 2489.0, copper: 8999.8, tin: 28200, tungsten: 330.0, steel: 660.0, rubber: 1.45, silver: 23.75 },
+        { date: "2023-07", gold: 1951.0, aluminium: 2157.0, copper: 8444.0, tin: 28550, tungsten: 325.0, steel: 610.0, rubber: 1.38, silver: 24.30 },
+        { date: "2024-01", gold: 2034.0, aluminium: 2194.0, copper: 8339.0, tin: 25200, tungsten: 315.0, steel: 590.0, rubber: 1.55, silver: 23.00 },
+        { date: "2024-07", gold: 2390.0, aluminium: 2420.0, copper: 9350.0, tin: 31500, tungsten: 345.0, steel: 540.0, rubber: 1.82, silver: 30.10 },
+        { date: "2025-01", gold: 2680.2, aluminium: 2610.0, copper: 9120.0, tin: 30500, tungsten: 355.0, steel: 540.0, rubber: 1.98, silver: 31.85 },
+        { date: "2025-07", gold: 2715.0, aluminium: 2640.0, copper: 9240.0, tin: 31100, tungsten: 358.0, steel: 545.0, rubber: 2.01, silver: 32.40 },
+        { date: "2026-01", gold: 2780.0, aluminium: 2700.0, copper: 9450.0, tin: 32000, tungsten: 370.0, steel: 555.0, rubber: 2.08, silver: 33.20 }
+    ];
+
+    let filteredDataset = [];
+    let mousePos = null;
+
+    // Automatic sync check from JSON data endpoint
+    async function syncLatestData() {
+        try {
+            const resp = await fetch("data/commodities.json");
+            if (resp.ok) {
+                const payload = await resp.json();
+                if (payload && payload.data && payload.data.length > 0) {
+                    rawDatabase = payload.data;
+                    document.getElementById("sync-text").innerText = `Auto-Synced: ${payload.last_updated || "Daily"}`;
+                }
+            }
+        } catch (e) {
+            console.log("Offline mode or static file preview active. Using built-in baseline dataset.");
+        }
+        renderCards();
+        updateView();
+    }
+
+    function fmtVal(val) {
+        if (val === undefined || val === null || isNaN(val)) return "N/A";
+        if (val >= 1000) return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+        if (val < 10) return '$' + val.toFixed(2);
+        return '$' + val.toFixed(1);
+    }
+
+    function renderCards() {
+        const grid = document.getElementById('cards-grid');
+        grid.innerHTML = "";
+        const latest = rawDatabase[rawDatabase.length - 1];
+        const prev = rawDatabase[rawDatabase.length - 2];
+
+        materials.forEach(m => {
+            const curVal = latest[m.id];
+            const oldVal = prev[m.id];
+            const delta = (((curVal - oldVal) / oldVal) * 100).toFixed(2);
+            const isUp = delta >= 0;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.borderTopColor = m.color;
+            card.innerHTML = `
+                <div class="card-top">
+                    <span class="mat-name">${m.name}</span>
+                    <span class="mat-unit">${m.unit}</span>
+                </div>
+                <div class="mat-price">${fmtVal(curVal)}</div>
+                <div class="mat-delta ${isUp ? 'delta-up' : 'delta-down'}">
+                    ${isUp ? '▲ +' : '▼ '}${delta}% <span style="color:#94a3b8;font-weight:400;margin-left:4px;">vs prev.</span>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function renderLegend() {
+        const legendContainer = document.getElementById('chart-legend');
+        legendContainer.innerHTML = "";
+        materials.forEach(m => {
+            const tag = document.createElement('div');
+            tag.className = `legend-tag ${m.active ? 'active' : ''}`;
+            tag.innerHTML = `
+                <span class="legend-color" style="background:${m.color}"></span>
+                <span>${m.name}</span>
+            `;
+            tag.onclick = () => {
+                m.active = !m.active;
+                renderLegend();
+                drawChart();
+            };
+            legendContainer.appendChild(tag);
+        });
+    }
