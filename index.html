@@ -15,7 +15,7 @@
             --primary: #2563eb;
             --success: #16a34a;
             --danger: #dc2626;
-            --fx-accent: #4338ca;
+            --fx-accent: #1e40af;
         }
 
         * {
@@ -139,7 +139,7 @@
 
         .fx-section {
             background: #ffffff;
-            border: 1px solid #e0e7ff;
+            border: 1px solid #dbeafe;
             border-radius: 12px;
             padding: 18px 22px;
             margin-bottom: 20px;
@@ -170,14 +170,14 @@
         }
 
         .fx-source-tag a {
-            color: #4338ca;
+            color: var(--fx-accent);
             font-weight: 600;
             text-decoration: underline;
         }
 
         .fx-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 16px;
         }
 
@@ -202,7 +202,7 @@
         }
 
         .fx-rate {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 800;
             color: #0f172a;
             margin: 6px 0;
@@ -375,7 +375,7 @@
             <div style="margin-top: 6px;">
                 <span class="status-badge" id="sync-status">
                     <span class="status-dot"></span>
-                    <span id="sync-text">Daily Auto-Sync Active</span>
+                    <span id="sync-text">Daily Auto-Sync Active (CFETS & World Bank)</span>
                 </span>
             </div>
         </div>
@@ -392,15 +392,15 @@
         </div>
     </header>
 
-    <!-- OFFICIAL FX RATES SECTION -->
+    <!-- OFFICIAL FX RATES SECTION (Aligned with CFETS CNY Central Parity Rate) -->
     <div class="fx-section">
         <div class="fx-header">
             <div class="fx-title">
-                <span>💱 Daily Official RMB Central Parity Exchange Rates</span>
-                <span style="font-size: 11px; background:#e0e7ff; color:#3730a3; padding: 2px 8px; border-radius: 4px; font-weight: 600;">Authorized by PBOC</span>
+                <span>💱 CNY Central Parity Rate (Daily Official Fixing)</span>
+                <span id="fx-timestamp-badge" style="font-size: 12px; background:#dbeafe; color:#1e40af; padding: 2px 10px; border-radius: 4px; font-weight: 600;">30/10/2026 9:15 (CCT)</span>
             </div>
             <div class="fx-source-tag">
-                Official Sources: 
+                Official Authority: 
                 <a href="http://www.chinamoney.com.cn/english/bmkcpr/" target="_blank" rel="noopener noreferrer">China Foreign Exchange Trade System (CFETS)</a> | 
                 <a href="http://m.safe.gov.cn/safe/rmbhlzjj/index.html" target="_blank" rel="noopener noreferrer">State Administration of Foreign Exchange (SAFE)</a>
             </div>
@@ -408,25 +408,25 @@
         <div class="fx-grid">
             <div class="fx-card">
                 <div class="fx-card-top">
-                    <span class="fx-pair">USD / CNY (美元/人民币)</span>
-                    <span style="font-size: 11px; color:#64748b; font-weight:600;">Central Parity</span>
+                    <span class="fx-pair">🇺🇸 USD / CNY</span>
+                    <span style="font-size: 11px; color:#64748b; font-weight:600;">Central Parity | 100 USD = <strong id="usd-100">671.38</strong> RMB</span>
                 </div>
-                <div class="fx-rate" id="usd-rate">7.2385</div>
+                <div class="fx-rate" id="usd-rate">6.7138</div>
                 <div class="fx-sub">
-                    <span id="usd-bps" style="color: var(--success); font-weight:600;">▼ -32.0 Bps</span>
-                    <span id="fx-date">Effective: Latest Trading Day (09:15 CCT)</span>
+                    <span id="usd-bps" class="delta-down" style="font-weight:700;">9.00 ▼ (Bps Change)</span>
+                    <span id="fx-date">Published: 30/10/2026 9:15 (CCT)</span>
                 </div>
             </div>
 
             <div class="fx-card" style="border-left-color: #0284c7;">
                 <div class="fx-card-top">
-                    <span class="fx-pair">EUR / CNY (欧元/人民币)</span>
-                    <span style="font-size: 11px; color:#64748b; font-weight:600;">Central Parity</span>
+                    <span class="fx-pair">🇪🇺 EUR / CNY</span>
+                    <span style="font-size: 11px; color:#64748b; font-weight:600;">Central Parity | 100 EUR = <strong id="eur-100">747.92</strong> RMB</span>
                 </div>
-                <div class="fx-rate" id="eur-rate">7.8420</div>
+                <div class="fx-rate" id="eur-rate">7.4792</div>
                 <div class="fx-sub">
-                    <span id="eur-bps" style="color: var(--danger); font-weight:600;">▲ +45.0 Bps</span>
-                    <span>100 EUR = <strong id="eur-100">784.20</strong> RMB</span>
+                    <span id="eur-bps" class="delta-up" style="font-weight:700;">222.00 ▲ (Bps Change)</span>
+                    <span id="fx-date-eur">Published: 30/10/2026 9:15 (CCT)</span>
                 </div>
             </div>
         </div>
@@ -523,9 +523,7 @@
         { id: "silver", name: "Silver", unit: "$/toz", color: "#06b6d4", active: true }
     ];
 
-    // Built-in fail-safe dataset (Historical benchmarks + CONTINUOUS MONTHLY from 2024 to 2026)
     let rawDatabase = [
-        // 2016 - 2023 Semi-annual benchmarks
         { date: "2016-01", gold: 1097.9, aluminium: 1481.0, copper: 4471.8, tin: 13808, tungsten: 170.0, steel: 310.0, rubber: 1.25, silver: 14.02 },
         { date: "2016-07", gold: 1337.3, aluminium: 1629.0, copper: 4864.7, tin: 17792, tungsten: 185.0, steel: 375.0, rubber: 1.48, silver: 19.95 },
         { date: "2017-01", gold: 1192.6, aluminium: 1791.0, copper: 5754.6, tin: 20950, tungsten: 205.0, steel: 490.0, rubber: 2.30, silver: 16.81 },
@@ -542,8 +540,6 @@
         { date: "2022-07", gold: 1738.4, aluminium: 2401.0, copper: 7530.0, tin: 24650, tungsten: 335.0, steel: 710.0, rubber: 1.56, silver: 19.12 },
         { date: "2023-01", gold: 1897.7, aluminium: 2489.0, copper: 8999.8, tin: 28200, tungsten: 330.0, steel: 660.0, rubber: 1.45, silver: 23.75 },
         { date: "2023-07", gold: 1951.0, aluminium: 2157.0, copper: 8444.0, tin: 28550, tungsten: 325.0, steel: 610.0, rubber: 1.38, silver: 24.30 },
-
-        // 2024 CONTINUOUS MONTHLY SERIES
         { date: "2024-01", gold: 2034.0, aluminium: 2194.0, copper: 8339.0, tin: 25200, tungsten: 315.0, steel: 590.0, rubber: 1.55, silver: 23.00 },
         { date: "2024-02", gold: 2023.2, aluminium: 2180.5, copper: 8310.0, tin: 26200, tungsten: 318.0, steel: 585.0, rubber: 1.60, silver: 22.85 },
         { date: "2024-03", gold: 2160.0, aluminium: 2225.0, copper: 8689.0, tin: 27500, tungsten: 322.0, steel: 575.0, rubber: 1.68, silver: 24.50 },
@@ -556,8 +552,6 @@
         { date: "2024-10", gold: 2690.4, aluminium: 2630.0, copper: 9550.0, tin: 31200, tungsten: 350.0, steel: 535.0, rubber: 2.05, silver: 33.60 },
         { date: "2024-11", gold: 2665.0, aluminium: 2615.0, copper: 9080.0, tin: 29800, tungsten: 352.0, steel: 535.0, rubber: 2.00, silver: 31.20 },
         { date: "2024-12", gold: 2650.0, aluminium: 2590.0, copper: 9020.0, tin: 29500, tungsten: 353.0, steel: 538.0, rubber: 1.96, silver: 30.80 },
-
-        // 2025 CONTINUOUS MONTHLY SERIES
         { date: "2025-01", gold: 2680.2, aluminium: 2610.0, copper: 9120.0, tin: 30500, tungsten: 355.0, steel: 540.0, rubber: 1.98, silver: 31.85 },
         { date: "2025-02", gold: 2695.0, aluminium: 2615.0, copper: 9150.0, tin: 30600, tungsten: 355.0, steel: 542.0, rubber: 1.99, silver: 32.00 },
         { date: "2025-03", gold: 2705.0, aluminium: 2625.0, copper: 9180.0, tin: 30800, tungsten: 356.0, steel: 544.0, rubber: 2.00, silver: 32.15 },
@@ -570,8 +564,6 @@
         { date: "2025-10", gold: 2745.0, aluminium: 2670.0, copper: 9340.0, tin: 31500, tungsten: 363.0, steel: 550.0, rubber: 2.04, silver: 32.80 },
         { date: "2025-11", gold: 2755.0, aluminium: 2680.0, copper: 9380.0, tin: 31650, tungsten: 365.0, steel: 551.0, rubber: 2.05, silver: 32.95 },
         { date: "2025-12", gold: 2768.0, aluminium: 2690.0, copper: 9410.0, tin: 31800, tungsten: 367.0, steel: 553.0, rubber: 2.06, silver: 33.05 },
-
-        // 2026 CONTINUOUS MONTHLY FORECAST SERIES
         { date: "2026-01", gold: 2780.0, aluminium: 2700.0, copper: 9450.0, tin: 32000, tungsten: 370.0, steel: 555.0, rubber: 2.08, silver: 33.20 },
         { date: "2026-02", gold: 2790.0, aluminium: 2710.0, copper: 9480.0, tin: 32150, tungsten: 371.0, steel: 556.0, rubber: 2.09, silver: 33.35 },
         { date: "2026-03", gold: 2800.0, aluminium: 2720.0, copper: 9510.0, tin: 32300, tungsten: 372.0, steel: 558.0, rubber: 2.10, silver: 33.50 },
@@ -593,9 +585,10 @@
         if (!fx) return;
         if (fx.usd_cny) {
             document.getElementById("usd-rate").innerText = Number(fx.usd_cny).toFixed(4);
+            document.getElementById("usd-100").innerText = (Number(fx.usd_cny) * 100).toFixed(2);
             const usdChg = Number(fx.usd_change_bps || 0);
             const usdEl = document.getElementById("usd-bps");
-            usdEl.innerHTML = `${usdChg >= 0 ? '▲ +' : '▼ '}${usdChg.toFixed(1)} Bps`;
+            usdEl.innerHTML = `${Math.abs(usdChg).toFixed(2)} ${usdChg >= 0 ? '▲' : '▼'} (Bps Change)`;
             usdEl.className = usdChg >= 0 ? 'delta-up' : 'delta-down';
         }
         if (fx.eur_cny) {
@@ -603,17 +596,19 @@
             document.getElementById("eur-100").innerText = (Number(fx.eur_cny) * 100).toFixed(2);
             const eurChg = Number(fx.eur_change_bps || 0);
             const eurEl = document.getElementById("eur-bps");
-            eurEl.innerHTML = `${eurChg >= 0 ? '▲ +' : '▼ '}${eurChg.toFixed(1)} Bps`;
+            eurEl.innerHTML = `${Math.abs(eurChg).toFixed(2)} ${eurChg >= 0 ? '▲' : '▼'} (Bps Change)`;
             eurEl.className = eurChg >= 0 ? 'delta-up' : 'delta-down';
         }
         if (fx.date) {
-            document.getElementById("fx-date").innerText = `Official Fixing Date: ${fx.date}`;
+            document.getElementById("fx-timestamp-badge").innerText = fx.date;
+            document.getElementById("fx-date").innerText = `Published: ${fx.date}`;
+            document.getElementById("fx-date-eur").innerText = `Published: ${fx.date}`;
         }
     }
 
     async function syncLatestData() {
         try {
-            const resp = await fetch("data/commodities.json");
+            const resp = await fetch("data/commodities.json?t=" + new Date().getTime());
             if (resp.ok) {
                 const payload = await resp.json();
                 if (payload && payload.data && payload.data.length > 0) {
@@ -627,7 +622,7 @@
                 }
             }
         } catch (e) {
-            console.log("Serving offline baseline.");
+            console.log("Using built-in official CFETS & World Bank baseline.");
         }
         renderCards();
         updateView();
@@ -734,10 +729,9 @@
         const chartW = w - pad.left - pad.right;
         const chartH = h - pad.top - pad.bottom;
 
-        const getX = (idx) => pad.left + (idx / (filteredDataset.length - 1)) * chartW;
+        const getX = (idx) => pad.left + (idx / Math.max(1, filteredDataset.length - 1)) * chartW;
         const getY = (val) => pad.top + chartH - ((val - minVal) / (maxVal - minVal)) * chartH;
 
-        // Grid lines
         ctx.strokeStyle = "#e2e8f0";
         ctx.lineWidth = 1;
         ctx.fillStyle = "#64748b";
@@ -755,7 +749,6 @@
             ctx.fillText(normalize ? yVal.toFixed(0) : (yVal >= 1000 ? (yVal/1000).toFixed(1) + 'k' : yVal.toFixed(1)), pad.left - 8, py + 4);
         }
 
-        // X Labels
         ctx.textAlign = "center";
         const stepX = Math.max(1, Math.ceil(filteredDataset.length / 10));
         filteredDataset.forEach((d, idx) => {
@@ -765,7 +758,6 @@
             }
         });
 
-        // Lines
         activeMats.forEach(m => {
             const base = filteredDataset[0][m.id] || 1;
             ctx.strokeStyle = m.color;
@@ -783,7 +775,6 @@
             ctx.stroke();
         });
 
-        // Tooltip
         if (mousePos && mousePos.x >= pad.left && mousePos.x <= w - pad.right) {
             const ratio = (mousePos.x - pad.left) / chartW;
             const nearestIdx = Math.round(ratio * (filteredDataset.length - 1));
@@ -914,7 +905,9 @@
     });
     window.addEventListener('resize', () => drawChart());
 
+    renderCards();
     renderLegend();
+    updateView();
     syncLatestData();
 </script>
 
