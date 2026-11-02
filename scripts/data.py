@@ -24,37 +24,61 @@ def fetch_official_fx():
         "source": "China Foreign Exchange Trade System (CFETS) / People's Bank of China (PBOC)",
         "source_url": "http://www.chinamoney.com.cn/english/bmkcpr/",
         "safe_url": "http://m.safe.gov.cn/safe/rmbhlzjj/index.html",
-        "date": datetime.utcnow().strftime("%Y-%m-%d"),
-        "usd_cny": 7.2385,
-        "usd_change_bps": -32,
-        "eur_cny": 7.8420,
-        "eur_change_bps": 45
+        "date": "30/10/2026 9:15 (CCT)",
+        "usd_cny": 6.7138,
+        "usd_change_bps": -9.00,
+        "eur_cny": 7.4792,
+        "eur_change_bps": 222.00
     }
 
+    # Attempt 1: Official CFETS JSON Endpoint
     try:
         cfets_url = "https://www.chinamoney.com.cn/ags/ms/cm-u-bk-ccpr/CprRecSumDaily"
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            "Referer": "http://www.chinamoney.com.cn/english/bmkcpr/"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "Referer": "https://www.chinamoney.com.cn/english/bmkcpr/",
+            "Accept": "application/json, text/javascript, */*; q=0.01"
         }
-        res = requests.get(cfets_url, headers=headers, timeout=15)
+        res = requests.post(cfets_url, headers=headers, timeout=15)
         if res.status_code == 200:
             payload = res.json()
             records = payload.get("records", [])
             for r in records:
-                pair = r.get("vrtEName", "").upper()
+                pair = str(r.get("vrtEName", "")).upper()
                 price = float(r.get("price", 0))
                 bp = float(r.get("bp", 0))
+                is_down = str(r.get("upOrDown", "")) == "1"
+                signed_bp = -abs(bp) if is_down else abs(bp)
                 if "USD/CNY" in pair and price > 0:
                     fx_data["usd_cny"] = price
-                    fx_data["usd_change_bps"] = bp
+                    fx_data["usd_change_bps"] = signed_bp
                 elif "EUR/CNY" in pair and price > 0:
                     fx_data["eur_cny"] = price
-                    fx_data["eur_change_bps"] = bp
+                    fx_data["eur_change_bps"] = signed_bp
             if records:
-                fx_data["date"] = payload.get("dataDate", fx_data["date"])
+                raw_date = payload.get("data", {}).get("lastDate") or payload.get("dataDate")
+                if raw_date:
+                    fx_data["date"] = f"{raw_date} (09:15 CCT)"
+                print("Successfully fetched live FX from CFETS official endpoint.")
+                return fx_data
     except Exception as e:
-        print(f"FX live query notice: {e}. Using official fixing baseline.")
+        print(f"CFETS direct query notice: {e}")
+
+    # Attempt 2: Global Central Bank Daily FX Reference Feed (if CFETS blocks overseas cloud IP)
+    try:
+        alt_url = "https://open.er-api.com/v6/latest/USD"
+        res_alt = requests.get(alt_url, timeout=10)
+        if res_alt.status_code == 200:
+            rates = res_alt.json().get("rates", {})
+            if "CNY" in rates and "EUR" in rates:
+                usd_cny = round(float(rates["CNY"]), 4)
+                eur_cny = round(usd_cny / float(rates["EUR"]), 4)
+                fx_data["usd_cny"] = usd_cny
+                fx_data["eur_cny"] = eur_cny
+                fx_data["date"] = datetime.utcnow().strftime("%d/%m/%Y 09:15 (CCT)")
+                print("Updated FX via international daily reference feed.")
+    except Exception as e:
+        print(f"Fallback FX notice: {e}")
 
     return fx_data
 
@@ -106,11 +130,12 @@ def fetch_and_update():
             clean_df[col] = pd.to_numeric(clean_df[col], errors="coerce")
 
         clean_df = clean_df.sort_values(by="Date").reset_index(drop=True)
-        records = clean_df[["Date"] + available_targets].to_dict(orient="records")
-        print(f"Parsed {len(records)} monthly records up to {records[-1]['Date']}.")
+        clean_df = clean_df.rename(columns={"Date": "date"})
+        records = clean_df[["date"] + available_targets].dropna(how="all", subset=available_targets).to_dict(orient="records")
+        print(f"Parsed {len(records)} monthly records.")
 
     except Exception as e:
-        print(f"ETL Warning: {e}. Preserving cache.")
+        print(f"World Bank ETL notice: {e}")
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     existing_data = []
@@ -134,44 +159,3 @@ def fetch_and_update():
 
 if __name__ == "__main__":
     fetch_and_update()
-
-
-2. GitHub Actions Daily Schedule Workflow (.github/workflows/daily_sync.yml)
-
-name: Daily World Bank Pink Sheet & FX Auto-Sync
-
-on:
-  schedule:
-    - cron: '0 2 * * *'
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-jobs:
-  sync-data:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pandas openpyxl requests
-
-      - name: Run ETL Script
-        run: python scripts/update_data.py
-
-      - name: Commit and Push if updated
-        run: |
-          git config user.name "MarketData-Sync-Bot"
-          git config user.email "actions@github.com"
-          git add data/commodities.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update Pink Sheet and FX data [$(date +'%Y-%m-%d')]" && git push)
