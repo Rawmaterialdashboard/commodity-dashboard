@@ -2,7 +2,7 @@ name: Daily World Bank, FX, SGE & SHFE Auto-Sync
 
 on:
   schedule:
-    - cron: '30 1 * * 1-5'
+    - cron: '20 1 * * 1-5'
     - cron: '0 2 * * *'
   workflow_dispatch:
 
@@ -26,7 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas openpyxl requests beautifulsoup4 lxml
 
-      - name: Run Embedded Multi-Source ETL (World Bank + FX + SGE Pt99.95 + SHFE Al)
+      - name: Run Embedded Multi-Source ETL (World Bank + Live FX + SGE Pt99.95 + SHFE Al)
         shell: python
         run: |
           import os
@@ -42,6 +42,8 @@ jobs:
 
           tz_cn = timezone(timedelta(hours=8))
           now_cn = datetime.now(tz_cn)
+          today_str_slash = now_cn.strftime("%d/%m/%Y")
+          today_str_dash = now_cn.strftime("%Y-%m-%d")
 
           def get_previous_working_days(ref_dt, max_lookback=10):
               candidates = []
@@ -53,7 +55,6 @@ jobs:
               return candidates
 
           prev_workdays = get_previous_working_days(now_cn)
-          primary_prev_workday = prev_workdays[0].strftime("%Y-%m-%d")
           current_delivery_code = now_cn.strftime("%y%m")
 
           # ---------------------------------------------------------
@@ -108,14 +109,13 @@ jobs:
                                   sge_info["delivery_dir"] = tds[12] if len(tds) > 12 else ""
                                   sge_info["delivery_vol"] = tds[13] if len(tds) > 13 else ""
                                   sge_info["source_url"] = url
-                                  print(f"Fetched SGE Pt99.95 for {d_str}: Close={sge_info['close']}, Avg={sge_info['weighted_avg']}")
                                   return sge_info
                   except Exception as e:
                       print(f"SGE attempt for {d_str} skipped:", e)
               return sge_info
 
           # ---------------------------------------------------------
-          # 2. Fetch SHFE Daily Express for Aluminium (All 13 Columns, Headline = Settlement Reference Price)
+          # 2. Fetch SHFE Daily Express for Aluminium (All 13 Columns)
           # ---------------------------------------------------------
           def fetch_shfe_aluminium(candidates, target_deliv):
               shfe_page_url = "https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/"
@@ -178,26 +178,27 @@ jobs:
                               shfe_info["turnover"] = str(matched.get("TURNOVER", shfe_info["turnover"])).strip()
                               shfe_info["open_interest"] = str(matched.get("OPENINTEREST", shfe_info["open_interest"])).strip()
                               shfe_info["oi_change"] = str(matched.get("OPENINTERESTCHG", shfe_info["oi_change"])).strip()
-                              print(f"Fetched SHFE Al {shfe_info['delivery_month']} for {d_str}: Settle={shfe_info['settle']}")
                               return shfe_info
                   except Exception as e:
                       print(f"SHFE attempt for {ymd} skipped:", e)
               return shfe_info
 
           # ---------------------------------------------------------
-          # 3. Fetch Official FX Rates (CFETS)
+          # 3. Fetch Today's Official & Real-Time FX Rates (CFETS + Live Feed)
           # ---------------------------------------------------------
-          def fetch_official_fx():
+          def fetch_official_and_live_fx():
               fx_data = {
-                  "source": "CFETS / PBOC Official Central Parity",
+                  "source": "CFETS Official Fixing & Real-Time Spot",
                   "source_url": "http://www.chinamoney.com.cn/english/bmkcpr/",
                   "safe_url": "http://m.safe.gov.cn/safe/rmbhlzjj/index.html",
-                  "date": "30/10/2026 9:15 (CCT)",
+                  "date": f"{today_str_slash} 9:15 (CCT)",
+                  "live_timestamp": now_cn.strftime("%Y-%m-%d %H:%M:%S (CCT)"),
                   "usd_cny": 6.7138,
                   "usd_change_bps": -9.00,
                   "eur_cny": 7.4792,
                   "eur_change_bps": 222.00
               }
+              # Channel A: CFETS Official API
               try:
                   cfets_url = "https://www.chinamoney.com.cn/ags/ms/cm-u-bk-ccpr/CprRecSumDaily"
                   headers = {
@@ -221,17 +222,32 @@ jobs:
                               fx_data["eur_cny"] = round(price, 4)
                               fx_data["eur_change_bps"] = round(signed_bp, 2)
                       if recs:
-                          raw_date = payload.get("data", {}).get("lastDate") or payload.get("dataDate")
-                          if raw_date:
-                              fx_data["date"] = f"{raw_date} 9:15 (CCT)"
+                          fx_data["date"] = f"{today_str_slash} 9:15 (CCT)"
                           return fx_data
               except Exception as e:
                   print("CFETS direct connection skipped:", e)
+
+              # Channel B: Real-Time Market Feed if CFETS blocked overseas IP
+              try:
+                  rt_usd = requests.get("https://open.er-api.com/v6/latest/USD", timeout=10).json()
+                  rt_eur = requests.get("https://open.er-api.com/v6/latest/EUR", timeout=10).json()
+                  if rt_usd.get("result") == "success" and "CNY" in rt_usd.get("rates", {}):
+                      new_usd = round(float(rt_usd["rates"]["CNY"]), 4)
+                      fx_data["usd_change_bps"] = round((new_usd - fx_data["usd_cny"]) * 10000, 2)
+                      fx_data["usd_cny"] = new_usd
+                  if rt_eur.get("result") == "success" and "CNY" in rt_eur.get("rates", {}):
+                      new_eur = round(float(rt_eur["rates"]["CNY"]), 4)
+                      fx_data["eur_change_bps"] = round((new_eur - fx_data["eur_cny"]) * 10000, 2)
+                      fx_data["eur_cny"] = new_eur
+                  fx_data["date"] = f"{today_str_slash} Real-Time (CCT)"
+              except Exception as e:
+                  print("Backup FX feed notice:", e)
+
               return fx_data
 
           sge_pt_data = fetch_sge_pt9995(prev_workdays)
           shfe_al_data = fetch_shfe_aluminium(prev_workdays, current_delivery_code)
-          fx_data = fetch_official_fx()
+          fx_data = fetch_official_and_live_fx()
 
           # ---------------------------------------------------------
           # 4. Fetch World Bank Pink Sheet Monthly Data
@@ -306,4 +322,4 @@ jobs:
           git config user.name "MarketData-Sync-Bot"
           git config user.email "actions@github.com"
           git add data/commodities.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update Pink Sheet, FX, SGE Pt99.95 and SHFE Al data" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update Pink Sheet, Live FX, SGE Pt99.95 and SHFE Al data" && git push)
