@@ -2,7 +2,6 @@ name: Daily World Bank, FX, SGE & SHFE Auto-Sync
 
 on:
   schedule:
-    # Runs at 01:30 UTC every day (09:30 AM Beijing Time)
     - cron: '30 1 * * 1-5'
     - cron: '0 2 * * *'
   workflow_dispatch:
@@ -32,7 +31,6 @@ jobs:
         run: |
           import os
           import io
-          import re
           import json
           import requests
           import pandas as pd
@@ -42,48 +40,42 @@ jobs:
           WB_EXCEL_URL = "https://thedocs.worldbank.org/en/doc/5d903e848db1d1b83e0ec8f744e55570-0350012021/related/CMO-Historical-Data-Monthly.xlsx"
           OUTPUT_PATH = "data/commodities.json"
 
-          # Beijing Time (UTC+8)
           tz_cn = timezone(timedelta(hours=8))
           now_cn = datetime.now(tz_cn)
 
           def get_previous_working_days(ref_dt, max_lookback=10):
-              """
-              Returns a list of candidate previous working days (skipping Saturdays & Sundays).
-              For example:
-              - If today is Sunday -> starts from Friday
-              - If today is Monday -> starts from Friday
-              - If today is Tuesday -> starts from Monday
-              """
               candidates = []
               cur = ref_dt - timedelta(days=1)
               while len(candidates) < max_lookback:
-                  if cur.weekday() < 5:  # 0=Mon, ..., 4=Fri
+                  if cur.weekday() < 5:
                       candidates.append(cur)
                   cur -= timedelta(days=1)
               return candidates
 
           prev_workdays = get_previous_working_days(now_cn)
           primary_prev_workday = prev_workdays[0].strftime("%Y-%m-%d")
-          current_delivery_code = now_cn.strftime("%y%m")  # e.g., '2611' for Nov 2026
-
-          print(f"Current Beijing Date: {now_cn.strftime('%Y-%m-%d')} | Target Prev Workday: {primary_prev_workday} | Target SHFE Delivery Month: {current_delivery_code}")
+          current_delivery_code = now_cn.strftime("%y%m")
 
           # ---------------------------------------------------------
-          # 1. Fetch SGE Daily Quotation for Pt99.95 (Previous Working Day)
+          # 1. Fetch SGE Daily Quotation for Pt99.95 (All 14 Columns)
           # ---------------------------------------------------------
           def fetch_sge_pt9995(candidates):
-              default_url = f"https://www.sge.com.cn/sjzx/quotation_daily_new?start_date={primary_prev_workday}&end_date={primary_prev_workday}&inst_ids=Pt99.95"
+              default_url = "https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=2026-10-30&end_date=2026-10-30&inst_ids=Pt99.95"
               sge_info = {
+                  "trading_date": "2026-10-30",
                   "contract": "Pt99.95",
-                  "name": "SGE Platinum (Pt99.95)",
-                  "unit": "RMB/g (元/克)",
-                  "trading_date": primary_prev_workday,
-                  "open": 228.50,
-                  "high": 230.00,
-                  "low": 227.80,
-                  "close": 229.20,
-                  "weighted_avg": 229.05,
-                  "change_pct": "+0.35%",
+                  "open": "362.23",
+                  "high": "362.23",
+                  "low": "355.94",
+                  "close": "356.89",
+                  "change": "-16.64",
+                  "change_pct": "-4.45%",
+                  "weighted_avg": "360.13",
+                  "volume_kg": "82.00",
+                  "turnover": "29,531,300.00",
+                  "open_interest": "-",
+                  "delivery_dir": "",
+                  "delivery_vol": "",
                   "source_url": default_url
               }
               headers = {
@@ -98,51 +90,51 @@ jobs:
                       resp = requests.get(url, headers=headers, timeout=12)
                       if resp.status_code == 200 and "Pt99.95" in resp.text:
                           soup = BeautifulSoup(resp.text, "lxml")
-                          rows = soup.find_all("tr")
-                          for tr in rows:
-                              tds = [td.get_text(strip=True) for td in tr.find_all(["td", "th"])]
-                              if any("Pt99.95" in cell for cell in tds) and len(tds) >= 6:
-                                  # Typical SGE table columns: Date, Contract, Open, High, Low, Close, Change, Change%, Weighted Avg...
-                                  nums = []
-                                  for c in tds:
-                                      clean_c = c.replace(",", "").replace("%", "").strip()
-                                      try:
-                                          nums.append(float(clean_c))
-                                      except ValueError:
-                                          pass
-                                  if len(nums) >= 4:
-                                      sge_info["trading_date"] = d_str
-                                      sge_info["open"] = nums[0]
-                                      sge_info["high"] = nums
-                                      sge_info["low"] = nums
-                                      sge_info["close"] = nums
-                                      if len(nums) >= 7:
-                                          sge_info["weighted_avg"] = nums[6]
-                                      sge_info["source_url"] = url
-                                      print(f"Successfully fetched SGE Pt99.95 for {d_str}: Close={sge_info['close']}")
-                                      return sge_info
+                          for tr in soup.find_all("tr"):
+                              tds = [td.get_text(strip=True) for td in tr.find_all("td")]
+                              if len(tds) >= 11 and "Pt99.95" in tds[1]:
+                                  sge_info["trading_date"] = tds[0] or d_str
+                                  sge_info["contract"] = tds[1]
+                                  sge_info["open"] = tds[2]
+                                  sge_info["high"] = tds[3]
+                                  sge_info["low"] = tds[4]
+                                  sge_info["close"] = tds[5]
+                                  sge_info["change"] = tds[6]
+                                  sge_info["change_pct"] = tds[7]
+                                  sge_info["weighted_avg"] = tds[8]
+                                  sge_info["volume_kg"] = tds[9]
+                                  sge_info["turnover"] = tds[10]
+                                  sge_info["open_interest"] = tds[11] if len(tds) > 11 else "-"
+                                  sge_info["delivery_dir"] = tds[12] if len(tds) > 12 else ""
+                                  sge_info["delivery_vol"] = tds[13] if len(tds) > 13 else ""
+                                  sge_info["source_url"] = url
+                                  print(f"Fetched SGE Pt99.95 for {d_str}: Close={sge_info['close']}, Avg={sge_info['weighted_avg']}")
+                                  return sge_info
                   except Exception as e:
                       print(f"SGE attempt for {d_str} skipped:", e)
               return sge_info
 
           # ---------------------------------------------------------
-          # 2. Fetch SHFE Daily Express for Aluminium (Current Month Delivery, e.g., 2611)
+          # 2. Fetch SHFE Daily Express for Aluminium (All 13 Columns, Headline = Settlement Reference Price)
           # ---------------------------------------------------------
           def fetch_shfe_aluminium(candidates, target_deliv):
               shfe_page_url = "https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/"
               shfe_info = {
-                  "product": "Aluminium (沪铝)",
-                  "contract": f"al{target_deliv}",
-                  "delivery_month": target_deliv,
-                  "unit": "RMB/mt (元/吨)",
-                  "trading_date": primary_prev_workday,
-                  "open": 20850.0,
-                  "high": 20960.0,
-                  "low": 20780.0,
-                  "close": 20910.0,
-                  "settle": 20885.0,
-                  "change_1": +65.0,
-                  "volume": 128540,
+                  "product": "铝 (Aluminium)",
+                  "trading_date": "2026-10-30",
+                  "delivery_month": "2611",
+                  "pre_settle": "23590",
+                  "open": "23550",
+                  "high": "23850",
+                  "low": "23520",
+                  "close": "23775",
+                  "settle": "23670",
+                  "change_1": "185",
+                  "change_2": "80",
+                  "volume": "44875",
+                  "turnover": "531194.75",
+                  "open_interest": "47795",
+                  "oi_change": "-26217",
                   "source_url": shfe_page_url
               }
               headers = {
@@ -164,7 +156,6 @@ jobs:
                               and str(r.get("DELIVERYMONTH", "")).strip() not in ("小计", "总计", "")
                           ]
                           if al_rows:
-                              # Find exact match for current delivery month (e.g. '2611') or nearest active front month
                               matched = None
                               for r in al_rows:
                                   if str(r.get("DELIVERYMONTH", "")).strip() == target_deliv:
@@ -173,38 +164,35 @@ jobs:
                               if not matched:
                                   matched = al_rows[0]
 
-                              deliv = str(matched.get("DELIVERYMONTH", target_deliv)).strip()
-                              def safe_float(v, default=0.0):
-                                  try:
-                                      return float(str(v).replace(",", "").strip())
-                                  except Exception:
-                                      return default
-
                               shfe_info["trading_date"] = d_str
-                              shfe_info["delivery_month"] = deliv
-                              shfe_info["contract"] = f"al{deliv}"
-                              shfe_info["open"] = safe_float(matched.get("OPENPRICE"), shfe_info["open"])
-                              shfe_info["high"] = safe_float(matched.get("HIGHESTPRICE"), shfe_info["high"])
-                              shfe_info["low"] = safe_float(matched.get("LOWESTPRICE"), shfe_info["low"])
-                              shfe_info["close"] = safe_float(matched.get("CLOSEPRICE"), shfe_info["close"])
-                              shfe_info["settle"] = safe_float(matched.get("SETTLEMENTPRICE"), shfe_info["settle"])
-                              shfe_info["change_1"] = safe_float(matched.get("ZD1_CHG"), 0.0)
-                              shfe_info["volume"] = int(safe_float(matched.get("VOLUME"), 0))
-                              print(f"Successfully fetched SHFE Aluminium ({shfe_info['contract']}) for {d_str}: Close={shfe_info['close']}, Settle={shfe_info['settle']}")
+                              shfe_info["delivery_month"] = str(matched.get("DELIVERYMONTH", target_deliv)).strip()
+                              shfe_info["pre_settle"] = str(matched.get("PRESETTLEMENTPRICE", shfe_info["pre_settle"])).strip()
+                              shfe_info["open"] = str(matched.get("OPENPRICE", shfe_info["open"])).strip()
+                              shfe_info["high"] = str(matched.get("HIGHESTPRICE", shfe_info["high"])).strip()
+                              shfe_info["low"] = str(matched.get("LOWESTPRICE", shfe_info["low"])).strip()
+                              shfe_info["close"] = str(matched.get("CLOSEPRICE", shfe_info["close"])).strip()
+                              shfe_info["settle"] = str(matched.get("SETTLEMENTPRICE", shfe_info["settle"])).strip()
+                              shfe_info["change_1"] = str(matched.get("ZD1_CHG", shfe_info["change_1"])).strip()
+                              shfe_info["change_2"] = str(matched.get("ZD2_CHG", shfe_info["change_2"])).strip()
+                              shfe_info["volume"] = str(matched.get("VOLUME", shfe_info["volume"])).strip()
+                              shfe_info["turnover"] = str(matched.get("TURNOVER", shfe_info["turnover"])).strip()
+                              shfe_info["open_interest"] = str(matched.get("OPENINTEREST", shfe_info["open_interest"])).strip()
+                              shfe_info["oi_change"] = str(matched.get("OPENINTERESTCHG", shfe_info["oi_change"])).strip()
+                              print(f"Fetched SHFE Al {shfe_info['delivery_month']} for {d_str}: Settle={shfe_info['settle']}")
                               return shfe_info
                   except Exception as e:
                       print(f"SHFE attempt for {ymd} skipped:", e)
               return shfe_info
 
           # ---------------------------------------------------------
-          # 3. Fetch Official FX Rates (CFETS / ECB)
+          # 3. Fetch Official FX Rates (CFETS)
           # ---------------------------------------------------------
           def fetch_official_fx():
               fx_data = {
-                  "source": "CFETS / PBOC & ECB Official Reference Rate",
+                  "source": "CFETS / PBOC Official Central Parity",
                   "source_url": "http://www.chinamoney.com.cn/english/bmkcpr/",
                   "safe_url": "http://m.safe.gov.cn/safe/rmbhlzjj/index.html",
-                  "date": f"{primary_prev_workday} 09:15 (CCT)",
+                  "date": "30/10/2026 9:15 (CCT)",
                   "usd_cny": 6.7138,
                   "usd_change_bps": -9.00,
                   "eur_cny": 7.4792,
@@ -235,36 +223,10 @@ jobs:
                       if recs:
                           raw_date = payload.get("data", {}).get("lastDate") or payload.get("dataDate")
                           if raw_date:
-                              fx_data["date"] = f"{raw_date} 09:15 (CCT)"
+                              fx_data["date"] = f"{raw_date} 9:15 (CCT)"
                           return fx_data
               except Exception as e:
                   print("CFETS direct connection skipped:", e)
-
-              try:
-                  usd_res = requests.get("https://api.frankfurter.app/latest?from=USD&to=CNY", timeout=10).json()
-                  eur_res = requests.get("https://api.frankfurter.app/latest?from=EUR&to=CNY", timeout=10).json()
-                  latest_date = usd_res.get("date")
-                  usd_val = float(usd_res["rates"]["CNY"])
-                  eur_val = float(eur_res["rates"]["CNY"])
-
-                  prev_dt = (datetime.strptime(latest_date, "%Y-%m-%d") - timedelta(days=5)).strftime("%Y-%m-%d")
-                  hist_usd = requests.get(f"https://api.frankfurter.app/{prev_dt}..{latest_date}?from=USD&to=CNY", timeout=10).json()
-                  hist_eur = requests.get(f"https://api.frankfurter.app/{prev_dt}..{latest_date}?from=EUR&to=CNY", timeout=10).json()
-
-                  usd_dates = sorted(hist_usd.get("rates", {}).keys())
-                  eur_dates = sorted(hist_eur.get("rates", {}).keys())
-
-                  usd_bps = round((usd_val - float(hist_usd["rates"][usd_dates[-2]]["CNY"])) * 10000, 2) if len(usd_dates) >= 2 else 0.0
-                  eur_bps = round((eur_val - float(hist_eur["rates"][eur_dates[-2]]["CNY"])) * 10000, 2) if len(eur_dates) >= 2 else 0.0
-
-                  fx_data["usd_cny"] = round(usd_val, 4)
-                  fx_data["usd_change_bps"] = usd_bps
-                  fx_data["eur_cny"] = round(eur_val, 4)
-                  fx_data["eur_change_bps"] = eur_bps
-                  fx_data["date"] = f"{latest_date} 09:15 (CCT)"
-              except Exception as e2:
-                  print("Fallback FX error:", e2)
-
               return fx_data
 
           sge_pt_data = fetch_sge_pt9995(prev_workdays)
@@ -324,7 +286,6 @@ jobs:
                       val = r.get(target_key)
                       if pd.notna(val) and float(val) > 0:
                           wb_updates[dt][target_key] = round(float(val), 2)
-              print(f"Loaded {len(wb_updates)} monthly records from World Bank Pink Sheet.")
           except Exception as e:
               print("World Bank fetch notice:", e)
 
@@ -332,7 +293,7 @@ jobs:
           with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
               json.dump({
                   "last_updated": now_cn.strftime("%Y-%m-%d %H:%M (CCT)"),
-                  "previous_working_day": primary_prev_workday,
+                  "previous_working_day": sge_pt_data["trading_date"],
                   "fx_rates": fx_data,
                   "sge_pt9995": sge_pt_data,
                   "shfe_aluminium": shfe_al_data,
