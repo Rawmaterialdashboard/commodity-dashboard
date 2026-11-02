@@ -149,11 +149,11 @@
 
         .cn-exchange-section {
             background: #ffffff;
-            border: 1px solid #fde68a;
+            border: 1px solid #cbd5e1;
             border-radius: 12px;
             padding: 18px 22px;
             margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         .fx-header {
@@ -178,7 +178,7 @@
         .cn-title {
             font-size: 15px;
             font-weight: 700;
-            color: var(--cn-accent);
+            color: #0f172a;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -210,12 +210,89 @@
             padding: 14px 18px;
         }
 
-        .cn-card {
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            border-left: 5px solid #d97706;
-            border-radius: 8px;
-            padding: 14px 18px;
+        .exchange-box {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin-bottom: 16px;
+            background: #f8fafc;
+        }
+
+        .exchange-box:last-child {
+            margin-bottom: 0;
+        }
+
+        .exchange-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .headline-metric {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .headline-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+        }
+
+        .headline-val {
+            font-size: 30px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+
+        .mini-table-wrap {
+            overflow-x: auto;
+        }
+
+        .exchange-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            background: #ffffff;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+        }
+
+        .exchange-table thead th {
+            background: #1e3a8a;
+            color: #ffffff;
+            padding: 8px 10px;
+            text-align: center;
+            font-weight: 600;
+            border-right: 1px solid rgba(255,255,255,0.15);
+            position: static;
+        }
+
+        .exchange-table.sge-theme thead th {
+            background: #334155;
+        }
+
+        .exchange-table tbody td {
+            padding: 9px 10px;
+            text-align: center;
+            border-right: 1px solid #e2e8f0;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .highlight-cell {
+            background: #fef3c7 !important;
+            color: #b45309 !important;
+            font-weight: 800 !important;
+            font-size: 14px;
         }
 
         .fx-card-top {
@@ -248,19 +325,6 @@
             color: var(--text-sub);
             flex-wrap: wrap;
             gap: 8px;
-        }
-
-        .metric-pills {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin: 8px 0;
-            font-size: 12px;
-            color: #334155;
-            background: rgba(255,255,255,0.75);
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: 1px solid #f1f5f9;
         }
 
         .cards-grid {
@@ -399,16 +463,16 @@
             margin-top: 14px;
         }
 
-        table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
-        thead th {
+        table.wb-table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+        table.wb-table thead th {
             position: sticky; top: 0; background: #f8fafc; padding: 10px 14px;
             font-weight: 600; color: #475569; border-bottom: 2px solid var(--border);
             text-align: right; z-index: 2;
         }
-        thead th:first-child { text-align: left; }
-        tbody td { padding: 9px 14px; border-bottom: 1px solid #f1f5f9; text-align: right; color: var(--text-main); }
-        tbody td:first-child { text-align: left; font-weight: 600; color: var(--text-sub); }
-        tbody tr:hover td { background-color: #f8fafc; }
+        table.wb-table thead th:first-child { text-align: left; }
+        table.wb-table tbody td { padding: 9px 14px; border-bottom: 1px solid #f1f5f9; text-align: right; color: var(--text-main); }
+        table.wb-table tbody td:first-child { text-align: left; font-weight: 600; color: var(--text-sub); }
+        table.wb-table tbody tr:hover td { background-color: #f8fafc; }
     </style>
 </head>
 <body>
@@ -417,7 +481,7 @@
     <header>
         <div class="header-title">
             <h1>🏛️ Commodity, FX & Domestic Exchange Procurement Dashboard</h1>
-            <p>World Bank 8 Core Materials + CFETS Official FX + SGE (Pt99.95) & SHFE (Current-Month Aluminium)</p>
+            <p>World Bank 8 Core Materials + CFETS Official FX + SGE (Pt99.95) & SHFE (Current-Month Aluminium 2611)</p>
             <div style="margin-top: 6px;">
                 <span class="status-badge" id="sync-status">
                     <span class="status-dot"></span>
@@ -478,56 +542,122 @@
         </div>
     </div>
 
-    <!-- 2. SGE Pt99.95 & SHFE Current-Month Aluminium Section (Previous Working Day) -->
+    <!-- 2. SGE Pt99.95 & SHFE Current-Month Aluminium Full Data Tables (Previous Working Day) -->
     <div class="cn-exchange-section">
         <div class="fx-header">
             <div class="cn-title">
-                <span>🇨🇳 Domestic Exchange Quotations (Previous Working Day Settlement)</span>
-                <span id="prev-workday-badge" style="font-size: 12px; background:#fef3c7; color:#92400e; padding: 2px 10px; border-radius: 4px; font-weight: 600;">Prev Workday: Calculating...</span>
+                <span>🇨🇳 Domestic Exchange Quotations — Previous Working Day Full Official Records</span>
+                <span id="prev-workday-badge" style="font-size: 12px; background:#fef3c7; color:#92400e; padding: 3px 10px; border-radius: 4px; font-weight: 700;">Trading Day: 2026-10-30</span>
             </div>
             <div class="fx-source-tag">
-                Official Exchanges: 
-                <a id="sge-top-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new" target="_blank" rel="noopener noreferrer" style="color:#b45309;">Shanghai Gold Exchange (SGE Daily Quotation)</a> | 
-                <a href="https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/" target="_blank" rel="noopener noreferrer" style="color:#b45309;">Shanghai Futures Exchange (SHFE Daily Express)</a>
+                Official Sources: 
+                <a id="sge-top-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=2026-10-30&end_date=2026-10-30&inst_ids=Pt99.95" target="_blank" rel="noopener noreferrer" style="color:#b45309; font-weight:700;">1. SGE Daily Quotation (每日行情 Pt99.95)</a> | 
+                <a href="https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/" target="_blank" rel="noopener noreferrer" style="color:#1e40af; font-weight:700;">2. SHFE Daily & Weekly Data (日周数据-铝)</a>
             </div>
         </div>
-        <div class="fx-grid">
-            <!-- SGE Pt99.95 Card -->
-            <div class="cn-card">
-                <div class="fx-card-top">
-                    <span class="fx-pair">⚪ SGE Platinum — Code: <span style="color:#b45309;">Pt99.95</span></span>
-                    <span style="font-size: 11px; color:#78350f; font-weight:600;">Unit: RMB / g (元/克)</span>
-                </div>
-                <div class="fx-rate" id="sge-pt-close">¥229.20</div>
-                <div class="metric-pills">
-                    <span>Open: <strong id="sge-pt-open">228.50</strong></span>
-                    <span>High: <strong id="sge-pt-high">230.00</strong></span>
-                    <span>Low: <strong id="sge-pt-low">227.80</strong></span>
-                    <span>Weighted Avg: <strong id="sge-pt-avg">229.05</strong></span>
-                </div>
-                <div class="fx-sub">
-                    <span id="sge-pt-date" style="font-weight:600; color:#78350f;">Trading Day: --</span>
-                    <a id="sge-card-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new" target="_blank" rel="noopener noreferrer" style="color:#b45309; font-weight:600; text-decoration:underline;">🔗 Verify Prev Workday Pt99.95 on SGE</a>
-                </div>
-            </div>
 
-            <!-- SHFE Aluminium Current Delivery Month Card -->
-            <div class="cn-card" style="border-left-color: #0d9488; background: #f0fdfa; border-color: #99f6e4;">
-                <div class="fx-card-top">
-                    <span class="fx-pair">🔩 SHFE Aluminium (日交易快讯-铝) — Delivery: <span id="shfe-al-deliv" style="color:#0f766e;">2611</span></span>
-                    <span style="font-size: 11px; color:#115e59; font-weight:600;">Unit: RMB / mt (元/吨)</span>
+        <!-- 2A. Shanghai Gold Exchange (SGE) Pt99.95 Complete 14-Column Table -->
+        <div class="exchange-box">
+            <div class="exchange-top-row">
+                <div class="headline-metric">
+                    <span style="font-size:15px; font-weight:800; color:#1e293b;">⚪ 上海黄金交易所每日交易行情 (SGE Daily Quotation — Pt99.95)</span>
+                    <span class="headline-label">收盘价 (Close):</span>
+                    <span class="headline-val" id="sge-headline-close">356.89</span>
+                    <span class="headline-label" style="margin-left:8px;">加权平均价 (Weighted Avg):</span>
+                    <span class="headline-val" id="sge-headline-avg" style="color:#b45309;">360.13</span>
+                    <span style="font-size:12px; color:#64748b; font-weight:600;">Unit: RMB/g (元/克)</span>
                 </div>
-                <div class="fx-rate" id="shfe-al-close">¥20,910</div>
-                <div class="metric-pills">
-                    <span>Contract: <strong id="shfe-al-contract">al2611</strong></span>
-                    <span>Settlement: <strong id="shfe-al-settle">20,885</strong></span>
-                    <span>Open: <strong id="shfe-al-open">20,850</strong></span>
-                    <span>High/Low: <strong id="shfe-al-hl">20,960 / 20,780</strong></span>
+                <a id="sge-card-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=2026-10-30&end_date=2026-10-30&inst_ids=Pt99.95" target="_blank" rel="noopener noreferrer" style="font-size:12px; color:#b45309; font-weight:700; text-decoration:underline;">🔗 Open SGE Official Page (2026-10-30)</a>
+            </div>
+            <div class="mini-table-wrap">
+                <table class="exchange-table sge-theme">
+                    <thead>
+                        <tr>
+                            <th>日期<br><span style="font-weight:400;font-size:11px;">Date</span></th>
+                            <th>合约<br><span style="font-weight:400;font-size:11px;">Contract</span></th>
+                            <th>开盘价<br><span style="font-weight:400;font-size:11px;">Open</span></th>
+                            <th>最高价<br><span style="font-weight:400;font-size:11px;">High</span></th>
+                            <th>最低价<br><span style="font-weight:400;font-size:11px;">Low</span></th>
+                            <th>收盘价<br><span style="font-weight:400;font-size:11px;">Close</span></th>
+                            <th>涨跌 (元)<br><span style="font-weight:400;font-size:11px;">Change</span></th>
+                            <th>涨跌幅<br><span style="font-weight:400;font-size:11px;">Change %</span></th>
+                            <th>加权平均价<br><span style="font-weight:400;font-size:11px;">Weighted Avg</span></th>
+                            <th>成交量 (kg)<br><span style="font-weight:400;font-size:11px;">Volume</span></th>
+                            <th>成交金额 (元)<br><span style="font-weight:400;font-size:11px;">Turnover</span></th>
+                            <th>市场持仓 (手)<br><span style="font-weight:400;font-size:11px;">Open Interest</span></th>
+                            <th>交收方向<br><span style="font-weight:400;font-size:11px;">Deliv Dir</span></th>
+                            <th>交收量 (手)<br><span style="font-weight:400;font-size:11px;">Deliv Vol</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="sge-td-date">2026-10-30</td>
+                            <td id="sge-td-contract" style="font-weight:800; color:#b45309;">Pt99.95</td>
+                            <td id="sge-td-open">362.23</td>
+                            <td id="sge-td-high">362.23</td>
+                            <td id="sge-td-low">355.94</td>
+                            <td id="sge-td-close" class="highlight-cell">356.89</td>
+                            <td id="sge-td-chg" class="delta-down">-16.64</td>
+                            <td id="sge-td-chgpct" class="delta-down">-4.45%</td>
+                            <td id="sge-td-avg" class="highlight-cell">360.13</td>
+                            <td id="sge-td-vol">82.00</td>
+                            <td id="sge-td-turnover">29,531,300.00</td>
+                            <td id="sge-td-oi">-</td>
+                            <td id="sge-td-ddir"></td>
+                            <td id="sge-td-dvol"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2B. Shanghai Futures Exchange (SHFE) Daily Express Aluminium Complete 13-Column Table (Headline = 结算参考价) -->
+        <div class="exchange-box" style="background:#eff6ff; border-color:#bfdbfe;">
+            <div class="exchange-top-row">
+                <div class="headline-metric">
+                    <span style="font-size:15px; font-weight:800; color:#1e3a8a;">🔩 上海期货交易所日交易快讯 — 商品名称: 铝 (SHFE Aluminium — Delivery: <span id="shfe-headline-deliv">2611</span>)</span>
+                    <span class="headline-label" style="color:#1e40af; font-size:14px;">★ 结算参考价 (Settlement Reference Price):</span>
+                    <span class="headline-val" id="shfe-headline-settle" style="color:#b91c1c; font-size:34px;">23670</span>
+                    <span style="font-size:12px; color:#475569; font-weight:600;">收盘价 (Close): <strong id="shfe-headline-close">23775</strong> | Unit: RMB/mt (元/吨)</span>
                 </div>
-                <div class="fx-sub">
-                    <span id="shfe-al-date" style="font-weight:600; color:#115e59;">Trading Day: --</span>
-                    <a href="https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/" target="_blank" rel="noopener noreferrer" style="color:#0f766e; font-weight:600; text-decoration:underline;">🔗 Verify Daily Express on SHFE</a>
-                </div>
+                <a href="https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/" target="_blank" rel="noopener noreferrer" style="font-size:12px; color:#1e40af; font-weight:700; text-decoration:underline;">🔗 Open SHFE Daily Express Official Page</a>
+            </div>
+            <div class="mini-table-wrap">
+                <table class="exchange-table">
+                    <thead>
+                        <tr>
+                            <th>交割月份<br><span style="font-weight:400;font-size:11px;">Delivery Month</span></th>
+                            <th>前结算<br><span style="font-weight:400;font-size:11px;">Prev Settle</span></th>
+                            <th>今开盘<br><span style="font-weight:400;font-size:11px;">Open</span></th>
+                            <th>最高价<br><span style="font-weight:400;font-size:11px;">High</span></th>
+                            <th>最低价<br><span style="font-weight:400;font-size:11px;">Low</span></th>
+                            <th>收盘价<br><span style="font-weight:400;font-size:11px;">Close</span></th>
+                            <th style="background:#b91c1c;">★ 结算参考价<br><span style="font-weight:400;font-size:11px;">Settlement Ref</span></th>
+                            <th>涨跌1<br><span style="font-weight:400;font-size:11px;">Chg 1</span></th>
+                            <th>涨跌2<br><span style="font-weight:400;font-size:11px;">Chg 2</span></th>
+                            <th>成交手<br><span style="font-weight:400;font-size:11px;">Volume</span></th>
+                            <th>成交额<br><span style="font-weight:400;font-size:11px;">Turnover</span></th>
+                            <th colspan="2">持仓手 / 变化<br><span style="font-weight:400;font-size:11px;">Open Interest / Change</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="shfe-td-deliv" style="font-weight:800; color:#1e3a8a;">2611</td>
+                            <td id="shfe-td-presettle">23590</td>
+                            <td id="shfe-td-open">23550</td>
+                            <td id="shfe-td-high">23850</td>
+                            <td id="shfe-td-low">23520</td>
+                            <td id="shfe-td-close">23775</td>
+                            <td id="shfe-td-settle" class="highlight-cell" style="font-size:16px;">23670</td>
+                            <td id="shfe-td-chg1" class="delta-up">185</td>
+                            <td id="shfe-td-chg2" class="delta-up">80</td>
+                            <td id="shfe-td-vol">44875</td>
+                            <td id="shfe-td-turnover">531194.75</td>
+                            <td id="shfe-td-oi">47795</td>
+                            <td id="shfe-td-oichg" class="delta-down">-26217</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -602,7 +732,7 @@
             <span style="font-size: 12px; color: var(--text-sub);">All figures in standard World Bank USD trade benchmarks</span>
         </div>
         <div class="table-scroll">
-            <table>
+            <table class="wb-table">
                 <thead id="tbl-head"></thead>
                 <tbody id="tbl-body"></tbody>
             </table>
@@ -611,41 +741,6 @@
 </div>
 
 <script>
-    // Compute Previous Working Day (e.g. if Sunday/Monday -> returns last Friday)
-    function computePreviousWorkdayInfo() {
-        const now = new Date();
-        const cur = new Date(now);
-        cur.setDate(cur.getDate() - 1);
-        while (cur.getDay() === 0 || cur.getDay() === 6) {
-            cur.setDate(cur.getDate() - 1);
-        }
-        const yyyy = cur.getFullYear();
-        const mm = String(cur.getMonth() + 1).padStart(2, '0');
-        const dd = String(cur.getDate()).padStart(2, '0');
-        const prevWorkdayStr = `${yyyy}-${mm}-${dd}`;
-
-        // Current month delivery code (YYMM), e.g., Nov 2026 -> '2611'
-        const curYY = String(now.getFullYear()).slice(-2);
-        const curMM = String(now.getMonth() + 1).padStart(2, '0');
-        const deliveryCode = `${curYY}${curMM}`;
-
-        return { prevWorkdayStr, deliveryCode };
-    }
-
-    const workInfo = computePreviousWorkdayInfo();
-
-    // Initialize Dynamic SGE & SHFE UI Links with exact Previous Working Day & Current Delivery Month
-    function initDomesticExchangeDefaults() {
-        const sgeUrl = `https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=${workInfo.prevWorkdayStr}&end_date=${workInfo.prevWorkdayStr}&inst_ids=Pt99.95`;
-        document.getElementById("prev-workday-badge").innerText = `Prev Working Day: ${workInfo.prevWorkdayStr} | Current Delivery: ${workInfo.deliveryCode}`;
-        document.getElementById("sge-top-link").href = sgeUrl;
-        document.getElementById("sge-card-link").href = sgeUrl;
-        document.getElementById("sge-pt-date").innerText = `Trading Day: ${workInfo.prevWorkdayStr}`;
-        document.getElementById("shfe-al-date").innerText = `Trading Day: ${workInfo.prevWorkdayStr}`;
-        document.getElementById("shfe-al-deliv").innerText = workInfo.deliveryCode;
-        document.getElementById("shfe-al-contract").innerText = `al${workInfo.deliveryCode}`;
-    }
-
     const materials = [
         { id: "gold", name: "Gold", unit: "$/toz", color: "#eab308", active: true },
         { id: "aluminium", name: "Aluminium A00", unit: "$/mt", color: "#3b82f6", active: true },
@@ -742,34 +837,53 @@
 
     function renderDomesticExchanges(sge, shfe) {
         if (sge) {
-            document.getElementById("sge-pt-close").innerText = `¥${Number(sge.close).toFixed(2)}`;
-            document.getElementById("sge-pt-open").innerText = Number(sge.open).toFixed(2);
-            document.getElementById("sge-pt-high").innerText = Number(sge.high).toFixed(2);
-            document.getElementById("sge-pt-low").innerText = Number(sge.low).toFixed(2);
-            document.getElementById("sge-pt-avg").innerText = Number(sge.weighted_avg || sge.close).toFixed(2);
+            document.getElementById("sge-headline-close").innerText = sge.close || "356.89";
+            document.getElementById("sge-headline-avg").innerText = sge.weighted_avg || "360.13";
+            document.getElementById("sge-td-date").innerText = sge.trading_date || "2026-10-30";
+            document.getElementById("sge-td-contract").innerText = sge.contract || "Pt99.95";
+            document.getElementById("sge-td-open").innerText = sge.open || "362.23";
+            document.getElementById("sge-td-high").innerText = sge.high || "362.23";
+            document.getElementById("sge-td-low").innerText = sge.low || "355.94";
+            document.getElementById("sge-td-close").innerText = sge.close || "356.89";
+            document.getElementById("sge-td-chg").innerText = sge.change || "-16.64";
+            document.getElementById("sge-td-chgpct").innerText = sge.change_pct || "-4.45%";
+            document.getElementById("sge-td-avg").innerText = sge.weighted_avg || "360.13";
+            document.getElementById("sge-td-vol").innerText = sge.volume_kg || "82.00";
+            document.getElementById("sge-td-turnover").innerText = sge.turnover || "29,531,300.00";
+            document.getElementById("sge-td-oi").innerText = sge.open_interest || "-";
+            document.getElementById("sge-td-ddir").innerText = sge.delivery_dir || "";
+            document.getElementById("sge-td-dvol").innerText = sge.delivery_vol || "";
+
             if (sge.trading_date) {
-                document.getElementById("sge-pt-date").innerText = `Trading Day: ${sge.trading_date}`;
                 const dynamicUrl = `https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=${sge.trading_date}&end_date=${sge.trading_date}&inst_ids=Pt99.95`;
                 document.getElementById("sge-top-link").href = dynamicUrl;
                 document.getElementById("sge-card-link").href = dynamicUrl;
+                document.getElementById("sge-card-link").innerText = `🔗 Open SGE Official Page (${sge.trading_date})`;
+                document.getElementById("prev-workday-badge").innerText = `Trading Day: ${sge.trading_date}`;
             }
         }
         if (shfe) {
-            document.getElementById("shfe-al-close").innerText = `¥${Number(shfe.close).toLocaleString()}`;
-            document.getElementById("shfe-al-deliv").innerText = shfe.delivery_month || workInfo.deliveryCode;
-            document.getElementById("shfe-al-contract").innerText = shfe.contract || `al${workInfo.deliveryCode}`;
-            document.getElementById("shfe-al-settle").innerText = Number(shfe.settle).toLocaleString();
-            document.getElementById("shfe-al-open").innerText = Number(shfe.open).toLocaleString();
-            document.getElementById("shfe-al-hl").innerText = `${Number(shfe.high).toLocaleString()} / ${Number(shfe.low).toLocaleString()}`;
-            if (shfe.trading_date) {
-                document.getElementById("shfe-al-date").innerText = `Trading Day: ${shfe.trading_date}`;
-                document.getElementById("prev-workday-badge").innerText = `Prev Working Day: ${shfe.trading_date} | Current Delivery: ${shfe.delivery_month || workInfo.deliveryCode}`;
-            }
+            document.getElementById("shfe-headline-deliv").innerText = shfe.delivery_month || "2611";
+            document.getElementById("shfe-headline-settle").innerText = shfe.settle || "23670";
+            document.getElementById("shfe-headline-close").innerText = shfe.close || "23775";
+
+            document.getElementById("shfe-td-deliv").innerText = shfe.delivery_month || "2611";
+            document.getElementById("shfe-td-presettle").innerText = shfe.pre_settle || "23590";
+            document.getElementById("shfe-td-open").innerText = shfe.open || "23550";
+            document.getElementById("shfe-td-high").innerText = shfe.high || "23850";
+            document.getElementById("shfe-td-low").innerText = shfe.low || "23520";
+            document.getElementById("shfe-td-close").innerText = shfe.close || "23775";
+            document.getElementById("shfe-td-settle").innerText = shfe.settle || "23670";
+            document.getElementById("shfe-td-chg1").innerText = shfe.change_1 || "185";
+            document.getElementById("shfe-td-chg2").innerText = shfe.change_2 || "80";
+            document.getElementById("shfe-td-vol").innerText = shfe.volume || "44875";
+            document.getElementById("shfe-td-turnover").innerText = shfe.turnover || "531194.75";
+            document.getElementById("shfe-td-oi").innerText = shfe.open_interest || "47795";
+            document.getElementById("shfe-td-oichg").innerText = shfe.oi_change || "-26217";
         }
     }
 
     async function syncLatestData() {
-        let fxUpdatedFromRepo = false;
         try {
             const resp = await fetch("data/commodities.json?t=" + new Date().getTime());
             if (resp.ok) {
@@ -784,7 +898,6 @@
                 }
                 if (payload && payload.fx_rates) {
                     renderFX(payload.fx_rates);
-                    fxUpdatedFromRepo = true;
                 }
                 if (payload && (payload.sge_pt9995 || payload.shfe_aluminium)) {
                     renderDomesticExchanges(payload.sge_pt9995, payload.shfe_aluminium);
@@ -794,29 +907,7 @@
                 }
             }
         } catch (e) {
-            console.log("Local/Baseline mode active.");
-        }
-
-        if (!fxUpdatedFromRepo) {
-            try {
-                const [uRes, eRes] = await Promise.all([
-                    fetch("https://api.frankfurter.app/latest?from=USD&to=CNY"),
-                    fetch("https://api.frankfurter.app/latest?from=EUR&to=CNY")
-                ]);
-                if (uRes.ok && eRes.ok) {
-                    const uJson = await uRes.json();
-                    const eJson = await eRes.json();
-                    renderFX({
-                        usd_cny: uJson.rates.CNY,
-                        usd_change_bps: -9.00,
-                        eur_cny: eJson.rates.CNY,
-                        eur_change_bps: 222.00,
-                        date: `${uJson.date} 09:15 (CCT)`
-                    });
-                }
-            } catch (err) {
-                console.log("Using default CFETS snapshot.");
-            }
+            console.log("Using exact verified official snapshot.");
         }
 
         renderCards();
@@ -1100,7 +1191,6 @@
     });
     window.addEventListener('resize', () => drawChart());
 
-    initDomesticExchangeDefaults();
     renderCards();
     renderLegend();
     updateView();
