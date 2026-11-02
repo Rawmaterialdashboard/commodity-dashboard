@@ -25,8 +25,123 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas openpyxl requests
 
-      - name: Run World Bank & CFETS ETL Script
-        run: python scripts/update_data.py
+      - name: Run Embedded World Bank & CFETS ETL
+        shell: python
+        run: |
+          import os
+          import io
+          import json
+          import requests
+          import pandas as pd
+          from datetime import datetime
+
+          WB_EXCEL_URL = "https://thedocs.worldbank.org/en/doc/5d903e848db1d1b83e0ec8f744e55570-0350012021/related/CMO-Historical-Data-Monthly.xlsx"
+          OUTPUT_PATH = "data/commodities.json"
+
+          TARGET_COLS = {
+              "GOLD": "gold",
+              "ALUMINUM": "aluminium",
+              "COPPER": "copper",
+              "TIN": "tin",
+              "TUNGSTEN": "tungsten",
+              "STEEL": "steel",
+              "RUBBER": "rubber",
+              "SILVER": "silver"
+          }
+
+          def fetch_official_fx():
+              fx_data = {
+                  "source": "China Foreign Exchange Trade System (CFETS) / PBOC",
+                  "source_url": "http://www.chinamoney.com.cn/english/bmkcpr/",
+                  "safe_url": "http://m.safe.gov.cn/safe/rmbhlzjj/index.html",
+                  "date": "30/10/2026 9:15 (CCT)",
+                  "usd_cny": 6.7138,
+                  "usd_change_bps": -9.00,
+                  "eur_cny": 7.4792,
+                  "eur_change_bps": 222.00
+              }
+              try:
+                  cfets_url = "https://www.chinamoney.com.cn/ags/ms/cm-u-bk-ccpr/CprRecSumDaily"
+                  headers = {
+                      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                      "Referer": "https://www.chinamoney.com.cn/english/bmkcpr/"
+                  }
+                  res = requests.post(cfets_url, headers=headers, timeout=15)
+                  if res.status_code == 200:
+                      payload = res.json()
+                      records = payload.get("records", [])
+                      for r in records:
+                          pair = str(r.get("vrtEName", "")).upper()
+                          price = float(r.get("price", 0))
+                          bp = float(r.get("bp", 0))
+                          is_down = str(r.get("upOrDown", "")) == "1"
+                          signed_bp = -abs(bp) if is_down else abs(bp)
+                          if "USD/CNY" in pair and price > 0:
+                              fx_data["usd_cny"] = price
+                              fx_data["usd_change_bps"] = signed_bp
+                          elif "EUR/CNY" in pair and price > 0:
+                              fx_data["eur_cny"] = price
+                              fx_data["eur_change_bps"] = signed_bp
+                      if records:
+                          raw_date = payload.get("data", {}).get("lastDate") or payload.get("dataDate")
+                          if raw_date:
+                              fx_data["date"] = f"{raw_date} 9:15 (CCT)"
+                          return fx_data
+              except Exception as e:
+                  print("CFETS notice:", e)
+              return fx_data
+
+          fx_data = fetch_official_fx()
+          records = []
+          try:
+              resp = requests.get(WB_EXCEL_URL, headers={"User-Agent": "Mozilla/5.0"}, timeout=60)
+              resp.raise_for_status()
+              excel_data = pd.ExcelFile(io.BytesIO(resp.content))
+              sheet_name = "Monthly Prices" if "Monthly Prices" in excel_data.sheet_names else excel_data.sheet_names[0]
+              raw_df = pd.read_excel(excel_data, sheet_name=sheet_name)
+
+              header_row_idx = 4
+              for idx, row in raw_df.iterrows():
+                  first_val = str(row.iloc[0]).strip().upper()
+                  if "1960M01" in first_val:
+                      header_row_idx = max(0, idx - 1)
+                      break
+
+              columns = raw_df.iloc[header_row_idx].tolist()
+              columns[0] = "Date"
+              clean_df = raw_df.iloc[header_row_idx + 1:].copy()
+              clean_df.columns = columns
+              clean_df = clean_df.dropna(subset=["Date"])
+              clean_df["Date"] = clean_df["Date"].astype(str).str.strip().str.replace("M", "-")
+              clean_df = clean_df[clean_df["Date"].str.match(r"^\d{4}-\d{2}$", na=False)]
+              clean_df = clean_df[(clean_df["Date"] >= "2016-01") & (clean_df["Date"] <= "2026-12")]
+
+              matched_mapping = {}
+              for col in clean_df.columns:
+                  col_str = str(col).upper()
+                  for key, target_id in TARGET_COLS.items():
+                      if key in col_str and target_id not in matched_mapping.values():
+                          matched_mapping[col] = target_id
+
+              clean_df = clean_df.rename(columns=matched_mapping)
+              available_targets = [v for v in TARGET_COLS.values() if v in clean_df.columns]
+              for col in available_targets:
+                  clean_df[col] = pd.to_numeric(clean_df[col], errors="coerce")
+
+              clean_df = clean_df.sort_values(by="Date").reset_index(drop=True)
+              clean_df = clean_df.rename(columns={"Date": "date"})
+              records = clean_df[["date"] + available_targets].dropna(how="all", subset=available_targets).to_dict(orient="records")
+          except Exception as e:
+              print("WB notice:", e)
+
+          os.makedirs("data", exist_ok=True)
+          with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+              json.dump({
+                  "last_updated": datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+                  "fx_rates": fx_data,
+                  "data": records
+              }, f, indent=2, ensure_ascii=False)
+          print("Successfully wrote data/commodities.json")
 
       - name: Commit and Push if updated
         run: |
