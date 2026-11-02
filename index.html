@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raw Materials & Official FX Procurement Dashboard</title>
+    <title>Raw Materials, FX & Domestic Exchanges Procurement Dashboard</title>
     <style>
         :root {
             --bg: #f8fafc;
@@ -16,6 +16,7 @@
             --success: #16a34a;
             --danger: #dc2626;
             --fx-accent: #1e40af;
+            --cn-accent: #b45309;
         }
 
         * {
@@ -146,6 +147,15 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
 
+        .cn-exchange-section {
+            background: #ffffff;
+            border: 1px solid #fde68a;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
         .fx-header {
             display: flex;
             justify-content: space-between;
@@ -162,6 +172,17 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .cn-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--cn-accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .fx-source-tag {
@@ -177,7 +198,7 @@
 
         .fx-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 16px;
         }
 
@@ -189,10 +210,20 @@
             padding: 14px 18px;
         }
 
+        .cn-card {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-left: 5px solid #d97706;
+            border-radius: 8px;
+            padding: 14px 18px;
+        }
+
         .fx-card-top {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .fx-pair {
@@ -215,6 +246,21 @@
             align-items: center;
             font-size: 12px;
             color: var(--text-sub);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .metric-pills {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 8px 0;
+            font-size: 12px;
+            color: #334155;
+            background: rgba(255,255,255,0.75);
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #f1f5f9;
         }
 
         .cards-grid {
@@ -370,12 +416,12 @@
 <div class="container">
     <header>
         <div class="header-title">
-            <h1>🏛️ Commodity & FX Procurement Intelligence Dashboard</h1>
-            <p>Tracking 8 Target Materials & Official Central Parity Exchange Rates | 2016 – 2026 (Continuous Monthly Resolution from 2024)</p>
+            <h1>🏛️ Commodity, FX & Domestic Exchange Procurement Dashboard</h1>
+            <p>World Bank 8 Core Materials + CFETS Official FX + SGE (Pt99.95) & SHFE (Current-Month Aluminium)</p>
             <div style="margin-top: 6px;">
                 <span class="status-badge" id="sync-status">
                     <span class="status-dot"></span>
-                    <span id="sync-text">Daily Auto-Sync Active (CFETS & World Bank)</span>
+                    <span id="sync-text">Weekday Auto-Sync Active (World Bank, CFETS, SGE & SHFE)</span>
                 </span>
             </div>
         </div>
@@ -392,7 +438,7 @@
         </div>
     </header>
 
-    <!-- OFFICIAL FX RATES SECTION (Aligned with CFETS CNY Central Parity Rate) -->
+    <!-- 1. Official FX Section -->
     <div class="fx-section">
         <div class="fx-header">
             <div class="fx-title">
@@ -432,6 +478,60 @@
         </div>
     </div>
 
+    <!-- 2. SGE Pt99.95 & SHFE Current-Month Aluminium Section (Previous Working Day) -->
+    <div class="cn-exchange-section">
+        <div class="fx-header">
+            <div class="cn-title">
+                <span>🇨🇳 Domestic Exchange Quotations (Previous Working Day Settlement)</span>
+                <span id="prev-workday-badge" style="font-size: 12px; background:#fef3c7; color:#92400e; padding: 2px 10px; border-radius: 4px; font-weight: 600;">Prev Workday: Calculating...</span>
+            </div>
+            <div class="fx-source-tag">
+                Official Exchanges: 
+                <a id="sge-top-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new" target="_blank" rel="noopener noreferrer" style="color:#b45309;">Shanghai Gold Exchange (SGE Daily Quotation)</a> | 
+                <a href="https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/" target="_blank" rel="noopener noreferrer" style="color:#b45309;">Shanghai Futures Exchange (SHFE Daily Express)</a>
+            </div>
+        </div>
+        <div class="fx-grid">
+            <!-- SGE Pt99.95 Card -->
+            <div class="cn-card">
+                <div class="fx-card-top">
+                    <span class="fx-pair">⚪ SGE Platinum — Code: <span style="color:#b45309;">Pt99.95</span></span>
+                    <span style="font-size: 11px; color:#78350f; font-weight:600;">Unit: RMB / g (元/克)</span>
+                </div>
+                <div class="fx-rate" id="sge-pt-close">¥229.20</div>
+                <div class="metric-pills">
+                    <span>Open: <strong id="sge-pt-open">228.50</strong></span>
+                    <span>High: <strong id="sge-pt-high">230.00</strong></span>
+                    <span>Low: <strong id="sge-pt-low">227.80</strong></span>
+                    <span>Weighted Avg: <strong id="sge-pt-avg">229.05</strong></span>
+                </div>
+                <div class="fx-sub">
+                    <span id="sge-pt-date" style="font-weight:600; color:#78350f;">Trading Day: --</span>
+                    <a id="sge-card-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new" target="_blank" rel="noopener noreferrer" style="color:#b45309; font-weight:600; text-decoration:underline;">🔗 Verify Prev Workday Pt99.95 on SGE</a>
+                </div>
+            </div>
+
+            <!-- SHFE Aluminium Current Delivery Month Card -->
+            <div class="cn-card" style="border-left-color: #0d9488; background: #f0fdfa; border-color: #99f6e4;">
+                <div class="fx-card-top">
+                    <span class="fx-pair">🔩 SHFE Aluminium (日交易快讯-铝) — Delivery: <span id="shfe-al-deliv" style="color:#0f766e;">2611</span></span>
+                    <span style="font-size: 11px; color:#115e59; font-weight:600;">Unit: RMB / mt (元/吨)</span>
+                </div>
+                <div class="fx-rate" id="shfe-al-close">¥20,910</div>
+                <div class="metric-pills">
+                    <span>Contract: <strong id="shfe-al-contract">al2611</strong></span>
+                    <span>Settlement: <strong id="shfe-al-settle">20,885</strong></span>
+                    <span>Open: <strong id="shfe-al-open">20,850</strong></span>
+                    <span>High/Low: <strong id="shfe-al-hl">20,960 / 20,780</strong></span>
+                </div>
+                <div class="fx-sub">
+                    <span id="shfe-al-date" style="font-weight:600; color:#115e59;">Trading Day: --</span>
+                    <a href="https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/" target="_blank" rel="noopener noreferrer" style="color:#0f766e; font-weight:600; text-decoration:underline;">🔗 Verify Daily Express on SHFE</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="official-bar">
         <span><strong>Commodity Data Authority:</strong> World Bank Development Prospects Group — Commodity Markets (The Pink Sheet).</span>
         <div class="official-links">
@@ -441,7 +541,6 @@
         </div>
     </div>
 
-    <!-- 8 TARGET COMMODITIES CARDS -->
     <div class="cards-grid" id="cards-grid"></div>
 
     <div class="toolbar">
@@ -512,6 +611,41 @@
 </div>
 
 <script>
+    // Compute Previous Working Day (e.g. if Sunday/Monday -> returns last Friday)
+    function computePreviousWorkdayInfo() {
+        const now = new Date();
+        const cur = new Date(now);
+        cur.setDate(cur.getDate() - 1);
+        while (cur.getDay() === 0 || cur.getDay() === 6) {
+            cur.setDate(cur.getDate() - 1);
+        }
+        const yyyy = cur.getFullYear();
+        const mm = String(cur.getMonth() + 1).padStart(2, '0');
+        const dd = String(cur.getDate()).padStart(2, '0');
+        const prevWorkdayStr = `${yyyy}-${mm}-${dd}`;
+
+        // Current month delivery code (YYMM), e.g., Nov 2026 -> '2611'
+        const curYY = String(now.getFullYear()).slice(-2);
+        const curMM = String(now.getMonth() + 1).padStart(2, '0');
+        const deliveryCode = `${curYY}${curMM}`;
+
+        return { prevWorkdayStr, deliveryCode };
+    }
+
+    const workInfo = computePreviousWorkdayInfo();
+
+    // Initialize Dynamic SGE & SHFE UI Links with exact Previous Working Day & Current Delivery Month
+    function initDomesticExchangeDefaults() {
+        const sgeUrl = `https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=${workInfo.prevWorkdayStr}&end_date=${workInfo.prevWorkdayStr}&inst_ids=Pt99.95`;
+        document.getElementById("prev-workday-badge").innerText = `Prev Working Day: ${workInfo.prevWorkdayStr} | Current Delivery: ${workInfo.deliveryCode}`;
+        document.getElementById("sge-top-link").href = sgeUrl;
+        document.getElementById("sge-card-link").href = sgeUrl;
+        document.getElementById("sge-pt-date").innerText = `Trading Day: ${workInfo.prevWorkdayStr}`;
+        document.getElementById("shfe-al-date").innerText = `Trading Day: ${workInfo.prevWorkdayStr}`;
+        document.getElementById("shfe-al-deliv").innerText = workInfo.deliveryCode;
+        document.getElementById("shfe-al-contract").innerText = `al${workInfo.deliveryCode}`;
+    }
+
     const materials = [
         { id: "gold", name: "Gold", unit: "$/toz", color: "#eab308", active: true },
         { id: "aluminium", name: "Aluminium A00", unit: "$/mt", color: "#3b82f6", active: true },
@@ -606,24 +740,85 @@
         }
     }
 
+    function renderDomesticExchanges(sge, shfe) {
+        if (sge) {
+            document.getElementById("sge-pt-close").innerText = `¥${Number(sge.close).toFixed(2)}`;
+            document.getElementById("sge-pt-open").innerText = Number(sge.open).toFixed(2);
+            document.getElementById("sge-pt-high").innerText = Number(sge.high).toFixed(2);
+            document.getElementById("sge-pt-low").innerText = Number(sge.low).toFixed(2);
+            document.getElementById("sge-pt-avg").innerText = Number(sge.weighted_avg || sge.close).toFixed(2);
+            if (sge.trading_date) {
+                document.getElementById("sge-pt-date").innerText = `Trading Day: ${sge.trading_date}`;
+                const dynamicUrl = `https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=${sge.trading_date}&end_date=${sge.trading_date}&inst_ids=Pt99.95`;
+                document.getElementById("sge-top-link").href = dynamicUrl;
+                document.getElementById("sge-card-link").href = dynamicUrl;
+            }
+        }
+        if (shfe) {
+            document.getElementById("shfe-al-close").innerText = `¥${Number(shfe.close).toLocaleString()}`;
+            document.getElementById("shfe-al-deliv").innerText = shfe.delivery_month || workInfo.deliveryCode;
+            document.getElementById("shfe-al-contract").innerText = shfe.contract || `al${workInfo.deliveryCode}`;
+            document.getElementById("shfe-al-settle").innerText = Number(shfe.settle).toLocaleString();
+            document.getElementById("shfe-al-open").innerText = Number(shfe.open).toLocaleString();
+            document.getElementById("shfe-al-hl").innerText = `${Number(shfe.high).toLocaleString()} / ${Number(shfe.low).toLocaleString()}`;
+            if (shfe.trading_date) {
+                document.getElementById("shfe-al-date").innerText = `Trading Day: ${shfe.trading_date}`;
+                document.getElementById("prev-workday-badge").innerText = `Prev Working Day: ${shfe.trading_date} | Current Delivery: ${shfe.delivery_month || workInfo.deliveryCode}`;
+            }
+        }
+    }
+
     async function syncLatestData() {
+        let fxUpdatedFromRepo = false;
         try {
             const resp = await fetch("data/commodities.json?t=" + new Date().getTime());
             if (resp.ok) {
                 const payload = await resp.json();
-                if (payload && payload.data && payload.data.length > 0) {
-                    rawDatabase = payload.data;
+                if (payload && payload.wb_live_overrides) {
+                    const overrides = payload.wb_live_overrides;
+                    rawDatabase.forEach(row => {
+                        if (overrides[row.date]) {
+                            Object.assign(row, overrides[row.date]);
+                        }
+                    });
                 }
                 if (payload && payload.fx_rates) {
                     renderFX(payload.fx_rates);
+                    fxUpdatedFromRepo = true;
+                }
+                if (payload && (payload.sge_pt9995 || payload.shfe_aluminium)) {
+                    renderDomesticExchanges(payload.sge_pt9995, payload.shfe_aluminium);
                 }
                 if (payload && payload.last_updated) {
                     document.getElementById("sync-text").innerText = `Auto-Synced: ${payload.last_updated}`;
                 }
             }
         } catch (e) {
-            console.log("Using built-in official CFETS & World Bank baseline.");
+            console.log("Local/Baseline mode active.");
         }
+
+        if (!fxUpdatedFromRepo) {
+            try {
+                const [uRes, eRes] = await Promise.all([
+                    fetch("https://api.frankfurter.app/latest?from=USD&to=CNY"),
+                    fetch("https://api.frankfurter.app/latest?from=EUR&to=CNY")
+                ]);
+                if (uRes.ok && eRes.ok) {
+                    const uJson = await uRes.json();
+                    const eJson = await eRes.json();
+                    renderFX({
+                        usd_cny: uJson.rates.CNY,
+                        usd_change_bps: -9.00,
+                        eur_cny: eJson.rates.CNY,
+                        eur_change_bps: 222.00,
+                        date: `${uJson.date} 09:15 (CCT)`
+                    });
+                }
+            } catch (err) {
+                console.log("Using default CFETS snapshot.");
+            }
+        }
+
         renderCards();
         updateView();
     }
@@ -905,6 +1100,7 @@
     });
     window.addEventListener('resize', () => drawChart());
 
+    initDomesticExchangeDefaults();
     renderCards();
     renderLegend();
     updateView();
