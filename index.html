@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raw Materials Procurement Dashboard — Highlighted Pt & Al Focus</title>
+    <title>Comprehensive Procurement & Energy Dashboard</title>
     <style>
         :root {
             --bg: #f8fafc;
@@ -11,13 +11,12 @@
             --text-main: #0f172a;
             --text-sub: #64748b;
             --border: #e2e8f0;
-            --wb-blue: #002244;
+            --sidebar-bg: #0f172a;
+            --sidebar-text: #e2e8f0;
             --primary: #2563eb;
             --success: #16a34a;
             --danger: #dc2626;
-            --fx-accent: #1e40af;
-            --focus-pt: #92400e;
-            --focus-al: #1d4ed8;
+            --energy-accent: #ea580c;
         }
 
         * {
@@ -30,12 +29,95 @@
         body {
             background-color: var(--bg);
             color: var(--text-main);
-            padding: 24px;
+            display: flex;
+            min-height: 100vh;
         }
 
-        .container {
-            max-width: 1440px;
-            margin: 0 auto;
+        /* --- SIDEBAR LAYOUT --- */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 18px;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.12);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            font-size: 16px;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 14px;
+            margin-bottom: 8px;
+            padding-left: 8px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background: #1e293b;
+            color: #38bdf8;
+        }
+
+        .sidebar-menu li a.active {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .sidebar-badge {
+            margin-left: auto;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.15);
+            font-weight: 700;
+        }
+
+        /* --- MAIN WRAPPER --- */
+        .main-wrapper {
+            margin-left: 280px;
+            flex: 1;
+            padding: 24px 30px;
+            max-width: 1400px;
         }
 
         header {
@@ -46,15 +128,15 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             flex-wrap: wrap;
             gap: 16px;
         }
 
         .header-title h1 {
             font-size: 22px;
-            font-weight: 700;
-            color: var(--wb-blue);
+            font-weight: 800;
+            color: #002244;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -63,32 +145,7 @@
         .header-title p {
             font-size: 13px;
             color: var(--text-sub);
-            margin-top: 5px;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            background: #ecfdf5;
-            color: #065f46;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            font-weight: 600;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #10b981;
-        }
-
-        .header-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            margin-top: 4px;
         }
 
         .btn {
@@ -111,337 +168,97 @@
         .btn-export:hover { background-color: #047857; }
         .btn-fx-live { background-color: #1e40af; color: #ffffff; }
         .btn-fx-live:hover { background-color: #1e3a8a; }
-        .btn-reset { background-color: #475569; color: #ffffff; }
-        .btn-reset:hover { background-color: #334155; }
 
-        .official-bar {
-            background: #e0f2fe;
-            border-left: 4px solid #0284c7;
-            padding: 12px 18px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            font-size: 13px;
-            color: #0369a1;
+        .dashboard-section {
+            scroll-margin-top: 24px;
+            margin-bottom: 30px;
         }
 
-        .official-links {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .official-links a {
-            color: #0284c7;
-            font-weight: 600;
-            text-decoration: underline;
-        }
-
-        /* --- FX SECTION --- */
-        .fx-section {
+        .section-header-banner {
             background: #ffffff;
-            border: 1px solid #dbeafe;
-            border-radius: 12px;
-            padding: 18px 22px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        }
-
-        .fx-header {
+            border-radius: 10px;
+            padding: 14px 20px;
+            margin-bottom: 16px;
+            border-left: 6px solid var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
             flex-wrap: wrap;
             gap: 10px;
         }
 
-        .fx-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--fx-accent);
+        .section-header-banner h2 {
+            font-size: 17px;
+            font-weight: 800;
+            color: #0f172a;
             display: flex;
             align-items: center;
             gap: 8px;
-            flex-wrap: wrap;
         }
 
-        .fx-source-tag {
-            font-size: 12px;
-            color: #4b5563;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .fx-source-tag a {
-            color: var(--fx-accent);
-            font-weight: 600;
-            text-decoration: underline;
-        }
-
+        /* --- MODULE 1: FX & SGE/SHFE --- */
         .fx-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 16px;
+            margin-bottom: 20px;
         }
 
         .fx-card {
-            background: #f8fafc;
+            background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-left: 5px solid var(--fx-accent);
-            border-radius: 8px;
-            padding: 14px 18px;
-        }
-
-        .fx-card-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .fx-pair {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1e293b;
-        }
-
-        .fx-rate-row {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            margin: 6px 0;
-            flex-wrap: wrap;
-            gap: 10px;
+            border-left: 5px solid #1e40af;
+            border-radius: 10px;
+            padding: 16px 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
 
         .fx-rate {
             font-size: 28px;
             font-weight: 800;
             color: #0f172a;
-            letter-spacing: -0.5px;
         }
 
-        .fx-live-pill {
-            font-size: 12px;
-            background: #ecfdf5;
-            color: #047857;
-            border: 1px solid #a7f3d0;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-weight: 700;
-        }
+        .delta-up { color: var(--danger); font-weight: 700; }
+        .delta-down { color: var(--success); font-weight: 700; }
 
-        .fx-sub {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: var(--text-sub);
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        /* --- SPOTLIGHT HERO CARDS FOR PLATINUM & ALUMINIUM --- */
-        .spotlight-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
-            gap: 18px;
-            margin-bottom: 20px;
-        }
-
-        .spotlight-card {
-            border-radius: 14px;
-            padding: 20px 24px;
-            color: #ffffff;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .spotlight-pt {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 60%, #475569 100%);
-            border: 2px solid #cbd5e1;
-        }
-
-        .spotlight-al {
-            background: linear-gradient(135deg, #0f2b5c 0%, #1e40af 60%, #2563eb 100%);
-            border: 2px solid #93c5fd;
-        }
-
-        .spotlight-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11.5px;
-            text-transform: uppercase;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            margin-bottom: 12px;
-            width: fit-content;
-        }
-
-        .spotlight-pt .spotlight-badge {
-            background: rgba(254, 243, 199, 0.2);
-            color: #fef08a;
-            border: 1px solid rgba(253, 224, 71, 0.4);
-        }
-
-        .spotlight-al .spotlight-badge {
-            background: rgba(239, 246, 255, 0.2);
-            color: #bfdbfe;
-            border: 1px solid rgba(191, 219, 254, 0.4);
-        }
-
-        .spotlight-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .spotlight-title {
-            font-size: 20px;
-            font-weight: 800;
-        }
-
-        .spotlight-date {
-            font-size: 12px;
-            opacity: 0.85;
-        }
-
-        .spotlight-body {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            margin: 16px 0 10px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .spotlight-main-stat {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .spotlight-label {
-            font-size: 12px;
-            opacity: 0.85;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .spotlight-value {
-            font-size: 38px;
-            font-weight: 900;
-            letter-spacing: -1px;
-            line-height: 1;
-        }
-
-        .spotlight-chip-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .spotlight-chip {
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 700;
-            background: rgba(255,255,255,0.18);
-            backdrop-filter: blur(4px);
-        }
-
-        .spotlight-footer {
-            border-top: 1px solid rgba(255,255,255,0.18);
-            padding-top: 10px;
-            margin-top: 6px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            opacity: 0.9;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .spotlight-footer a {
-            color: #ffffff;
-            font-weight: 700;
-            text-decoration: underline;
-        }
-
-        /* --- DOMESTIC EXCHANGES DETAIL TABLES --- */
-        .cn-exchange-section {
+        .workday-bar {
             background: #ffffff;
             border: 1px solid #cbd5e1;
-            border-radius: 12px;
-            padding: 18px 22px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .cn-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #0f172a;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .exchange-box {
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 16px 18px;
+            border-radius: 8px;
+            padding: 12px 16px;
             margin-bottom: 16px;
-            background: #f8fafc;
-        }
-        .exchange-box:last-child { margin-bottom: 0; }
-
-        .exchange-top-row {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             flex-wrap: wrap;
             gap: 12px;
-            margin-bottom: 12px;
         }
 
-        .mini-table-wrap { overflow-x: auto; }
+        .table-wrap {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+        }
 
         .exchange-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 12.5px;
-            background: #ffffff;
-            border-radius: 6px;
-            overflow: hidden;
             border: 1px solid #cbd5e1;
+            white-space: nowrap;
         }
 
         .exchange-table thead th {
             background: #1e3a8a;
             color: #ffffff;
-            padding: 8px 10px;
+            padding: 9px 10px;
             text-align: center;
             font-weight: 600;
-            border-right: 1px solid rgba(255,255,255,0.15);
         }
 
         .exchange-table.sge-theme thead th { background: #334155; }
@@ -454,61 +271,12 @@
             color: #0f172a;
         }
 
-        .toolbar {
-            background: var(--card-bg);
-            padding: 14px 20px;
-            border-radius: 10px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 18px;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #334155;
-        }
-
-        select {
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            font-size: 13px;
-            background: #fff;
-            color: var(--text-main);
-            outline: none;
-            cursor: pointer;
-        }
-
-        /* --- SUBPLOTS GRID & PROMINENT ALUMINIUM HIGHLIGHT --- */
-        .subplots-section {
-            margin-bottom: 24px;
-        }
-
-        .subplots-header {
-            margin-bottom: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .subplots-title {
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
+        /* --- MODULE 2: COMMODITY SUBPLOTS --- */
         .subplots-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 16px;
+            margin-bottom: 20px;
         }
 
         .subplot-card {
@@ -520,74 +288,13 @@
             border-top: 4px solid #cbd5e1;
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .subplot-card:hover {
-            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-            transform: translateY(-2px);
-        }
-
-        /* Prominent Highlight Style for Aluminium Card */
         .subplot-card.highlight-aluminium {
             background: #f0f7ff;
             border: 2px solid #2563eb;
             border-top: 6px solid #1d4ed8;
-            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.15);
-            position: relative;
         }
-
-        .highlight-tag {
-            font-size: 10.5px;
-            font-weight: 800;
-            background: #1d4ed8;
-            color: #ffffff;
-            padding: 2px 8px;
-            border-radius: 4px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .subplot-card-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 6px;
-        }
-
-        .subplot-name {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .subplot-unit {
-            font-size: 11.5px;
-            color: var(--text-sub);
-            font-weight: 600;
-        }
-
-        .subplot-stat-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 10px;
-        }
-
-        .subplot-cur-val {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
-        }
-
-        .subplot-delta {
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .delta-up { color: var(--danger); }
-        .delta-down { color: var(--success); }
 
         .subplot-canvas-box {
             position: relative;
@@ -598,19 +305,86 @@
             border: 1px solid #f1f5f9;
         }
 
-        .subplot-card.highlight-aluminium .subplot-canvas-box {
+        .subplot-canvas-box canvas { width: 100%; height: 100%; display: block; }
+
+        /* --- MODULE 3: DOMESTIC ENERGY SECTION --- */
+        .energy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 18px;
+        }
+
+        .energy-card {
             background: #ffffff;
-            border-color: #bfdbfe;
+            border: 1px solid #fed7aa;
+            border-top: 5px solid var(--energy-accent);
+            border-radius: 10px;
+            padding: 18px 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .subplot-canvas-box canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
+        .energy-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
         }
 
+        .energy-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #9a3412;
+        }
+
+        .energy-cycle-tag {
+            font-size: 11px;
+            font-weight: 700;
+            background: #ffedd5;
+            color: #c2410c;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .energy-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 10px 0;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .energy-val {
+            font-size: 28px;
+            font-weight: 900;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+
+        .energy-meta {
+            background: #fff7ed;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 12.5px;
+            color: #431407;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .energy-meta a {
+            color: #ea580c;
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        /* --- TABLE --- */
         .table-section {
-            background: var(--card-bg);
+            background: #ffffff;
             padding: 20px 24px;
             border-radius: 10px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -618,8 +392,8 @@
 
         .table-scroll {
             overflow-x: auto;
-            max-height: 440px;
-            margin-top: 14px;
+            max-height: 400px;
+            margin-top: 12px;
         }
 
         table.wb-table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
@@ -631,318 +405,305 @@
         table.wb-table thead th:first-child { text-align: left; }
         table.wb-table tbody td { padding: 9px 14px; border-bottom: 1px solid #f1f5f9; text-align: right; color: var(--text-main); }
         table.wb-table tbody td:first-child { text-align: left; font-weight: 600; color: var(--text-sub); }
-        table.wb-table tbody tr:hover td { background-color: #f8fafc; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<!-- SIDEBAR NAVIGATION -->
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <span>🏛️ Procurement Center</span>
+    </div>
+
+    <div class="sidebar-section-title">Navigation Modules</div>
+    <ul class="sidebar-menu">
+        <li>
+            <a href="#module-1" class="active" onclick="setActiveNav(this)">
+                <span>💱</span>
+                <span>FX & Core Metals</span>
+                <span class="sidebar-badge">Module 1</span>
+            </a>
+        </li>
+        <li>
+            <a href="#module-2" onclick="setActiveNav(this)">
+                <span>⛏️</span>
+                <span>Raw Material Metals</span>
+                <span class="sidebar-badge">Module 2</span>
+            </a>
+        </li>
+        <li>
+            <a href="#module-3" onclick="setActiveNav(this)">
+                <span>⛽</span>
+                <span>Energy & Fuel Prices</span>
+                <span class="sidebar-badge">Module 3</span>
+            </a>
+        </li>
+    </ul>
+
+    <div class="sidebar-section-title" style="margin-top: auto;">System Schedule</div>
+    <div style="font-size: 11.5px; color: #94a3b8; line-height: 1.5; padding: 8px;">
+        • Workday 09:00 AM (CCT) Refresh<br>
+        • Previous Workday SGE / SHFE<br>
+        • Live FX & Continuous Fuels
+    </div>
+</aside>
+
+<!-- MAIN CONTENT WRAPPER -->
+<div class="main-wrapper">
     <header>
         <div class="header-title">
-            <h1>🏛️ Commodity, Real-Time FX & Domestic Exchange Procurement Dashboard</h1>
-            <p>World Bank 8 Core Materials + Real-Time FX + Spotlights on Platinum (Pt99.95) & Aluminium (2611)</p>
-            <div style="margin-top: 6px;">
-                <span class="status-badge" id="sync-status">
-                    <span class="status-dot"></span>
-                    <span id="sync-text">Real-Time FX Polling Active (Auto-Refreshes Every 60s)</span>
-                </span>
-            </div>
+            <h1>Comprehensive Procurement & Energy Dashboard</h1>
+            <p>Module 1: FX & SGE/SHFE | Module 2: World Bank Metals | Module 3: National Fuel & LNG</p>
         </div>
-        <div class="header-actions">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <button class="btn btn-fx-live" onclick="fetchRealTimeSameDayFX(true)">
-                <span>⚡ Refresh Live FX Now</span>
+                <span>⚡ Refresh Live FX</span>
             </button>
             <a class="btn btn-wb-pdf" href="https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Pink-Sheet-July-2026.pdf" target="_blank" rel="noopener noreferrer">
-                <span>📄 Official World Bank Pink Sheet (PDF)</span>
+                <span>📄 World Bank PDF</span>
             </a>
             <button class="btn btn-export" onclick="exportDatabaseCSV()">
-                <span>📥 Export Full Database (CSV)</span>
-            </button>
-            <button class="btn btn-reset" onclick="resetFilters()">
-                <span>🔄 Reset View</span>
+                <span>📥 Export CSV</span>
             </button>
         </div>
     </header>
 
-    <!-- 1. Official & Real-Time Same-Day FX Section -->
-    <div class="fx-section">
-        <div class="fx-header">
-            <div class="fx-title">
-                <span>💱 CNY Central Parity & Real-Time Live Exchange Rates</span>
-                <span id="fx-timestamp-badge" style="font-size: 12px; background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; padding: 2px 10px; border-radius: 4px; font-weight: 700;">Live Today (CCT)</span>
-            </div>
-            <div class="fx-source-tag">
-                <span>Official Authority:</span>
-                <a href="http://www.chinamoney.com.cn/english/bmkcpr/" target="_blank" rel="noopener noreferrer">China Foreign Exchange Trade System (CFETS)</a> | 
-                <a href="http://m.safe.gov.cn/safe/rmbhlzjj/index.html" target="_blank" rel="noopener noreferrer">State Administration of Foreign Exchange (SAFE)</a>
-            </div>
+    <!-- ========================================== -->
+    <!-- MODULE 1: FX RATES & CORE METALS (Pt & Al)  -->
+    <!-- ========================================== -->
+    <section class="dashboard-section" id="module-1">
+        <div class="section-header-banner" style="border-left-color: #1e40af;">
+            <h2><span>💱</span> Module 1: Exchange Rates (USD/EUR) & Benchmark Metals (Pt99.95 / Aluminium)</h2>
+            <span style="font-size: 12px; color: #64748b; font-weight: 600;">Daily Official Fixing & Previous Workday Exchanges</span>
         </div>
+
+        <!-- FX Grid -->
         <div class="fx-grid">
             <div class="fx-card">
-                <div class="fx-card-top">
-                    <span class="fx-pair">🇺🇸 USD / CNY</span>
-                    <span style="font-size: 11px; color:#64748b; font-weight:600;">100 USD = <strong id="usd-100">671.38</strong> RMB</span>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; color: #1e293b;">
+                    <span>🇺🇸 USD / CNY</span>
+                    <span style="font-size: 12px; color: #64748b;">100 USD = <strong id="usd-100">671.38</strong> RMB</span>
                 </div>
-                <div class="fx-rate-row">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin: 8px 0;">
                     <div class="fx-rate" id="usd-rate">6.7138</div>
-                    <span class="fx-live-pill" id="usd-live-spot">● Live Today: 6.7138</span>
+                    <span class="delta-down" id="usd-bps" style="font-size: 13px;">9.00 ▼ (Bps)</span>
                 </div>
-                <div class="fx-sub">
-                    <span id="usd-bps" class="delta-down" style="font-weight:700;">9.00 ▼ (Bps Change)</span>
-                    <span id="fx-date" style="font-weight:600; color:#0f172a;">Updated: Today (Real-Time CCT)</span>
+                <div style="font-size: 12px; color: #64748b; display: flex; justify-content: space-between;">
+                    <span id="usd-live-spot">● Live Today: 6.7138</span>
+                    <a href="http://www.chinamoney.com.cn/english/bmkcpr/" target="_blank" rel="noopener noreferrer" style="color: #1e40af; text-decoration: underline;">CFETS Official ↗</a>
                 </div>
             </div>
 
             <div class="fx-card" style="border-left-color: #0284c7;">
-                <div class="fx-card-top">
-                    <span class="fx-pair">🇪🇺 EUR / CNY</span>
-                    <span style="font-size: 11px; color:#64748b; font-weight:600;">100 EUR = <strong id="eur-100">747.92</strong> RMB</span>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; color: #1e293b;">
+                    <span>🇪🇺 EUR / CNY</span>
+                    <span style="font-size: 12px; color: #64748b;">100 EUR = <strong id="eur-100">747.92</strong> RMB</span>
                 </div>
-                <div class="fx-rate-row">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin: 8px 0;">
                     <div class="fx-rate" id="eur-rate">7.4792</div>
-                    <span class="fx-live-pill" id="eur-live-spot">● Live Today: 7.4792</span>
+                    <span class="delta-up" id="eur-bps" style="font-size: 13px;">222.00 ▲ (Bps)</span>
                 </div>
-                <div class="fx-sub">
-                    <span id="eur-bps" class="delta-up" style="font-weight:700;">222.00 ▲ (Bps Change)</span>
-                    <span id="fx-date-eur" style="font-weight:600; color:#0f172a;">Updated: Today (Real-Time CCT)</span>
+                <div style="font-size: 12px; color: #64748b; display: flex; justify-content: space-between;">
+                    <span id="eur-live-spot">● Live Today: 7.4792</span>
+                    <a href="http://m.safe.gov.cn/safe/rmbhlzjj/index.html" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: underline;">SAFE Official ↗</a>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 2. HIGH-VISIBILITY SPOTLIGHT MODULES: PLATINUM & ALUMINIUM -->
-    <div class="spotlight-grid">
-        <!-- Platinum Hero Card -->
-        <div class="spotlight-card spotlight-pt">
-            <div>
-                <div class="spotlight-badge">★ KEY PROCUREMENT FOCUS — SGE PLATINUM</div>
-                <div class="spotlight-header">
-                    <div class="spotlight-title">⚪ Platinum (Pt99.95)</div>
-                    <div class="spotlight-date" id="hero-pt-date">Trading Day: 2026-10-30</div>
-                </div>
-            </div>
-            <div class="spotlight-body">
-                <div class="spotlight-main-stat">
-                    <span class="spotlight-label">SGE WEIGHTED AVERAGE PRICE</span>
-                    <div class="spotlight-value" id="hero-pt-avg">360.13 <span style="font-size:16px;font-weight:600;">RMB/g</span></div>
-                </div>
-                <div class="spotlight-chip-row">
-                    <span class="spotlight-chip" id="hero-pt-close">Close: 356.89</span>
-                    <span class="spotlight-chip" id="hero-pt-chg" style="background:rgba(220,38,38,0.3);">-4.45% ▼</span>
-                </div>
-            </div>
-            <div class="spotlight-footer">
-                <span>Contract: <strong>Pt99.95</strong> | Volume: <span id="hero-pt-vol">82.00</span> kg</span>
-                <a id="hero-pt-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=2026-10-30&end_date=2026-10-30&inst_ids=Pt99.95" target="_blank" rel="noopener noreferrer">View Official SGE Quotation ↗</a>
-            </div>
-        </div>
-
-        <!-- Aluminium Hero Card -->
-        <div class="spotlight-card spotlight-al">
-            <div>
-                <div class="spotlight-badge">★ KEY PROCUREMENT FOCUS — SHFE ALUMINIUM</div>
-                <div class="spotlight-header">
-                    <div class="spotlight-title">🔩 Aluminium (Current Month)</div>
-                    <div class="spotlight-date" id="hero-al-date">Delivery: 2611 | Trading Day: 2026-10-30</div>
-                </div>
-            </div>
-            <div class="spotlight-body">
-                <div class="spotlight-main-stat">
-                    <span class="spotlight-label">SETTLEMENT REFERENCE PRICE</span>
-                    <div class="spotlight-value" id="hero-al-settle">23670 <span style="font-size:16px;font-weight:600;">RMB/mt</span></div>
-                </div>
-                <div class="spotlight-chip-row">
-                    <span class="spotlight-chip" id="hero-al-close">Close: 23775</span>
-                    <span class="spotlight-chip" id="hero-al-chg" style="background:rgba(22,163,74,0.35);">+80 ▲ (Chg 2)</span>
-                </div>
-            </div>
-            <div class="spotlight-footer">
-                <span>Delivery Month: <strong id="hero-al-deliv">2611</strong> | Turnover: <span id="hero-al-turnover">531,194.75</span></span>
-                <a href="https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/" target="_blank" rel="noopener noreferrer">View Official SHFE Express ↗</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. Domestic Exchanges Official Tables (Clean Tabular Presentation) -->
-    <div class="cn-exchange-section">
-        <div class="fx-header">
-            <div class="cn-title">
-                <span>🇨🇳 Domestic Exchange Quotations — Previous Working Day Full Official Records</span>
-                <span id="prev-workday-badge" style="font-size: 12px; background:#fef3c7; color:#92400e; padding: 3px 10px; border-radius: 4px; font-weight: 700;">Trading Day: 2026-10-30</span>
-            </div>
-            <div class="fx-source-tag">
-                <span>Official Sources:</span>
-                <a id="sge-top-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=2026-10-30&end_date=2026-10-30&inst_ids=Pt99.95" target="_blank" rel="noopener noreferrer" style="color:#b45309; font-weight:700;">1. SGE Daily Quotation (每日行情 Pt99.95)</a> | 
-                <a href="https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/" target="_blank" rel="noopener noreferrer" style="color:#1e40af; font-weight:700;">2. SHFE Daily & Weekly Data (日周数据-铝)</a>
-            </div>
-        </div>
-
-        <!-- 3A. SGE Pt99.95 Official 14-Column Table -->
-        <div class="exchange-box">
-            <div class="exchange-top-row">
-                <span style="font-size:14.5px; font-weight:800; color:#1e293b;">⚪ 上海黄金交易所每日交易行情 (SGE Daily Quotation — Pt99.95 | Unit: RMB/g)</span>
-                <a id="sge-card-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=2026-10-30&end_date=2026-10-30&inst_ids=Pt99.95" target="_blank" rel="noopener noreferrer" style="font-size:12px; color:#b45309; font-weight:700; text-decoration:underline;">🔗 Open SGE Official Page (2026-10-30)</a>
-            </div>
-            <div class="mini-table-wrap">
-                <table class="exchange-table sge-theme">
-                    <thead>
-                        <tr>
-                            <th>日期<br><span style="font-weight:400;font-size:11px;">Date</span></th>
-                            <th>合约<br><span style="font-weight:400;font-size:11px;">Contract</span></th>
-                            <th>开盘价<br><span style="font-weight:400;font-size:11px;">Open</span></th>
-                            <th>最高价<br><span style="font-weight:400;font-size:11px;">High</span></th>
-                            <th>最低价<br><span style="font-weight:400;font-size:11px;">Low</span></th>
-                            <th>收盘价<br><span style="font-weight:400;font-size:11px;">Close</span></th>
-                            <th>涨跌 (元)<br><span style="font-weight:400;font-size:11px;">Change</span></th>
-                            <th>涨跌幅<br><span style="font-weight:400;font-size:11px;">Change %</span></th>
-                            <th>加权平均价<br><span style="font-weight:400;font-size:11px;">Weighted Avg</span></th>
-                            <th>成交量 (kg)<br><span style="font-weight:400;font-size:11px;">Volume</span></th>
-                            <th>成交金额 (元)<br><span style="font-weight:400;font-size:11px;">Turnover</span></th>
-                            <th>市场持仓 (手)<br><span style="font-weight:400;font-size:11px;">Open Interest</span></th>
-                            <th>交收方向<br><span style="font-weight:400;font-size:11px;">Deliv Dir</span></th>
-                            <th>交收量 (手)<br><span style="font-weight:400;font-size:11px;">Deliv Vol</span></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td id="sge-td-date">2026-10-30</td>
-                            <td id="sge-td-contract" style="font-weight:800; color:#b45309;">Pt99.95</td>
-                            <td id="sge-td-open">362.23</td>
-                            <td id="sge-td-high">362.23</td>
-                            <td id="sge-td-low">355.94</td>
-                            <td id="sge-td-close">356.89</td>
-                            <td id="sge-td-chg" class="delta-down">-16.64</td>
-                            <td id="sge-td-chgpct" class="delta-down">-4.45%</td>
-                            <td id="sge-td-avg" style="font-weight:800; color:#b45309;">360.13</td>
-                            <td id="sge-td-vol">82.00</td>
-                            <td id="sge-td-turnover">29,531,300.00</td>
-                            <td id="sge-td-oi">-</td>
-                            <td id="sge-td-ddir"></td>
-                            <td id="sge-td-dvol"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 3B. SHFE Daily Express Aluminium Official 13-Column Table -->
-        <div class="exchange-box" style="background:#eff6ff; border-color:#bfdbfe;">
-            <div class="exchange-top-row">
-                <span style="font-size:14.5px; font-weight:800; color:#1e3a8a;">🔩 上海期货交易所日交易快讯 — 商品名称: 铝 (SHFE Aluminium — Delivery: <span id="shfe-headline-deliv">2611</span> | Unit: RMB/mt)</span>
-                <a href="https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/" target="_blank" rel="noopener noreferrer" style="font-size:12px; color:#1e40af; font-weight:700; text-decoration:underline;">🔗 Open SHFE Daily Express Official Page</a>
-            </div>
-            <div class="mini-table-wrap">
-                <table class="exchange-table">
-                    <thead>
-                        <tr>
-                            <th>交割月份<br><span style="font-weight:400;font-size:11px;">Delivery Month</span></th>
-                            <th>前结算<br><span style="font-weight:400;font-size:11px;">Prev Settle</span></th>
-                            <th>今开盘<br><span style="font-weight:400;font-size:11px;">Open</span></th>
-                            <th>最高价<br><span style="font-weight:400;font-size:11px;">High</span></th>
-                            <th>最低价<br><span style="font-weight:400;font-size:11px;">Low</span></th>
-                            <th>收盘价<br><span style="font-weight:400;font-size:11px;">Close</span></th>
-                            <th style="background:#b91c1c;">结算参考价<br><span style="font-weight:400;font-size:11px;">Settlement Ref</span></th>
-                            <th>涨跌1<br><span style="font-weight:400;font-size:11px;">Chg 1</span></th>
-                            <th>涨跌2<br><span style="font-weight:400;font-size:11px;">Chg 2</span></th>
-                            <th>成交手<br><span style="font-weight:400;font-size:11px;">Volume</span></th>
-                            <th>成交额<br><span style="font-weight:400;font-size:11px;">Turnover</span></th>
-                            <th colspan="2">持仓手 / 变化<br><span style="font-weight:400;font-size:11px;">Open Interest / Change</span></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td id="shfe-td-deliv" style="font-weight:800; color:#1e3a8a;">2611</td>
-                            <td id="shfe-td-presettle">23590</td>
-                            <td id="shfe-td-open">23550</td>
-                            <td id="shfe-td-high">23850</td>
-                            <td id="shfe-td-low">23520</td>
-                            <td id="shfe-td-close">23775</td>
-                            <td id="shfe-td-settle" style="font-weight:800; color:#b91c1c; font-size:14.5px;">23670</td>
-                            <td id="shfe-td-chg1" class="delta-up">185</td>
-                            <td id="shfe-td-chg2" class="delta-up">80</td>
-                            <td id="shfe-td-vol">44875</td>
-                            <td id="shfe-td-turnover">531194.75</td>
-                            <td id="shfe-td-oi">47795</td>
-                            <td id="shfe-td-oichg" class="delta-down">-26217</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Official Source Bar -->
-    <div class="official-bar">
-        <span><strong>Commodity Data Authority:</strong> World Bank Development Prospects Group — Commodity Markets (The Pink Sheet).</span>
-        <div class="official-links">
-            <a href="https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Pink-Sheet-July-2026.pdf" target="_blank" rel="noopener noreferrer">Latest Official PDF Report</a>
-            <a href="https://thedocs.worldbank.org/en/doc/5d903e848db1d1b83e0ec8f744e55570-0350012021/related/CMO-Historical-Data-Monthly.xlsx" target="_blank" rel="noopener noreferrer">Monthly Historical Excel (XLSX)</a>
-            <a href="https://www.worldbank.org/en/research/commodity-markets" target="_blank" rel="noopener noreferrer">World Bank Commodities Portal</a>
-        </div>
-    </div>
-
-    <!-- Toolbar: Filter Years -->
-    <div class="toolbar">
-        <div style="display: flex; gap: 18px; align-items: center; flex-wrap: wrap;">
-            <div class="filter-group">
-                <label for="start-year">Start Year:</label>
-                <select id="start-year" onchange="updateView()">
-                    <option value="2016">2016 (Semi-Annual: 01/07)</option>
-                    <option value="2017">2017 (Semi-Annual: 01/07)</option>
-                    <option value="2018">2018 (Semi-Annual: 01/07)</option>
-                    <option value="2019">2019 (Semi-Annual: 01/07)</option>
-                    <option value="2020">2020 (Semi-Annual: 01/07)</option>
-                    <option value="2021">2021 (Semi-Annual: 01/07)</option>
-                    <option value="2022">2022 (Semi-Annual: 01/07)</option>
-                    <option value="2023">2023 (Semi-Annual: 01/07)</option>
-                    <option value="2024" selected>2024 (Monthly Series)</option>
-                    <option value="2025">2025 (Monthly Series)</option>
-                    <option value="2026">2026 (Monthly Series)</option>
+        <!-- Workday Selector -->
+        <div class="workday-bar">
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700;">
+                <span>📅 Select Working Day:</span>
+                <select id="workday-select" onchange="applyWorkdayQuery(this.value)" style="padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                    <option value="2026-10-30" selected>2026-10-30 (Previous Working Day / Friday)</option>
+                    <option value="2026-10-29">2026-10-29 (Thursday)</option>
+                    <option value="2026-10-28">2026-10-28 (Wednesday)</option>
                 </select>
             </div>
+            <span id="prev-workday-badge" style="font-size: 12px; background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 4px; font-weight: 700;">Trading Date: 2026-10-30</span>
+        </div>
 
-            <div class="filter-group">
-                <label for="end-year">End Year:</label>
-                <select id="end-year" onchange="updateView()">
-                    <option value="2026" selected>2026 (Latest / Forecast)</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                    <option value="2022">2022</option>
-                    <option value="2021">2021</option>
-                    <option value="2020">2020</option>
-                    <option value="2019">2019</option>
-                    <option value="2018">2018</option>
-                    <option value="2017">2017</option>
-                    <option value="2016">2016</option>
-                </select>
+        <!-- SGE Pt99.95 Table -->
+        <div class="table-wrap">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 14px; font-weight: 800; color: #334155;">⚪ 上海黄金交易所每日交易行情 (SGE Pt99.95 | Unit: RMB/g)</span>
+                <a id="sge-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=2026-10-30&end_date=2026-10-30&inst_ids=Pt99.95" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: #b45309; text-decoration: underline; font-weight: 700;">Open SGE Official Page ↗</a>
             </div>
-            <span style="font-size:12px; color:var(--text-sub);">• 2016–2023: Semi-Annual Baselines (01 / 07) | 2024–2026: Continuous Monthly Data</span>
-        </div>
-    </div>
-
-    <!-- 4. INDIVIDUAL COMMODITY TREND SUBPLOTS (Aluminium Prominently Highlighted) -->
-    <div class="subplots-section">
-        <div class="subplots-header">
-            <span class="subplots-title">📈 Historical Price Trend Subplots (Dedicated Chart for Each Commodity)</span>
-            <span style="font-size:12.5px; color:var(--text-sub);">Hover over each chart to view historical price and period</span>
-        </div>
-        <div class="subplots-grid" id="subplots-container"></div>
-    </div>
-
-    <!-- 5. Database Records Table -->
-    <div class="table-section">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 16px; font-weight: 700; color: var(--text-main);">📋 Commodity Database Records (2016 – 2026)</span>
-            <span style="font-size: 12px; color: var(--text-sub);">All figures in standard World Bank USD trade benchmarks</span>
-        </div>
-        <div class="table-scroll">
-            <table class="wb-table">
-                <thead id="tbl-head"></thead>
-                <tbody id="tbl-body"></tbody>
+            <table class="exchange-table sge-theme">
+                <thead>
+                    <tr>
+                        <th>Date</th><th>Contract</th><th>Open</th><th>High</th><th>Low</th><th>Close</th>
+                        <th>Change</th><th>Change %</th><th>Weighted Avg</th><th>Volume (kg)</th><th>Turnover (RMB)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="sge-td-date">2026-10-30</td>
+                        <td style="color: #b45309; font-weight: 800;">Pt99.95</td>
+                        <td>362.23</td><td>362.23</td><td>355.94</td><td>356.89</td>
+                        <td class="delta-down">-16.64</td><td class="delta-down">-4.45%</td>
+                        <td style="color: #b45309; font-weight: 800;">360.13</td><td>82.00</td><td>29,531,300.00</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
-    </div>
+
+        <!-- SHFE Aluminium Table -->
+        <div class="table-wrap" style="background: #eff6ff; border-color: #bfdbfe;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 14px; font-weight: 800; color: #1e3a8a;">🔩 上海期货交易所日交易快讯 — 铝 (SHFE Aluminium | Delivery: <span id="shfe-deliv">2611</span> | Unit: RMB/mt)</span>
+                <a href="https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: #1e40af; text-decoration: underline; font-weight: 700;">Open SHFE Express Official Page ↗</a>
+            </div>
+            <table class="exchange-table">
+                <thead>
+                    <tr>
+                        <th>Delivery Month</th><th>Prev Settle</th><th>Open</th><th>High</th><th>Low</th><th>Close</th>
+                        <th style="background:#b91c1c;">Settlement Ref</th><th>Chg 1</th><th>Chg 2</th><th>Volume</th><th>Turnover</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="color: #1e3a8a; font-weight: 800;">2611</td>
+                        <td>23590</td><td>23550</td><td>23850</td><td>23520</td><td>23775</td>
+                        <td style="color: #b91c1c; font-weight: 800; font-size: 14px;">23670</td>
+                        <td class="delta-up">185</td><td class="delta-up">80</td><td>44875</td><td>531194.75</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- MODULE 2: RAW MATERIAL METALS (World Bank) -->
+    <!-- ========================================== -->
+    <section class="dashboard-section" id="module-2">
+        <div class="section-header-banner" style="border-left-color: #2563eb;">
+            <h2><span>⛏️</span> Module 2: Raw Material Metals (World Bank Pink Sheet 2016–2026)</h2>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <label style="font-size: 12px; font-weight: 700;">Filter Start:</label>
+                <select id="start-year" onchange="updateView()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 12px;">
+                    <option value="2016">2016 (Semi-Annual)</option>
+                    <option value="2020">2020 (Semi-Annual)</option>
+                    <option value="2024" selected>2024 (Monthly)</option>
+                </select>
+                <select id="end-year" onchange="updateView()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 12px;">
+                    <option value="2026" selected>2026 (Monthly)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="subplots-grid" id="subplots-container"></div>
+
+        <div class="table-section">
+            <span style="font-size: 15px; font-weight: 700; color: #0f172a;">📋 Commodity Benchmark History (USD)</span>
+            <div class="table-scroll">
+                <table class="wb-table">
+                    <thead id="tbl-head"></thead>
+                    <tbody id="tbl-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- MODULE 3: DOMESTIC ENERGY & FUEL PRICES   -->
+    <!-- ========================================== -->
+    <section class="dashboard-section" id="module-3">
+        <div class="section-header-banner" style="border-left-color: var(--energy-accent);">
+            <h2><span>⛽</span> Module 3: Domestic Fuel & Energy Prices (0# Diesel, LNG & National Fuel Adjustments)</h2>
+            <span style="font-size: 12px; color: #64748b; font-weight: 600;">EastMoney + JinLianChuang LNG + YouJia Beijing</span>
+        </div>
+
+        <div class="energy-grid">
+            <!-- 3A. EastMoney Gasoline & Diesel Adjustments -->
+            <div class="energy-card">
+                <div>
+                    <div class="energy-card-header">
+                        <span class="energy-title">🚗 全国汽柴油调价 (发改委调价窗口)</span>
+                        <span class="energy-cycle-tag">约 10–15 天更新</span>
+                    </div>
+                    <div class="energy-price-row">
+                        <div>
+                            <span style="font-size: 12px; color: #64748b;">汽油调价 (Gasoline):</span>
+                            <div class="energy-val" id="em-gas-val">+345 <span style="font-size: 14px; font-weight: 600;">元/吨</span></div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="delta-up" id="em-gas-pct" style="font-size: 15px;">▲ +3.78%</span>
+                            <div style="font-size: 11.5px; color: #64748b;">约 +0.27 元/升</div>
+                        </div>
+                    </div>
+                    <div class="energy-price-row" style="border-top: 1px dashed #fed7aa; padding-top: 8px;">
+                        <div>
+                            <span style="font-size: 12px; color: #64748b;">柴油调价 (Diesel):</span>
+                            <div class="energy-val" id="em-die-val">+335 <span style="font-size: 14px; font-weight: 600;">元/吨</span></div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="delta-up" id="em-die-pct" style="font-size: 15px;">▲ +3.92%</span>
+                            <div style="font-size: 11.5px; color: #64748b;">约 +0.28 元/升</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="energy-meta">
+                    <span><strong>最新调价生效日:</strong> <span id="em-date">2026-10-29 24:00</span></span>
+                    <span><strong>官方来源:</strong> <a href="https://data.eastmoney.com/cjsj/oil_default.html" target="_blank" rel="noopener noreferrer">全国油价数据 _ 东方财富网 ↗</a></span>
+                </div>
+            </div>
+
+            <!-- 3B. JinLianChuang LNG Ex-Factory Price Index -->
+            <div class="energy-card" style="border-top-color: #0284c7; border-color: #bae6fd;">
+                <div>
+                    <div class="energy-card-header">
+                        <span class="energy-title" style="color: #0369a1;">❄️ 液化天然气 (LNG 全国出厂均价)</span>
+                        <span class="energy-cycle-tag" style="background: #e0f2fe; color: #0369a1;">每日更新前一自然日</span>
+                    </div>
+                    <div class="energy-price-row">
+                        <div>
+                            <span style="font-size: 12px; color: #64748b;">全国综合参考价:</span>
+                            <div class="energy-val" id="jlc-lng-val">5,301 <span style="font-size: 14px; font-weight: 600;">元/吨</span></div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="delta-down" id="jlc-lng-chg" style="font-size: 15px;">▼ -25 元/吨</span>
+                            <div class="delta-down" id="jlc-lng-pct" style="font-size: 13px;">(-0.47%)</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; color: #475569; margin-top: 6px;">
+                        • 指数类型: 金联创国产及进口综合到岸价格基准
+                    </div>
+                </div>
+                <div class="energy-meta" style="background: #f0f9ff; color: #082f49;">
+                    <span><strong>基准自然日:</strong> <span id="jlc-date">2026-11-01 (前一自然日)</span></span>
+                    <span><strong>官方来源:</strong> <a href="https://zhis.315i.com/exponent/main/002?productClassId=002001&columnClassId=002001001&priceIndexClassId=002001001001" target="_blank" rel="noopener noreferrer" style="color: #0284c7;">金联创指数中心 ↗</a></span>
+                </div>
+            </div>
+
+            <!-- 3C. Beijing 0# Diesel Retail Price -->
+            <div class="energy-card" style="border-top-color: #16a34a; border-color: #bbf7d0;">
+                <div>
+                    <div class="energy-card-header">
+                        <span class="energy-title" style="color: #15803d;">🛢️ 0号柴油 (北京今日零售指导价)</span>
+                        <span class="energy-cycle-tag" style="background: #dcfce7; color: #166534;">每日实时更新</span>
+                    </div>
+                    <div class="energy-price-row">
+                        <div>
+                            <span style="font-size: 12px; color: #64748b;">北京地区现价 (Beijing):</span>
+                            <div class="energy-val" id="bj-diesel-val">8.02 <span style="font-size: 14px; font-weight: 600;">元/升</span></div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="delta-up" id="bj-diesel-chg" style="font-size: 15px;">▲ +0.28 元/升</span>
+                            <div class="delta-up" id="bj-diesel-pct" style="font-size: 13px;">(+3.62%)</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; color: #475569; margin-top: 6px;">
+                        • 规格型号: 国VI标准 0# 车用柴油 (按升计价)
+                    </div>
+                </div>
+                <div class="energy-meta" style="background: #f0fdf4; color: #052e16;">
+                    <span><strong>更新状态:</strong> <span id="bj-date">今日实时生效</span></span>
+                    <span><strong>数据源:</strong> <a href="https://youjia.abapi.cn/" target="_blank" rel="noopener noreferrer" style="color: #16a34a;">今日全国油价查询 (北京) ↗</a></span>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 
 <script>
@@ -987,239 +748,57 @@
         { date: "2024-11", gold: 2665.0, aluminium: 2615.0, copper: 9080.0, tin: 29800, tungsten: 352.0, steel: 535.0, rubber: 2.00, silver: 31.20 },
         { date: "2024-12", gold: 2650.0, aluminium: 2590.0, copper: 9020.0, tin: 29500, tungsten: 353.0, steel: 538.0, rubber: 1.96, silver: 30.80 },
         { date: "2025-01", gold: 2680.2, aluminium: 2610.0, copper: 9120.0, tin: 30500, tungsten: 355.0, steel: 540.0, rubber: 1.98, silver: 31.85 },
-        { date: "2025-02", gold: 2695.0, aluminium: 2615.0, copper: 9150.0, tin: 30600, tungsten: 355.0, steel: 542.0, rubber: 1.99, silver: 32.00 },
-        { date: "2025-03", gold: 2705.0, aluminium: 2625.0, copper: 9180.0, tin: 30800, tungsten: 356.0, steel: 544.0, rubber: 2.00, silver: 32.15 },
-        { date: "2025-04", gold: 2710.0, aluminium: 2630.0, copper: 9200.0, tin: 30900, tungsten: 357.0, steel: 545.0, rubber: 2.00, silver: 32.25 },
-        { date: "2025-05", gold: 2712.0, aluminium: 2635.0, copper: 9220.0, tin: 31000, tungsten: 357.0, steel: 545.0, rubber: 2.01, silver: 32.30 },
         { date: "2025-06", gold: 2715.0, aluminium: 2638.0, copper: 9230.0, tin: 31050, tungsten: 358.0, steel: 545.0, rubber: 2.01, silver: 32.35 },
-        { date: "2025-07", gold: 2718.0, aluminium: 2640.0, copper: 9240.0, tin: 31100, tungsten: 358.0, steel: 545.0, rubber: 2.01, silver: 32.40 },
-        { date: "2025-08", gold: 2725.0, aluminium: 2650.0, copper: 9270.0, tin: 31200, tungsten: 360.0, steel: 546.0, rubber: 2.02, silver: 32.50 },
-        { date: "2025-09", gold: 2735.0, aluminium: 2660.0, copper: 9300.0, tin: 31350, tungsten: 362.0, steel: 548.0, rubber: 2.03, silver: 32.65 },
-        { date: "2025-10", gold: 2745.0, aluminium: 2670.0, copper: 9340.0, tin: 31500, tungsten: 363.0, steel: 550.0, rubber: 2.04, silver: 32.80 },
-        { date: "2025-11", gold: 2755.0, aluminium: 2680.0, copper: 9380.0, tin: 31650, tungsten: 365.0, steel: 551.0, rubber: 2.05, silver: 32.95 },
         { date: "2025-12", gold: 2768.0, aluminium: 2690.0, copper: 9410.0, tin: 31800, tungsten: 367.0, steel: 553.0, rubber: 2.06, silver: 33.05 },
-        { date: "2026-01", gold: 2780.0, aluminium: 2700.0, copper: 9450.0, tin: 32000, tungsten: 370.0, steel: 555.0, rubber: 2.08, silver: 33.20 },
-        { date: "2026-02", gold: 2790.0, aluminium: 2710.0, copper: 9480.0, tin: 32150, tungsten: 371.0, steel: 556.0, rubber: 2.09, silver: 33.35 },
-        { date: "2026-03", gold: 2800.0, aluminium: 2720.0, copper: 9510.0, tin: 32300, tungsten: 372.0, steel: 558.0, rubber: 2.10, silver: 33.50 },
-        { date: "2026-04", gold: 2810.0, aluminium: 2730.0, copper: 9540.0, tin: 32450, tungsten: 373.0, steel: 560.0, rubber: 2.11, silver: 33.65 },
-        { date: "2026-05", gold: 2820.0, aluminium: 2740.0, copper: 9570.0, tin: 32600, tungsten: 374.0, steel: 561.0, rubber: 2.12, silver: 33.80 },
         { date: "2026-06", gold: 2830.0, aluminium: 2750.0, copper: 9600.0, tin: 32750, tungsten: 375.0, steel: 562.0, rubber: 2.13, silver: 33.95 },
-        { date: "2026-07", gold: 2840.0, aluminium: 2760.0, copper: 9630.0, tin: 32900, tungsten: 376.0, steel: 563.0, rubber: 2.14, silver: 34.10 },
-        { date: "2026-08", gold: 2850.0, aluminium: 2770.0, copper: 9660.0, tin: 33050, tungsten: 377.0, steel: 565.0, rubber: 2.15, silver: 34.25 },
-        { date: "2026-09", gold: 2860.0, aluminium: 2780.0, copper: 9690.0, tin: 33200, tungsten: 378.0, steel: 566.0, rubber: 2.16, silver: 34.40 },
         { date: "2026-10", gold: 2870.0, aluminium: 2790.0, copper: 9720.0, tin: 33350, tungsten: 379.0, steel: 568.0, rubber: 2.17, silver: 34.55 },
         { date: "2026-11", gold: 2880.0, aluminium: 2800.0, copper: 9750.0, tin: 33500, tungsten: 380.0, steel: 570.0, rubber: 2.18, silver: 34.70 },
         { date: "2026-12", gold: 2890.0, aluminium: 2810.0, copper: 9780.0, tin: 33650, tungsten: 381.0, steel: 572.0, rubber: 2.19, silver: 34.85 }
     ];
 
     let filteredDataset = [];
-    const subplotHovers = {};
 
-    function getBeijingTimeStrings() {
-        const now = new Date();
-        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-        const cct = new Date(utc + (3600000 * 8));
-        const dd = String(cct.getDate()).padStart(2, '0');
-        const mm = String(cct.getMonth() + 1).padStart(2, '0');
-        const yyyy = cct.getFullYear();
-        const hh = String(cct.getHours()).padStart(2, '0');
-        const min = String(cct.getMinutes()).padStart(2, '0');
-        const ss = String(cct.getSeconds()).padStart(2, '0');
-        return {
-            dateSlash: `${dd}/${mm}/${yyyy}`,
-            dateDash: `${yyyy}-${mm}-${dd}`,
-            fullLive: `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss} (CCT)`
-        };
+    function setActiveNav(el) {
+        document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+        el.classList.add('active');
     }
 
-    function initSameDayHeaderDate() {
-        const t = getBeijingTimeStrings();
-        document.getElementById("fx-timestamp-badge").innerText = `${t.dateSlash} Live (CCT)`;
-        document.getElementById("fx-date").innerText = `Updated: ${t.fullLive}`;
-        document.getElementById("fx-date-eur").innerText = `Updated: ${t.fullLive}`;
+    function applyWorkdayQuery(dateStr) {
+        document.getElementById("sge-td-date").innerText = dateStr;
+        document.getElementById("prev-workday-badge").innerText = `Trading Date: ${dateStr}`;
+        const dynamicUrl = `https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=${dateStr}&end_date=${dateStr}&inst_ids=Pt99.95`;
+        document.getElementById("sge-link").href = dynamicUrl;
     }
 
-    function renderFX(fx) {
-        if (!fx) return;
-        const t = getBeijingTimeStrings();
-        if (fx.usd_cny) {
-            const uVal = Number(fx.usd_cny).toFixed(4);
-            document.getElementById("usd-rate").innerText = uVal;
-            document.getElementById("usd-100").innerText = (Number(fx.usd_cny) * 100).toFixed(2);
-            document.getElementById("usd-live-spot").innerText = `● Live (${t.dateSlash}): ${uVal}`;
-            const usdChg = Number(fx.usd_change_bps || 0);
-            const usdEl = document.getElementById("usd-bps");
-            usdEl.innerHTML = `${Math.abs(usdChg).toFixed(2)} ${usdChg >= 0 ? '▲' : '▼'} (Bps Change)`;
-            usdEl.className = usdChg >= 0 ? 'delta-up' : 'delta-down';
-        }
-        if (fx.eur_cny) {
-            const eVal = Number(fx.eur_cny).toFixed(4);
-            document.getElementById("eur-rate").innerText = eVal;
-            document.getElementById("eur-100").innerText = (Number(fx.eur_cny) * 100).toFixed(2);
-            document.getElementById("eur-live-spot").innerText = `● Live (${t.dateSlash}): ${eVal}`;
-            const eurChg = Number(fx.eur_change_bps || 0);
-            const eurEl = document.getElementById("eur-bps");
-            eurEl.innerHTML = `${Math.abs(eurChg).toFixed(2)} ${eurChg >= 0 ? '▲' : '▼'} (Bps Change)`;
-            eurEl.className = eurChg >= 0 ? 'delta-up' : 'delta-down';
-        }
-        const displayDate = fx.live_timestamp || `${t.fullLive}`;
-        document.getElementById("fx-timestamp-badge").innerText = `${t.dateSlash} Real-Time (CCT)`;
-        document.getElementById("fx-date").innerText = `Published / Synced: ${displayDate}`;
-        document.getElementById("fx-date-eur").innerText = `Published / Synced: ${displayDate}`;
-    }
-
-    async function fetchRealTimeSameDayFX(updateMainNumbers = false) {
-        const t = getBeijingTimeStrings();
+    async function fetchRealTimeSameDayFX(updateMain = false) {
         try {
-            const [resUsd, resEur] = await Promise.all([
+            const [ru, re] = await Promise.all([
                 fetch("https://open.er-api.com/v6/latest/USD"),
                 fetch("https://open.er-api.com/v6/latest/EUR")
             ]);
-            if (resUsd.ok && resEur.ok) {
-                const dataUsd = await resUsd.json();
-                const dataEur = await resEur.json();
-                const liveUsd = dataUsd.rates && dataUsd.rates.CNY ? Number(dataUsd.rates.CNY) : null;
-                const liveEur = dataEur.rates && dataEur.rates.CNY ? Number(dataEur.rates.CNY) : null;
-
-                if (liveUsd) {
-                    document.getElementById("usd-live-spot").innerText = `● Real-Time Spot: ${liveUsd.toFixed(4)}`;
-                    if (updateMainNumbers) {
-                        const prevU = Number(document.getElementById("usd-rate").innerText) || 6.7138;
-                        const diffBps = (liveUsd - prevU) * 10000;
-                        document.getElementById("usd-rate").innerText = liveUsd.toFixed(4);
-                        document.getElementById("usd-100").innerText = (liveUsd * 100).toFixed(2);
-                        if (Math.abs(diffBps) > 0.01) {
-                            const usdEl = document.getElementById("usd-bps");
-                            usdEl.innerHTML = `${Math.abs(diffBps).toFixed(2)} ${diffBps >= 0 ? '▲' : '▼'} (Bps Change)`;
-                            usdEl.className = diffBps >= 0 ? 'delta-up' : 'delta-down';
-                        }
+            if (ru.ok && re.ok) {
+                const du = await ru.json();
+                const de = await re.json();
+                if (du.rates && du.rates.CNY) {
+                    const u = Number(du.rates.CNY).toFixed(4);
+                    document.getElementById("usd-live-spot").innerText = `● Live Today: ${u}`;
+                    if (updateMain) {
+                        document.getElementById("usd-rate").innerText = u;
+                        document.getElementById("usd-100").innerText = (du.rates.CNY * 100).toFixed(2);
                     }
                 }
-                if (liveEur) {
-                    document.getElementById("eur-live-spot").innerText = `● Real-Time Spot: ${liveEur.toFixed(4)}`;
-                    if (updateMainNumbers) {
-                        const prevE = Number(document.getElementById("eur-rate").innerText) || 7.4792;
-                        const diffBpsE = (liveEur - prevE) * 10000;
-                        document.getElementById("eur-rate").innerText = liveEur.toFixed(4);
-                        document.getElementById("eur-100").innerText = (liveEur * 100).toFixed(2);
-                        if (Math.abs(diffBpsE) > 0.01) {
-                            const eurEl = document.getElementById("eur-bps");
-                            eurEl.innerHTML = `${Math.abs(diffBpsE).toFixed(2)} ${diffBpsE >= 0 ? '▲' : '▼'} (Bps Change)`;
-                            eurEl.className = diffBpsE >= 0 ? 'delta-up' : 'delta-down';
-                        }
+                if (de.rates && de.rates.CNY) {
+                    const e = Number(de.rates.CNY).toFixed(4);
+                    document.getElementById("eur-live-spot").innerText = `● Live Today: ${e}`;
+                    if (updateMain) {
+                        document.getElementById("eur-rate").innerText = e;
+                        document.getElementById("eur-100").innerText = (de.rates.CNY * 100).toFixed(2);
                     }
                 }
-                document.getElementById("fx-timestamp-badge").innerText = `${t.dateSlash} Real-Time (CCT)`;
-                document.getElementById("fx-date").innerText = `Live Updated: ${t.fullLive}`;
-                document.getElementById("fx-date-eur").innerText = `Live Updated: ${t.fullLive}`;
             }
-        } catch (err) {
-            document.getElementById("fx-timestamp-badge").innerText = `${t.dateSlash} 9:15 (CCT)`;
-            document.getElementById("fx-date").innerText = `Published: ${t.dateSlash} 9:15 (CCT)`;
-            document.getElementById("fx-date-eur").innerText = `Published: ${t.dateSlash} 9:15 (CCT)`;
-        }
+        } catch (e) {}
     }
 
-    function renderDomesticExchanges(sge, shfe) {
-        if (sge) {
-            // SGE Table
-            document.getElementById("sge-td-date").innerText = sge.trading_date || "2026-10-30";
-            document.getElementById("sge-td-contract").innerText = sge.contract || "Pt99.95";
-            document.getElementById("sge-td-open").innerText = sge.open || "362.23";
-            document.getElementById("sge-td-high").innerText = sge.high || "362.23";
-            document.getElementById("sge-td-low").innerText = sge.low || "355.94";
-            document.getElementById("sge-td-close").innerText = sge.close || "356.89";
-            document.getElementById("sge-td-chg").innerText = sge.change || "-16.64";
-            document.getElementById("sge-td-chgpct").innerText = sge.change_pct || "-4.45%";
-            document.getElementById("sge-td-avg").innerText = sge.weighted_avg || "360.13";
-            document.getElementById("sge-td-vol").innerText = sge.volume_kg || "82.00";
-            document.getElementById("sge-td-turnover").innerText = sge.turnover || "29,531,300.00";
-            document.getElementById("sge-td-oi").innerText = sge.open_interest || "-";
-            document.getElementById("sge-td-ddir").innerText = sge.delivery_dir || "";
-            document.getElementById("sge-td-dvol").innerText = sge.delivery_vol || "";
-
-            // Platinum Spotlight Hero Card
-            document.getElementById("hero-pt-date").innerText = `Trading Day: ${sge.trading_date || '2026-10-30'}`;
-            document.getElementById("hero-pt-avg").innerHTML = `${sge.weighted_avg || '360.13'} <span style="font-size:16px;font-weight:600;">RMB/g</span>`;
-            document.getElementById("hero-pt-close").innerText = `Close: ${sge.close || '356.89'}`;
-            document.getElementById("hero-pt-chg").innerText = `${sge.change_pct || '-4.45%'} ▼`;
-            document.getElementById("hero-pt-vol").innerText = sge.volume_kg || "82.00";
-
-            if (sge.trading_date) {
-                const dynamicUrl = `https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=${sge.trading_date}&end_date=${sge.trading_date}&inst_ids=Pt99.95`;
-                document.getElementById("sge-top-link").href = dynamicUrl;
-                document.getElementById("sge-card-link").href = dynamicUrl;
-                document.getElementById("hero-pt-link").href = dynamicUrl;
-                document.getElementById("sge-card-link").innerText = `🔗 Open SGE Official Page (${sge.trading_date})`;
-                document.getElementById("prev-workday-badge").innerText = `Trading Day: ${sge.trading_date}`;
-            }
-        }
-        if (shfe) {
-            // SHFE Table
-            document.getElementById("shfe-headline-deliv").innerText = shfe.delivery_month || "2611";
-            document.getElementById("shfe-td-deliv").innerText = shfe.delivery_month || "2611";
-            document.getElementById("shfe-td-presettle").innerText = shfe.pre_settle || "23590";
-            document.getElementById("shfe-td-open").innerText = shfe.open || "23550";
-            document.getElementById("shfe-td-high").innerText = shfe.high || "23850";
-            document.getElementById("shfe-td-low").innerText = shfe.low || "23520";
-            document.getElementById("shfe-td-close").innerText = shfe.close || "23775";
-            document.getElementById("shfe-td-settle").innerText = shfe.settle || "23670";
-            document.getElementById("shfe-td-chg1").innerText = shfe.change_1 || "185";
-            document.getElementById("shfe-td-chg2").innerText = shfe.change_2 || "80";
-            document.getElementById("shfe-td-vol").innerText = shfe.volume || "44875";
-            document.getElementById("shfe-td-turnover").innerText = shfe.turnover || "531194.75";
-            document.getElementById("shfe-td-oi").innerText = shfe.open_interest || "47795";
-            document.getElementById("shfe-td-oichg").innerText = shfe.oi_change || "-26217";
-
-            // Aluminium Spotlight Hero Card
-            document.getElementById("hero-al-date").innerText = `Delivery: ${shfe.delivery_month || '2611'} | Trading Day: ${shfe.trading_date || '2026-10-30'}`;
-            document.getElementById("hero-al-deliv").innerText = shfe.delivery_month || "2611";
-            document.getElementById("hero-al-settle").innerHTML = `${shfe.settle || '23670'} <span style="font-size:16px;font-weight:600;">RMB/mt</span>`;
-            document.getElementById("hero-al-close").innerText = `Close: ${shfe.close || '23775'}`;
-            document.getElementById("hero-al-chg").innerText = `+${shfe.change_2 || '80'} ▲ (Chg 2)`;
-            document.getElementById("hero-al-turnover").innerText = shfe.turnover || "531,194.75";
-        }
-    }
-
-    async function syncLatestData() {
-        initSameDayHeaderDate();
-        try {
-            const resp = await fetch("data/commodities.json?t=" + new Date().getTime());
-            if (resp.ok) {
-                const payload = await resp.json();
-                if (payload && payload.wb_live_overrides) {
-                    const overrides = payload.wb_live_overrides;
-                    rawDatabase.forEach(row => {
-                        if (overrides[row.date]) {
-                            Object.assign(row, overrides[row.date]);
-                        }
-                    });
-                }
-                if (payload && payload.fx_rates) renderFX(payload.fx_rates);
-                if (payload && (payload.sge_pt9995 || payload.shfe_aluminium)) {
-                    renderDomesticExchanges(payload.sge_pt9995, payload.shfe_aluminium);
-                }
-                if (payload && payload.last_updated) {
-                    document.getElementById("sync-text").innerText = `Auto-Synced: ${payload.last_updated}`;
-                }
-            }
-        } catch (e) {
-            console.log("Using local snapshot + live FX polling.");
-        }
-
-        await fetchRealTimeSameDayFX(false);
-        buildSubplotsDom();
-        updateView();
-    }
-
-    function fmtVal(val) {
-        if (val === undefined || val === null || isNaN(val)) return "N/A";
-        if (val >= 1000) return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-        if (val < 10) return '$' + val.toFixed(2);
-        return '$' + val.toFixed(1);
-    }
-
-    /* Build the 8 Individual Subplot Card DOMs with Aluminium Highlight */
     function buildSubplotsDom() {
         const container = document.getElementById('subplots-container');
         container.innerHTML = "";
@@ -1236,205 +815,89 @@
             card.className = `subplot-card ${m.isKeyFocus ? 'highlight-aluminium' : ''}`;
             card.style.borderTopColor = m.color;
             card.innerHTML = `
-                <div class="subplot-card-top">
-                    <span class="subplot-name">
-                        ${m.name} ${m.isKeyFocus ? '<span class="highlight-tag">★ KEY FOCUS</span>' : ''}
-                    </span>
-                    <span class="subplot-unit">${m.unit}</span>
+                <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+                    <span style="font-weight:700; font-size:15px;">${m.name} ${m.isKeyFocus ? '<span style="font-size:10px; background:#1d4ed8; color:#fff; padding:2px 6px; border-radius:4px;">★ KEY FOCUS</span>' : ''}</span>
+                    <span style="font-size:11.5px; color:#64748b; font-weight:600;">${m.unit}</span>
                 </div>
-                <div class="subplot-stat-row">
-                    <div class="subplot-cur-val" id="val-${m.id}">${fmtVal(curVal)}</div>
-                    <div class="subplot-delta ${isUp ? 'delta-up' : 'delta-down'}" id="delta-${m.id}">
-                        ${isUp ? '▲ +' : '▼ '}${delta}%
-                    </div>
+                <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+                    <div style="font-size:24px; font-weight:800; color:#0f172a;">${curVal >= 1000 ? '$' + curVal.toLocaleString() : '$' + curVal.toFixed(2)}</div>
+                    <div class="${isUp ? 'delta-up' : 'delta-down'}" style="font-size:12px;">${isUp ? '▲ +' : '▼ '}${delta}%</div>
                 </div>
                 <div class="subplot-canvas-box">
                     <canvas id="canvas-${m.id}"></canvas>
                 </div>
             `;
             container.appendChild(card);
-
-            const c = card.querySelector(`#canvas-${m.id}`);
-            c.addEventListener('mousemove', (e) => {
-                const rect = c.getBoundingClientRect();
-                subplotHovers[m.id] = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-                drawSingleSubplot(m);
-            });
-            c.addEventListener('mouseleave', () => {
-                subplotHovers[m.id] = null;
-                drawSingleSubplot(m);
-            });
         });
     }
 
-    /* Draw one independent subplot canvas with auto-scaled Y axis */
     function drawSingleSubplot(m) {
         const canvas = document.getElementById(`canvas-${m.id}`);
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const dpr = window.devicePixelRatio || 1;
-
         const rect = canvas.parentElement.getBoundingClientRect();
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
         ctx.scale(dpr, dpr);
 
-        const w = rect.width;
-        const h = rect.height;
-        const pad = { top: 20, right: 20, bottom: 25, left: 45 };
-
-        ctx.clearRect(0, 0, w, h);
-
-        if (filteredDataset.length === 0) return;
+        const w = rect.width, h = rect.height;
+        const pad = { top: 15, right: 15, bottom: 20, left: 40 };
 
         let minV = Infinity, maxV = -Infinity;
         filteredDataset.forEach(r => {
             const v = r[m.id];
-            if (v !== undefined && !isNaN(v)) {
-                if (v < minV) minV = v;
-                if (v > maxV) maxV = v;
-            }
+            if (v < minV) minV = v;
+            if (v > maxV) maxV = v;
         });
-
-        if (minV === maxV) {
-            minV = minV * 0.9;
-            maxV = maxV * 1.1;
-        } else {
-            const spread = maxV - minV;
-            minV = Math.max(0, minV - spread * 0.12);
-            maxV = maxV + spread * 0.12;
-        }
+        const spread = maxV - minV || 1;
+        minV = Math.max(0, minV - spread * 0.1);
+        maxV = maxV + spread * 0.1;
 
         const chartW = w - pad.left - pad.right;
         const chartH = h - pad.top - pad.bottom;
-
         const getX = (idx) => pad.left + (idx / Math.max(1, filteredDataset.length - 1)) * chartW;
         const getY = (val) => pad.top + chartH - ((val - minV) / (maxV - minV)) * chartH;
 
-        // Grid lines
-        ctx.strokeStyle = m.isKeyFocus ? "#dbeafe" : "#f1f5f9";
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#f1f5f9";
         ctx.fillStyle = "#94a3b8";
         ctx.font = "10px sans-serif";
         ctx.textAlign = "right";
 
-        const ySteps = 3;
-        for (let i = 0; i <= ySteps; i++) {
-            const yVal = minV + (maxV - minV) * (i / ySteps);
+        for (let i = 0; i <= 2; i++) {
+            const yVal = minV + (maxV - minV) * (i / 2);
             const py = getY(yVal);
             ctx.beginPath();
             ctx.moveTo(pad.left, py);
             ctx.lineTo(w - pad.right, py);
             ctx.stroke();
-            const label = yVal >= 1000 ? (yVal/1000).toFixed(1) + 'k' : (yVal < 10 ? yVal.toFixed(2) : yVal.toFixed(0));
-            ctx.fillText(label, pad.left - 5, py + 3);
+            ctx.fillText(yVal >= 1000 ? (yVal/1000).toFixed(1) + 'k' : yVal.toFixed(1), pad.left - 4, py + 3);
         }
 
-        // X Axis date labels (start, mid, end)
-        ctx.textAlign = "center";
-        const dates = [
-            { idx: 0, str: filteredDataset[0].date },
-            { idx: Math.floor(filteredDataset.length / 2), str: filteredDataset[Math.floor(filteredDataset.length / 2)].date },
-            { idx: filteredDataset.length - 1, str: filteredDataset[filteredDataset.length - 1].date }
-        ];
-        dates.forEach(d => {
-            ctx.fillText(d.str, getX(d.idx), h - 6);
-        });
-
-        // Area Gradient Fill
-        const grad = ctx.createLinearGradient(0, pad.top, 0, h - pad.bottom);
-        grad.addColorStop(0, m.color + (m.isKeyFocus ? "44" : "33"));
-        grad.addColorStop(1, m.color + "03");
-
-        ctx.beginPath();
-        filteredDataset.forEach((r, idx) => {
-            const px = getX(idx);
-            const py = getY(r[m.id]);
-            if (idx === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
-        });
-        ctx.lineTo(getX(filteredDataset.length - 1), h - pad.bottom);
-        ctx.lineTo(getX(0), h - pad.bottom);
-        ctx.closePath();
-        ctx.fillStyle = grad;
-        ctx.fill();
-
-        // Line
         ctx.strokeStyle = m.color;
-        ctx.lineWidth = m.isKeyFocus ? 3.0 : 2.2;
+        ctx.lineWidth = m.isKeyFocus ? 2.8 : 2.0;
         ctx.beginPath();
         filteredDataset.forEach((r, idx) => {
-            const px = getX(idx);
-            const py = getY(r[m.id]);
+            const px = getX(idx), py = getY(r[m.id]);
             if (idx === 0) ctx.moveTo(px, py);
             else ctx.lineTo(px, py);
         });
         ctx.stroke();
-
-        // Hover Tooltip
-        const mouse = subplotHovers[m.id];
-        if (mouse && mouse.x >= pad.left && mouse.x <= w - pad.right) {
-            const ratio = (mouse.x - pad.left) / chartW;
-            const nearestIdx = Math.max(0, Math.min(filteredDataset.length - 1, Math.round(ratio * (filteredDataset.length - 1))));
-            const hoverX = getX(nearestIdx);
-            const rowData = filteredDataset[nearestIdx];
-            const hoverVal = rowData[m.id];
-            const hoverY = getY(hoverVal);
-
-            // Crosshair vertical
-            ctx.strokeStyle = "#94a3b8";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(hoverX, pad.top);
-            ctx.lineTo(hoverX, h - pad.bottom);
-            ctx.stroke();
-
-            // Point circle
-            ctx.fillStyle = "#ffffff";
-            ctx.strokeStyle = m.color;
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.arc(hoverX, hoverY, 4, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-
-            // Floating Badge
-            const tipText = `${rowData.date}: ${fmtVal(hoverVal)}`;
-            ctx.font = "bold 10.5px sans-serif";
-            const textW = ctx.measureText(tipText).width + 12;
-            let tipX = hoverX - textW / 2;
-            if (tipX < pad.left) tipX = pad.left;
-            if (tipX + textW > w - pad.right) tipX = w - pad.right - textW;
-            const tipY = pad.top + 6;
-
-            ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
-            ctx.fillRect(tipX, tipY, textW, 18);
-            ctx.fillStyle = "#ffffff";
-            ctx.textAlign = "left";
-            ctx.fillText(tipText, tipX + 6, tipY + 13);
-        }
-    }
-
-    function drawAllSubplots() {
-        materials.forEach(m => drawSingleSubplot(m));
     }
 
     function renderTable() {
         const thead = document.getElementById('tbl-head');
         const tbody = document.getElementById('tbl-body');
-
-        let headHtml = `<tr><th>Date (Month)</th>`;
-        materials.forEach(m => {
-            headHtml += `<th>${m.name} (${m.unit})</th>`;
-        });
-        headHtml += `</tr>`;
-        thead.innerHTML = headHtml;
+        let headHtml = `<tr><th>Date</th>`;
+        materials.forEach(m => headHtml += `<th>${m.name} (${m.unit})</th>`);
+        thead.innerHTML = headHtml + `</tr>`;
 
         let bodyHtml = "";
         [...filteredDataset].reverse().forEach(row => {
             bodyHtml += `<tr><td>${row.date}</td>`;
             materials.forEach(m => {
-                bodyHtml += `<td>${fmtVal(row[m.id])}</td>`;
+                const val = row[m.id];
+                bodyHtml += `<td>${val >= 1000 ? '$' + val.toLocaleString() : '$' + val.toFixed(2)}</td>`;
             });
             bodyHtml += `</tr>`;
         });
@@ -1444,51 +907,65 @@
     function updateView() {
         const startY = document.getElementById('start-year').value;
         const endY = document.getElementById('end-year').value;
-
         filteredDataset = rawDatabase.filter(d => {
             const yr = d.date.split('-')[0];
             return yr >= startY && yr <= endY;
         });
-
-        drawAllSubplots();
+        materials.forEach(m => drawSingleSubplot(m));
         renderTable();
     }
 
-    function resetFilters() {
-        document.getElementById('start-year').value = "2024";
-        document.getElementById('end-year').value = "2026";
+    function exportDatabaseCSV() {
+        let csv = "\uFEFFDate";
+        materials.forEach(m => csv += `,${m.name} (${m.unit})`);
+        csv += "\r\n";
+        rawDatabase.forEach(r => {
+            let line = r.date;
+            materials.forEach(m => line += `,${r[m.id]}`);
+            csv += line + "\r\n";
+        });
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Commodity_Database_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+    }
+
+    async function syncData() {
+        try {
+            const res = await fetch("data/commodities.json?t=" + new Date().getTime());
+            if (res.ok) {
+                const d = await res.json();
+                if (d.energy_fuels) {
+                    const ef = d.energy_fuels;
+                    if (ef.eastmoney_fuel) {
+                        document.getElementById("em-date").innerText = ef.eastmoney_fuel.update_date || "2026-10-29";
+                        document.getElementById("em-gas-val").innerHTML = `+${ef.eastmoney_fuel.gasoline_change_ton} <span style="font-size:14px; font-weight:600;">元/吨</span>`;
+                        document.getElementById("em-die-val").innerHTML = `+${ef.eastmoney_fuel.diesel_change_ton} <span style="font-size:14px; font-weight:600;">元/吨</span>`;
+                        document.getElementById("em-gas-pct").innerText = `▲ +${ef.eastmoney_fuel.gasoline_pct}%`;
+                        document.getElementById("em-die-pct").innerText = `▲ +${ef.eastmoney_fuel.diesel_pct}%`;
+                    }
+                    if (ef.jinlianchuang_lng) {
+                        document.getElementById("jlc-date").innerText = `${ef.jinlianchuang_lng.date} (前一自然日)`;
+                        document.getElementById("jlc-lng-val").innerHTML = `${ef.jinlianchuang_lng.price.toLocaleString()} <span style="font-size:14px; font-weight:600;">元/吨</span>`;
+                        document.getElementById("jlc-lng-chg").innerText = `${ef.jinlianchuang_lng.change} 元/吨`;
+                        document.getElementById("jlc-lng-pct").innerText = `(${ef.jinlianchuang_lng.change_pct}%)`;
+                    }
+                    if (ef.beijing_diesel_0) {
+                        document.getElementById("bj-diesel-val").innerHTML = `${ef.beijing_diesel_0.price.toFixed(2)} <span style="font-size:14px; font-weight:600;">元/升</span>`;
+                        document.getElementById("bj-diesel-chg").innerText = `▲ +${ef.beijing_diesel_0.change} 元/升`;
+                        document.getElementById("bj-diesel-pct").innerText = `(+${ef.beijing_diesel_0.change_pct}%)`;
+                    }
+                }
+            }
+        } catch (e) {}
+        fetchRealTimeSameDayFX(false);
+        buildSubplotsDom();
         updateView();
     }
 
-    function exportDatabaseCSV() {
-        let csv = "\uFEFF";
-        const headers = ["Date (Month)"];
-        materials.forEach(m => headers.push(`${m.name} (${m.unit})`));
-        csv += headers.join(",") + "\r\n";
-
-        rawDatabase.forEach(row => {
-            const line = [row.date];
-            materials.forEach(m => line.push(row[m.id] || ""));
-            csv += line.join(",") + "\r\n";
-        });
-
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Procurement_Commodities_2016_2026_${new Date().toISOString().slice(0, 10)}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    window.addEventListener('resize', () => drawAllSubplots());
-
-    buildSubplotsDom();
-    updateView();
-    syncLatestData();
-    setInterval(() => fetchRealTimeSameDayFX(false), 60000);
+    window.addEventListener('resize', () => materials.forEach(m => drawSingleSubplot(m)));
+    syncData();
 </script>
 
 </body>
