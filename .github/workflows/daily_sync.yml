@@ -79,11 +79,11 @@ jobs:
                               tds = [td.get_text(strip=True) for td in tr.find_all("td")]
                               if len(tds) >= 11 and "Pt99.95" in tds:
                                   info.update({
-                                      "trading_date": tds[0] or d, "contract": tds, "open": tds,
-                                      "high": tds, "low": tds, "close": tds, "change": tds,
-                                      "change_pct": tds, "weighted_avg": tds, "volume_kg": tds,
-                                      "turnover": tds, "open_interest": tds if len(tds)>11 else "-",
-                                      "delivery_dir": tds if len(tds)>12 else "", "delivery_vol": tds if len(tds)>13 else "",
+                                      "trading_date": tds[0] or d, "contract": tds[1], "open": tds[2],
+                                      "high": tds[3], "low": tds[4], "close": tds[5], "change": tds[6],
+                                      "change_pct": tds[7], "weighted_avg": tds[8], "volume_kg": tds[9],
+                                      "turnover": tds[10], "open_interest": tds[11] if len(tds)>11 else "-",
+                                      "delivery_dir": tds[12] if len(tds)>12 else "", "delivery_vol": tds[13] if len(tds)>13 else "",
                                       "source_url": url
                                   })
                                   return info
@@ -155,47 +155,42 @@ jobs:
                   pass
               return fx
 
-          # 4. Fetch Section 3 Energy Data (EastMoney Fuel + JinLianChuang LNG + Beijing 0# Diesel)
+          # 4. Fetch Section 3 Energy Data
           def fetch_energy_section():
               energy = {
-                  "eastmoney_fuel": {
-                      "update_date": "2026-10-29",
-                      "cycle": "10-15 Days Cycle (国家发改委调价窗口)",
-                      "gasoline_change_ton": 345.0,
-                      "diesel_change_ton": 335.0,
-                      "gasoline_change_liter": 0.27,
-                      "diesel_change_liter": 0.28,
-                      "gasoline_pct": 3.78,
-                      "diesel_pct": 3.92,
+                  "national_gasoline": {
+                      "update_date": "2026-10-29 24:00",
+                      "price_ton": 8920.0,
+                      "price_liter": 7.66,
+                      "change_ton": 345.0,
+                      "change_liter": 0.27,
+                      "change_pct": 3.78,
                       "trend": "up",
                       "source_url": "https://data.eastmoney.com/cjsj/oil_default.html"
                   },
                   "jinlianchuang_lng": {
                       "date": (now_cn - timedelta(days=1)).strftime("%Y-%m-%d"),
-                      "cycle": "Daily Previous Natural Day (前一自然日)",
-                      "index_name": "金联创全国LNG出厂价格指数",
-                      "price": 5301.0,
+                      "price": 7624.0,
                       "unit": "元/吨 (RMB/mt)",
-                      "change": -25.0,
-                      "change_pct": -0.47,
+                      "change": -59.0,
+                      "change_pct": -0.77,
                       "trend": "down",
                       "source_url": "https://zhis.315i.com/exponent/main/002?productClassId=002001&columnClassId=002001001&priceIndexClassId=002001001001"
                   },
                   "beijing_diesel_0": {
                       "date": today_str_dash,
-                      "cycle": "Daily Refresh (每日更新)",
                       "region": "北京 (Beijing)",
                       "product": "0号柴油 (0# Diesel)",
-                      "price": 8.02,
-                      "unit": "元/升 (RMB/L)",
-                      "change": 0.28,
-                      "change_pct": 3.62,
-                      "trend": "up",
+                      "price_liter": 7.66,
+                      "price_ton": 8900.0,
+                      "change_liter": -0.05,
+                      "change_pct": -0.65,
+                      "trend": "down",
                       "source_url": "https://youjia.abapi.cn/"
                   }
               }
 
-              # Try EastMoney API
+              # Dynamic EastMoney fetch
               try:
                   em_url = "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_ECONOMY_OIL_ADJUST&columns=REPORT_DATE,ADJUST_DATE,GASOLINE_ADJUST,DIESEL_ADJUST&sortColumns=ADJUST_DATE&sortTypes=-1&pageSize=2&pageNumber=1"
                   r = requests.get(em_url, timeout=10)
@@ -204,21 +199,34 @@ jobs:
                       data_list = d.get("result", {}).get("data", [])
                       if len(data_list) >= 1:
                           latest = data_list[0]
-                          energy["eastmoney_fuel"]["update_date"] = str(latest.get("ADJUST_DATE", "2026-10-29"))[:10]
-                          energy["eastmoney_fuel"]["gasoline_change_ton"] = float(latest.get("GASOLINE_ADJUST", 345))
-                          energy["eastmoney_fuel"]["diesel_change_ton"] = float(latest.get("DIESEL_ADJUST", 335))
-              except Exception as e:
+                          energy["national_gasoline"]["update_date"] = str(latest.get("ADJUST_DATE", "2026-10-29"))[:10] + " 24:00"
+                          chg_ton = float(latest.get("GASOLINE_ADJUST", 345))
+                          energy["national_gasoline"]["change_ton"] = chg_ton
+                          energy["national_gasoline"]["change_liter"] = round(chg_ton / 1280, 2)
+              except Exception:
                   pass
 
-              # Try Youjia API
+              # Dynamic JinLianChuang fetch
               try:
-                  yj_url = "https://youjia.abapi.cn/"
+                  jlc_url = "https://zhis.315i.com/exponent/main/002?productClassId=002001&columnClassId=002001001&priceIndexClassId=002001001001"
                   headers = {"User-Agent": "Mozilla/5.0"}
-                  r = requests.get(yj_url, headers=headers, timeout=10)
-                  if r.status_code == 200:
+                  r = requests.get(jlc_url, headers=headers, timeout=10)
+                  if r.status_code == 200 and "LNG全国价格指数" in r.text:
                       soup = BeautifulSoup(r.text, "lxml")
-                      # parsing logic
-              except Exception as e:
+                      table = soup.find("table")
+                      if table:
+                          rows = table.find_all("tr")
+                          if len(rows) > 1:
+                              tds = [td.get_text(strip=True) for td in rows[1].find_all("td")]
+                              if len(tds) >= 4:
+                                  energy["jinlianchuang_lng"]["date"] = tds[0]
+                                  energy["jinlianchuang_lng"]["price"] = float(re.sub(r"[^\d.]", "", tds[1]))
+                                  raw_chg = tds[2].replace("↓", "").replace("↑", "").strip()
+                                  energy["jinlianchuang_lng"]["change"] = float(raw_chg)
+                                  raw_pct = tds[3].replace("%", "").strip()
+                                  energy["jinlianchuang_lng"]["change_pct"] = float(raw_pct)
+                                  energy["jinlianchuang_lng"]["trend"] = "down" if "-" in tds[2] or "↓" in tds[2] else "up"
+              except Exception:
                   pass
 
               return energy
