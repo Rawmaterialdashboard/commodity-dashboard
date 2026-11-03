@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raw Materials, Real-Time FX & Domestic Exchanges Procurement Dashboard</title>
+    <title>Raw Materials Procurement Dashboard — Highlighted Pt & Al Focus</title>
     <style>
         :root {
             --bg: #f8fafc;
@@ -16,7 +16,8 @@
             --success: #16a34a;
             --danger: #dc2626;
             --fx-accent: #1e40af;
-            --cn-accent: #b45309;
+            --focus-pt: #92400e;
+            --focus-al: #1d4ed8;
         }
 
         * {
@@ -140,6 +141,7 @@
             text-decoration: underline;
         }
 
+        /* --- FX SECTION --- */
         .fx-section {
             background: #ffffff;
             border: 1px solid #dbeafe;
@@ -147,15 +149,6 @@
             padding: 18px 22px;
             margin-bottom: 20px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        }
-
-        .cn-exchange-section {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 12px;
-            padding: 18px 22px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         .fx-header {
@@ -171,16 +164,6 @@
             font-size: 15px;
             font-weight: 700;
             color: var(--fx-accent);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .cn-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #0f172a;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -214,91 +197,6 @@
             border-left: 5px solid var(--fx-accent);
             border-radius: 8px;
             padding: 14px 18px;
-        }
-
-        .exchange-box {
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 16px 18px;
-            margin-bottom: 16px;
-            background: #f8fafc;
-        }
-
-        .exchange-box:last-child {
-            margin-bottom: 0;
-        }
-
-        .exchange-top-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .headline-metric {
-            display: flex;
-            align-items: baseline;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-
-        .headline-label {
-            font-size: 13px;
-            font-weight: 700;
-            color: #475569;
-            text-transform: uppercase;
-        }
-
-        .headline-val {
-            font-size: 30px;
-            font-weight: 800;
-            color: #0f172a;
-            letter-spacing: -0.5px;
-        }
-
-        .mini-table-wrap {
-            overflow-x: auto;
-        }
-
-        .exchange-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12.5px;
-            background: #ffffff;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid #cbd5e1;
-        }
-
-        .exchange-table thead th {
-            background: #1e3a8a;
-            color: #ffffff;
-            padding: 8px 10px;
-            text-align: center;
-            font-weight: 600;
-            border-right: 1px solid rgba(255,255,255,0.15);
-            position: static;
-        }
-
-        .exchange-table.sge-theme thead th {
-            background: #334155;
-        }
-
-        .exchange-table tbody td {
-            padding: 9px 10px;
-            text-align: center;
-            border-right: 1px solid #e2e8f0;
-            font-weight: 600;
-            color: #0f172a;
-        }
-
-        .highlight-cell {
-            background: #fef3c7 !important;
-            color: #b45309 !important;
-            font-weight: 800 !important;
-            font-size: 14px;
         }
 
         .fx-card-top {
@@ -351,33 +249,210 @@
             gap: 8px;
         }
 
-        .cards-grid {
+        /* --- SPOTLIGHT HERO CARDS FOR PLATINUM & ALUMINIUM --- */
+        .spotlight-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+            gap: 18px;
             margin-bottom: 20px;
         }
 
-        .card {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 16px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            border-top: 4px solid #cbd5e1;
+        .spotlight-card {
+            border-radius: 14px;
+            padding: 20px 24px;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .card-top {
+        .spotlight-pt {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 60%, #475569 100%);
+            border: 2px solid #cbd5e1;
+        }
+
+        .spotlight-al {
+            background: linear-gradient(135deg, #0f2b5c 0%, #1e40af 60%, #2563eb 100%);
+            border: 2px solid #93c5fd;
+        }
+
+        .spotlight-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11.5px;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            margin-bottom: 12px;
+            width: fit-content;
+        }
+
+        .spotlight-pt .spotlight-badge {
+            background: rgba(254, 243, 199, 0.2);
+            color: #fef08a;
+            border: 1px solid rgba(253, 224, 71, 0.4);
+        }
+
+        .spotlight-al .spotlight-badge {
+            background: rgba(239, 246, 255, 0.2);
+            color: #bfdbfe;
+            border: 1px solid rgba(191, 219, 254, 0.4);
+        }
+
+        .spotlight-header {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .mat-name { font-size: 15px; font-weight: 700; color: var(--text-main); }
-        .mat-unit { font-size: 12px; color: var(--text-sub); font-weight: 500; }
-        .mat-price { font-size: 22px; font-weight: 700; margin: 10px 0 4px 0; color: var(--text-main); }
-        .mat-delta { font-size: 12px; font-weight: 600; }
-        .delta-up { color: var(--danger); }
-        .delta-down { color: var(--success); }
+        .spotlight-title {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .spotlight-date {
+            font-size: 12px;
+            opacity: 0.85;
+        }
+
+        .spotlight-body {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin: 16px 0 10px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .spotlight-main-stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .spotlight-label {
+            font-size: 12px;
+            opacity: 0.85;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .spotlight-value {
+            font-size: 38px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .spotlight-chip-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .spotlight-chip {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            background: rgba(255,255,255,0.18);
+            backdrop-filter: blur(4px);
+        }
+
+        .spotlight-footer {
+            border-top: 1px solid rgba(255,255,255,0.18);
+            padding-top: 10px;
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            opacity: 0.9;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .spotlight-footer a {
+            color: #ffffff;
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        /* --- DOMESTIC EXCHANGES DETAIL TABLES --- */
+        .cn-exchange-section {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .cn-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .exchange-box {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin-bottom: 16px;
+            background: #f8fafc;
+        }
+        .exchange-box:last-child { margin-bottom: 0; }
+
+        .exchange-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .mini-table-wrap { overflow-x: auto; }
+
+        .exchange-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            background: #ffffff;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+        }
+
+        .exchange-table thead th {
+            background: #1e3a8a;
+            color: #ffffff;
+            padding: 8px 10px;
+            text-align: center;
+            font-weight: 600;
+            border-right: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .exchange-table.sge-theme thead th { background: #334155; }
+
+        .exchange-table tbody td {
+            padding: 9px 10px;
+            text-align: center;
+            border-right: 1px solid #e2e8f0;
+            font-weight: 600;
+            color: #0f172a;
+        }
 
         .toolbar {
             background: var(--card-bg);
@@ -412,67 +487,127 @@
             cursor: pointer;
         }
 
-        .checkbox-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            cursor: pointer;
-            color: #1e293b;
+        /* --- SUBPLOTS GRID & PROMINENT ALUMINIUM HIGHLIGHT --- */
+        .subplots-section {
+            margin-bottom: 24px;
         }
 
-        .chart-section {
-            background: var(--card-bg);
-            padding: 20px 24px;
-            border-radius: 10px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-
-        .chart-header {
+        .subplots-header {
+            margin-bottom: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
         }
 
-        .chart-title { font-size: 16px; font-weight: 700; color: var(--text-main); }
+        .subplots-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
 
-        .canvas-container {
+        .subplots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .subplot-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            border-top: 4px solid #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .subplot-card:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        /* Prominent Highlight Style for Aluminium Card */
+        .subplot-card.highlight-aluminium {
+            background: #f0f7ff;
+            border: 2px solid #2563eb;
+            border-top: 6px solid #1d4ed8;
+            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.15);
             position: relative;
-            width: 100%;
-            height: 440px;
         }
 
-        canvas { width: 100%; height: 100%; display: block; }
+        .highlight-tag {
+            font-size: 10.5px;
+            font-weight: 800;
+            background: #1d4ed8;
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
 
-        .chart-legend {
+        .subplot-card-top {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 14px;
-            justify-content: center;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px;
         }
 
-        .legend-tag {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            padding: 4px 10px;
-            border-radius: 5px;
-            border: 1px solid #e2e8f0;
-            background: #f8fafc;
-            color: #475569;
+        .subplot-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
         }
-        .legend-tag.active {
-            border-color: #2563eb;
-            background: #eff6ff;
-            color: #1d4ed8;
+
+        .subplot-unit {
+            font-size: 11.5px;
+            color: var(--text-sub);
             font-weight: 600;
         }
-        .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+
+        .subplot-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+
+        .subplot-cur-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .subplot-delta {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .delta-up { color: var(--danger); }
+        .delta-down { color: var(--success); }
+
+        .subplot-canvas-box {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            background: #fdfdfd;
+            border-radius: 6px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .subplot-card.highlight-aluminium .subplot-canvas-box {
+            background: #ffffff;
+            border-color: #bfdbfe;
+        }
+
+        .subplot-canvas-box canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
 
         .table-section {
             background: var(--card-bg);
@@ -505,7 +640,7 @@
     <header>
         <div class="header-title">
             <h1>🏛️ Commodity, Real-Time FX & Domestic Exchange Procurement Dashboard</h1>
-            <p>World Bank 8 Core Materials + Same-Day Real-Time FX + SGE (Pt99.95) & SHFE (Current-Month Aluminium 2611)</p>
+            <p>World Bank 8 Core Materials + Real-Time FX + Spotlights on Platinum (Pt99.95) & Aluminium (2611)</p>
             <div style="margin-top: 6px;">
                 <span class="status-badge" id="sync-status">
                     <span class="status-dot"></span>
@@ -575,7 +710,60 @@
         </div>
     </div>
 
-    <!-- 2. SGE Pt99.95 & SHFE Current-Month Aluminium Full Data Tables (Previous Working Day) -->
+    <!-- 2. HIGH-VISIBILITY SPOTLIGHT MODULES: PLATINUM & ALUMINIUM -->
+    <div class="spotlight-grid">
+        <!-- Platinum Hero Card -->
+        <div class="spotlight-card spotlight-pt">
+            <div>
+                <div class="spotlight-badge">★ KEY PROCUREMENT FOCUS — SGE PLATINUM</div>
+                <div class="spotlight-header">
+                    <div class="spotlight-title">⚪ Platinum (Pt99.95)</div>
+                    <div class="spotlight-date" id="hero-pt-date">Trading Day: 2026-10-30</div>
+                </div>
+            </div>
+            <div class="spotlight-body">
+                <div class="spotlight-main-stat">
+                    <span class="spotlight-label">SGE WEIGHTED AVERAGE PRICE</span>
+                    <div class="spotlight-value" id="hero-pt-avg">360.13 <span style="font-size:16px;font-weight:600;">RMB/g</span></div>
+                </div>
+                <div class="spotlight-chip-row">
+                    <span class="spotlight-chip" id="hero-pt-close">Close: 356.89</span>
+                    <span class="spotlight-chip" id="hero-pt-chg" style="background:rgba(220,38,38,0.3);">-4.45% ▼</span>
+                </div>
+            </div>
+            <div class="spotlight-footer">
+                <span>Contract: <strong>Pt99.95</strong> | Volume: <span id="hero-pt-vol">82.00</span> kg</span>
+                <a id="hero-pt-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=2026-10-30&end_date=2026-10-30&inst_ids=Pt99.95" target="_blank" rel="noopener noreferrer">View Official SGE Quotation ↗</a>
+            </div>
+        </div>
+
+        <!-- Aluminium Hero Card -->
+        <div class="spotlight-card spotlight-al">
+            <div>
+                <div class="spotlight-badge">★ KEY PROCUREMENT FOCUS — SHFE ALUMINIUM</div>
+                <div class="spotlight-header">
+                    <div class="spotlight-title">🔩 Aluminium (Current Month)</div>
+                    <div class="spotlight-date" id="hero-al-date">Delivery: 2611 | Trading Day: 2026-10-30</div>
+                </div>
+            </div>
+            <div class="spotlight-body">
+                <div class="spotlight-main-stat">
+                    <span class="spotlight-label">SETTLEMENT REFERENCE PRICE</span>
+                    <div class="spotlight-value" id="hero-al-settle">23670 <span style="font-size:16px;font-weight:600;">RMB/mt</span></div>
+                </div>
+                <div class="spotlight-chip-row">
+                    <span class="spotlight-chip" id="hero-al-close">Close: 23775</span>
+                    <span class="spotlight-chip" id="hero-al-chg" style="background:rgba(22,163,74,0.35);">+80 ▲ (Chg 2)</span>
+                </div>
+            </div>
+            <div class="spotlight-footer">
+                <span>Delivery Month: <strong id="hero-al-deliv">2611</strong> | Turnover: <span id="hero-al-turnover">531,194.75</span></span>
+                <a href="https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/" target="_blank" rel="noopener noreferrer">View Official SHFE Express ↗</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Domestic Exchanges Official Tables (Clean Tabular Presentation) -->
     <div class="cn-exchange-section">
         <div class="fx-header">
             <div class="cn-title">
@@ -589,17 +777,10 @@
             </div>
         </div>
 
-        <!-- 2A. Shanghai Gold Exchange (SGE) Pt99.95 Complete 14-Column Table -->
+        <!-- 3A. SGE Pt99.95 Official 14-Column Table -->
         <div class="exchange-box">
             <div class="exchange-top-row">
-                <div class="headline-metric">
-                    <span style="font-size:15px; font-weight:800; color:#1e293b;">⚪ 上海黄金交易所每日交易行情 (SGE Daily Quotation — Pt99.95)</span>
-                    <span class="headline-label">收盘价 (Close):</span>
-                    <span class="headline-val" id="sge-headline-close">356.89</span>
-                    <span class="headline-label" style="margin-left:8px;">加权平均价 (Weighted Avg):</span>
-                    <span class="headline-val" id="sge-headline-avg" style="color:#b45309;">360.13</span>
-                    <span style="font-size:12px; color:#64748b; font-weight:600;">Unit: RMB/g (元/克)</span>
-                </div>
+                <span style="font-size:14.5px; font-weight:800; color:#1e293b;">⚪ 上海黄金交易所每日交易行情 (SGE Daily Quotation — Pt99.95 | Unit: RMB/g)</span>
                 <a id="sge-card-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=2026-10-30&end_date=2026-10-30&inst_ids=Pt99.95" target="_blank" rel="noopener noreferrer" style="font-size:12px; color:#b45309; font-weight:700; text-decoration:underline;">🔗 Open SGE Official Page (2026-10-30)</a>
             </div>
             <div class="mini-table-wrap">
@@ -629,10 +810,10 @@
                             <td id="sge-td-open">362.23</td>
                             <td id="sge-td-high">362.23</td>
                             <td id="sge-td-low">355.94</td>
-                            <td id="sge-td-close" class="highlight-cell">356.89</td>
+                            <td id="sge-td-close">356.89</td>
                             <td id="sge-td-chg" class="delta-down">-16.64</td>
                             <td id="sge-td-chgpct" class="delta-down">-4.45%</td>
-                            <td id="sge-td-avg" class="highlight-cell">360.13</td>
+                            <td id="sge-td-avg" style="font-weight:800; color:#b45309;">360.13</td>
                             <td id="sge-td-vol">82.00</td>
                             <td id="sge-td-turnover">29,531,300.00</td>
                             <td id="sge-td-oi">-</td>
@@ -644,15 +825,10 @@
             </div>
         </div>
 
-        <!-- 2B. Shanghai Futures Exchange (SHFE) Daily Express Aluminium Complete 13-Column Table (Headline = 结算参考价) -->
+        <!-- 3B. SHFE Daily Express Aluminium Official 13-Column Table -->
         <div class="exchange-box" style="background:#eff6ff; border-color:#bfdbfe;">
             <div class="exchange-top-row">
-                <div class="headline-metric">
-                    <span style="font-size:15px; font-weight:800; color:#1e3a8a;">🔩 上海期货交易所日交易快讯 — 商品名称: 铝 (SHFE Aluminium — Delivery: <span id="shfe-headline-deliv">2611</span>)</span>
-                    <span class="headline-label" style="color:#1e40af; font-size:14px;">★ 结算参考价 (Settlement Reference Price):</span>
-                    <span class="headline-val" id="shfe-headline-settle" style="color:#b91c1c; font-size:34px;">23670</span>
-                    <span style="font-size:12px; color:#475569; font-weight:600;">收盘价 (Close): <strong id="shfe-headline-close">23775</strong> | Unit: RMB/mt (元/吨)</span>
-                </div>
+                <span style="font-size:14.5px; font-weight:800; color:#1e3a8a;">🔩 上海期货交易所日交易快讯 — 商品名称: 铝 (SHFE Aluminium — Delivery: <span id="shfe-headline-deliv">2611</span> | Unit: RMB/mt)</span>
                 <a href="https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/" target="_blank" rel="noopener noreferrer" style="font-size:12px; color:#1e40af; font-weight:700; text-decoration:underline;">🔗 Open SHFE Daily Express Official Page</a>
             </div>
             <div class="mini-table-wrap">
@@ -665,7 +841,7 @@
                             <th>最高价<br><span style="font-weight:400;font-size:11px;">High</span></th>
                             <th>最低价<br><span style="font-weight:400;font-size:11px;">Low</span></th>
                             <th>收盘价<br><span style="font-weight:400;font-size:11px;">Close</span></th>
-                            <th style="background:#b91c1c;">★ 结算参考价<br><span style="font-weight:400;font-size:11px;">Settlement Ref</span></th>
+                            <th style="background:#b91c1c;">结算参考价<br><span style="font-weight:400;font-size:11px;">Settlement Ref</span></th>
                             <th>涨跌1<br><span style="font-weight:400;font-size:11px;">Chg 1</span></th>
                             <th>涨跌2<br><span style="font-weight:400;font-size:11px;">Chg 2</span></th>
                             <th>成交手<br><span style="font-weight:400;font-size:11px;">Volume</span></th>
@@ -681,7 +857,7 @@
                             <td id="shfe-td-high">23850</td>
                             <td id="shfe-td-low">23520</td>
                             <td id="shfe-td-close">23775</td>
-                            <td id="shfe-td-settle" class="highlight-cell" style="font-size:16px;">23670</td>
+                            <td id="shfe-td-settle" style="font-weight:800; color:#b91c1c; font-size:14.5px;">23670</td>
                             <td id="shfe-td-chg1" class="delta-up">185</td>
                             <td id="shfe-td-chg2" class="delta-up">80</td>
                             <td id="shfe-td-vol">44875</td>
@@ -695,6 +871,7 @@
         </div>
     </div>
 
+    <!-- Official Source Bar -->
     <div class="official-bar">
         <span><strong>Commodity Data Authority:</strong> World Bank Development Prospects Group — Commodity Markets (The Pink Sheet).</span>
         <div class="official-links">
@@ -704,24 +881,23 @@
         </div>
     </div>
 
-    <div class="cards-grid" id="cards-grid"></div>
-
+    <!-- Toolbar: Filter Years -->
     <div class="toolbar">
         <div style="display: flex; gap: 18px; align-items: center; flex-wrap: wrap;">
             <div class="filter-group">
                 <label for="start-year">Start Year:</label>
                 <select id="start-year" onchange="updateView()">
-                    <option value="2016">2016</option>
-                    <option value="2017">2017</option>
-                    <option value="2018">2018</option>
-                    <option value="2019">2019</option>
-                    <option value="2020">2020</option>
-                    <option value="2021">2021</option>
-                    <option value="2022">2022</option>
-                    <option value="2023">2023</option>
-                    <option value="2024" selected>2024</option>
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
+                    <option value="2016">2016 (Semi-Annual: 01/07)</option>
+                    <option value="2017">2017 (Semi-Annual: 01/07)</option>
+                    <option value="2018">2018 (Semi-Annual: 01/07)</option>
+                    <option value="2019">2019 (Semi-Annual: 01/07)</option>
+                    <option value="2020">2020 (Semi-Annual: 01/07)</option>
+                    <option value="2021">2021 (Semi-Annual: 01/07)</option>
+                    <option value="2022">2022 (Semi-Annual: 01/07)</option>
+                    <option value="2023">2023 (Semi-Annual: 01/07)</option>
+                    <option value="2024" selected>2024 (Monthly Series)</option>
+                    <option value="2025">2025 (Monthly Series)</option>
+                    <option value="2026">2026 (Monthly Series)</option>
                 </select>
             </div>
 
@@ -741,27 +917,23 @@
                     <option value="2016">2016</option>
                 </select>
             </div>
-
-            <label class="checkbox-label">
-                <input type="checkbox" id="normalize-check" onchange="updateView()">
-                <span><strong>Indexed Comparison (Base Period = 100)</strong> — Normalize across different units</span>
-            </label>
+            <span style="font-size:12px; color:var(--text-sub);">• 2016–2023: Semi-Annual Baselines (01 / 07) | 2024–2026: Continuous Monthly Data</span>
         </div>
     </div>
 
-    <div class="chart-section">
-        <div class="chart-header">
-            <span class="chart-title">📈 Historical Price Trends (Interactive Canvas — Hover to view values, toggle tags below)</span>
+    <!-- 4. INDIVIDUAL COMMODITY TREND SUBPLOTS (Aluminium Prominently Highlighted) -->
+    <div class="subplots-section">
+        <div class="subplots-header">
+            <span class="subplots-title">📈 Historical Price Trend Subplots (Dedicated Chart for Each Commodity)</span>
+            <span style="font-size:12.5px; color:var(--text-sub);">Hover over each chart to view historical price and period</span>
         </div>
-        <div class="canvas-container">
-            <canvas id="chart-canvas"></canvas>
-        </div>
-        <div class="chart-legend" id="chart-legend"></div>
+        <div class="subplots-grid" id="subplots-container"></div>
     </div>
 
+    <!-- 5. Database Records Table -->
     <div class="table-section">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span class="chart-title">📋 Commodity Database Records (2016 – 2026)</span>
+            <span style="font-size: 16px; font-weight: 700; color: var(--text-main);">📋 Commodity Database Records (2016 – 2026)</span>
             <span style="font-size: 12px; color: var(--text-sub);">All figures in standard World Bank USD trade benchmarks</span>
         </div>
         <div class="table-scroll">
@@ -775,14 +947,14 @@
 
 <script>
     const materials = [
-        { id: "gold", name: "Gold", unit: "$/toz", color: "#eab308", active: true },
-        { id: "aluminium", name: "Aluminium A00", unit: "$/mt", color: "#3b82f6", active: true },
-        { id: "copper", name: "Copper", unit: "$/mt", color: "#ea580c", active: true },
-        { id: "tin", name: "Tin", unit: "$/mt", color: "#8b5cf6", active: true },
-        { id: "tungsten", name: "Tungsten", unit: "$/mtu", color: "#64748b", active: true },
-        { id: "steel", name: "Steel", unit: "$/mt", color: "#334155", active: true },
-        { id: "rubber", name: "Rubber", unit: "$/kg", color: "#10b981", active: true },
-        { id: "silver", name: "Silver", unit: "$/toz", color: "#06b6d4", active: true }
+        { id: "gold", name: "Gold", unit: "$/toz", color: "#eab308" },
+        { id: "aluminium", name: "Aluminium A00", unit: "$/mt", color: "#2563eb", isKeyFocus: true },
+        { id: "copper", name: "Copper", unit: "$/mt", color: "#ea580c" },
+        { id: "tin", name: "Tin", unit: "$/mt", color: "#8b5cf6" },
+        { id: "tungsten", name: "Tungsten", unit: "$/mtu", color: "#64748b" },
+        { id: "steel", name: "Steel", unit: "$/mt", color: "#334155" },
+        { id: "rubber", name: "Rubber", unit: "$/kg", color: "#10b981" },
+        { id: "silver", name: "Silver", unit: "$/toz", color: "#06b6d4" }
     ];
 
     let rawDatabase = [
@@ -841,7 +1013,7 @@
     ];
 
     let filteredDataset = [];
-    let mousePos = null;
+    const subplotHovers = {};
 
     function getBeijingTimeStrings() {
         const now = new Date();
@@ -950,8 +1122,7 @@
 
     function renderDomesticExchanges(sge, shfe) {
         if (sge) {
-            document.getElementById("sge-headline-close").innerText = sge.close || "356.89";
-            document.getElementById("sge-headline-avg").innerText = sge.weighted_avg || "360.13";
+            // SGE Table
             document.getElementById("sge-td-date").innerText = sge.trading_date || "2026-10-30";
             document.getElementById("sge-td-contract").innerText = sge.contract || "Pt99.95";
             document.getElementById("sge-td-open").innerText = sge.open || "362.23";
@@ -967,19 +1138,25 @@
             document.getElementById("sge-td-ddir").innerText = sge.delivery_dir || "";
             document.getElementById("sge-td-dvol").innerText = sge.delivery_vol || "";
 
+            // Platinum Spotlight Hero Card
+            document.getElementById("hero-pt-date").innerText = `Trading Day: ${sge.trading_date || '2026-10-30'}`;
+            document.getElementById("hero-pt-avg").innerHTML = `${sge.weighted_avg || '360.13'} <span style="font-size:16px;font-weight:600;">RMB/g</span>`;
+            document.getElementById("hero-pt-close").innerText = `Close: ${sge.close || '356.89'}`;
+            document.getElementById("hero-pt-chg").innerText = `${sge.change_pct || '-4.45%'} ▼`;
+            document.getElementById("hero-pt-vol").innerText = sge.volume_kg || "82.00";
+
             if (sge.trading_date) {
                 const dynamicUrl = `https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=${sge.trading_date}&end_date=${sge.trading_date}&inst_ids=Pt99.95`;
                 document.getElementById("sge-top-link").href = dynamicUrl;
                 document.getElementById("sge-card-link").href = dynamicUrl;
+                document.getElementById("hero-pt-link").href = dynamicUrl;
                 document.getElementById("sge-card-link").innerText = `🔗 Open SGE Official Page (${sge.trading_date})`;
                 document.getElementById("prev-workday-badge").innerText = `Trading Day: ${sge.trading_date}`;
             }
         }
         if (shfe) {
+            // SHFE Table
             document.getElementById("shfe-headline-deliv").innerText = shfe.delivery_month || "2611";
-            document.getElementById("shfe-headline-settle").innerText = shfe.settle || "23670";
-            document.getElementById("shfe-headline-close").innerText = shfe.close || "23775";
-
             document.getElementById("shfe-td-deliv").innerText = shfe.delivery_month || "2611";
             document.getElementById("shfe-td-presettle").innerText = shfe.pre_settle || "23590";
             document.getElementById("shfe-td-open").innerText = shfe.open || "23550";
@@ -993,6 +1170,14 @@
             document.getElementById("shfe-td-turnover").innerText = shfe.turnover || "531194.75";
             document.getElementById("shfe-td-oi").innerText = shfe.open_interest || "47795";
             document.getElementById("shfe-td-oichg").innerText = shfe.oi_change || "-26217";
+
+            // Aluminium Spotlight Hero Card
+            document.getElementById("hero-al-date").innerText = `Delivery: ${shfe.delivery_month || '2611'} | Trading Day: ${shfe.trading_date || '2026-10-30'}`;
+            document.getElementById("hero-al-deliv").innerText = shfe.delivery_month || "2611";
+            document.getElementById("hero-al-settle").innerHTML = `${shfe.settle || '23670'} <span style="font-size:16px;font-weight:600;">RMB/mt</span>`;
+            document.getElementById("hero-al-close").innerText = `Close: ${shfe.close || '23775'}`;
+            document.getElementById("hero-al-chg").innerText = `+${shfe.change_2 || '80'} ▲ (Chg 2)`;
+            document.getElementById("hero-al-turnover").innerText = shfe.turnover || "531,194.75";
         }
     }
 
@@ -1010,9 +1195,7 @@
                         }
                     });
                 }
-                if (payload && payload.fx_rates) {
-                    renderFX(payload.fx_rates);
-                }
+                if (payload && payload.fx_rates) renderFX(payload.fx_rates);
                 if (payload && (payload.sge_pt9995 || payload.shfe_aluminium)) {
                     renderDomesticExchanges(payload.sge_pt9995, payload.shfe_aluminium);
                 }
@@ -1025,7 +1208,7 @@
         }
 
         await fetchRealTimeSameDayFX(false);
-        renderCards();
+        buildSubplotsDom();
         updateView();
     }
 
@@ -1036,9 +1219,10 @@
         return '$' + val.toFixed(1);
     }
 
-    function renderCards() {
-        const grid = document.getElementById('cards-grid');
-        grid.innerHTML = "";
+    /* Build the 8 Individual Subplot Card DOMs with Aluminium Highlight */
+    function buildSubplotsDom() {
+        const container = document.getElementById('subplots-container');
+        container.innerHTML = "";
         const latest = rawDatabase[rawDatabase.length - 1];
         const prev = rawDatabase[rawDatabase.length - 2];
 
@@ -1049,43 +1233,44 @@
             const isUp = delta >= 0;
 
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = `subplot-card ${m.isKeyFocus ? 'highlight-aluminium' : ''}`;
             card.style.borderTopColor = m.color;
             card.innerHTML = `
-                <div class="card-top">
-                    <span class="mat-name">${m.name}</span>
-                    <span class="mat-unit">${m.unit}</span>
+                <div class="subplot-card-top">
+                    <span class="subplot-name">
+                        ${m.name} ${m.isKeyFocus ? '<span class="highlight-tag">★ KEY FOCUS</span>' : ''}
+                    </span>
+                    <span class="subplot-unit">${m.unit}</span>
                 </div>
-                <div class="mat-price">${fmtVal(curVal)}</div>
-                <div class="mat-delta ${isUp ? 'delta-up' : 'delta-down'}">
-                    ${isUp ? '▲ +' : '▼ '}${delta}% <span style="color:#94a3b8;font-weight:400;margin-left:4px;">vs prev month</span>
+                <div class="subplot-stat-row">
+                    <div class="subplot-cur-val" id="val-${m.id}">${fmtVal(curVal)}</div>
+                    <div class="subplot-delta ${isUp ? 'delta-up' : 'delta-down'}" id="delta-${m.id}">
+                        ${isUp ? '▲ +' : '▼ '}${delta}%
+                    </div>
+                </div>
+                <div class="subplot-canvas-box">
+                    <canvas id="canvas-${m.id}"></canvas>
                 </div>
             `;
-            grid.appendChild(card);
+            container.appendChild(card);
+
+            const c = card.querySelector(`#canvas-${m.id}`);
+            c.addEventListener('mousemove', (e) => {
+                const rect = c.getBoundingClientRect();
+                subplotHovers[m.id] = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+                drawSingleSubplot(m);
+            });
+            c.addEventListener('mouseleave', () => {
+                subplotHovers[m.id] = null;
+                drawSingleSubplot(m);
+            });
         });
     }
 
-    function renderLegend() {
-        const legendContainer = document.getElementById('chart-legend');
-        legendContainer.innerHTML = "";
-        materials.forEach(m => {
-            const tag = document.createElement('div');
-            tag.className = `legend-tag ${m.active ? 'active' : ''}`;
-            tag.innerHTML = `
-                <span class="legend-color" style="background:${m.color}"></span>
-                <span>${m.name}</span>
-            `;
-            tag.onclick = () => {
-                m.active = !m.active;
-                renderLegend();
-                drawChart();
-            };
-            legendContainer.appendChild(tag);
-        });
-    }
-
-    function drawChart() {
-        const canvas = document.getElementById('chart-canvas');
+    /* Draw one independent subplot canvas with auto-scaled Y axis */
+    function drawSingleSubplot(m) {
+        const canvas = document.getElementById(`canvas-${m.id}`);
+        if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const dpr = window.devicePixelRatio || 1;
 
@@ -1096,135 +1281,142 @@
 
         const w = rect.width;
         const h = rect.height;
-        const pad = { top: 30, right: 40, bottom: 40, left: 60 };
+        const pad = { top: 20, right: 20, bottom: 25, left: 45 };
 
         ctx.clearRect(0, 0, w, h);
 
-        const activeMats = materials.filter(m => m.active);
-        if (activeMats.length === 0 || filteredDataset.length === 0) {
-            ctx.fillStyle = "#94a3b8";
-            ctx.font = "14px sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText("Please select at least one raw material from the legend below.", w / 2, h / 2);
-            return;
-        }
+        if (filteredDataset.length === 0) return;
 
-        const normalize = document.getElementById('normalize-check').checked;
-
-        let minVal = Infinity, maxVal = -Infinity;
-        activeMats.forEach(m => {
-            const base = filteredDataset[0][m.id] || 1;
-            filteredDataset.forEach(row => {
-                const rawV = row[m.id];
-                if (rawV !== undefined && !isNaN(rawV)) {
-                    const v = normalize ? (rawV / base) * 100 : rawV;
-                    if (v < minVal) minVal = v;
-                    if (v > maxVal) maxVal = v;
-                }
-            });
+        let minV = Infinity, maxV = -Infinity;
+        filteredDataset.forEach(r => {
+            const v = r[m.id];
+            if (v !== undefined && !isNaN(v)) {
+                if (v < minV) minV = v;
+                if (v > maxV) maxV = v;
+            }
         });
 
-        minVal = Math.max(0, minVal * 0.9);
-        maxVal = maxVal * 1.1;
+        if (minV === maxV) {
+            minV = minV * 0.9;
+            maxV = maxV * 1.1;
+        } else {
+            const spread = maxV - minV;
+            minV = Math.max(0, minV - spread * 0.12);
+            maxV = maxV + spread * 0.12;
+        }
 
         const chartW = w - pad.left - pad.right;
         const chartH = h - pad.top - pad.bottom;
 
         const getX = (idx) => pad.left + (idx / Math.max(1, filteredDataset.length - 1)) * chartW;
-        const getY = (val) => pad.top + chartH - ((val - minVal) / (maxVal - minVal)) * chartH;
+        const getY = (val) => pad.top + chartH - ((val - minV) / (maxV - minV)) * chartH;
 
-        ctx.strokeStyle = "#e2e8f0";
+        // Grid lines
+        ctx.strokeStyle = m.isKeyFocus ? "#dbeafe" : "#f1f5f9";
         ctx.lineWidth = 1;
-        ctx.fillStyle = "#64748b";
-        ctx.font = "11px sans-serif";
+        ctx.fillStyle = "#94a3b8";
+        ctx.font = "10px sans-serif";
         ctx.textAlign = "right";
 
-        const ySteps = 5;
+        const ySteps = 3;
         for (let i = 0; i <= ySteps; i++) {
-            const yVal = minVal + (maxVal - minVal) * (i / ySteps);
+            const yVal = minV + (maxV - minV) * (i / ySteps);
             const py = getY(yVal);
             ctx.beginPath();
             ctx.moveTo(pad.left, py);
             ctx.lineTo(w - pad.right, py);
             ctx.stroke();
-            ctx.fillText(normalize ? yVal.toFixed(0) : (yVal >= 1000 ? (yVal/1000).toFixed(1) + 'k' : yVal.toFixed(1)), pad.left - 8, py + 4);
+            const label = yVal >= 1000 ? (yVal/1000).toFixed(1) + 'k' : (yVal < 10 ? yVal.toFixed(2) : yVal.toFixed(0));
+            ctx.fillText(label, pad.left - 5, py + 3);
         }
 
+        // X Axis date labels (start, mid, end)
         ctx.textAlign = "center";
-        const stepX = Math.max(1, Math.ceil(filteredDataset.length / 10));
-        filteredDataset.forEach((d, idx) => {
-            if (idx % stepX === 0 || idx === filteredDataset.length - 1) {
-                const px = getX(idx);
-                ctx.fillText(d.date, px, h - pad.bottom + 18);
-            }
+        const dates = [
+            { idx: 0, str: filteredDataset[0].date },
+            { idx: Math.floor(filteredDataset.length / 2), str: filteredDataset[Math.floor(filteredDataset.length / 2)].date },
+            { idx: filteredDataset.length - 1, str: filteredDataset[filteredDataset.length - 1].date }
+        ];
+        dates.forEach(d => {
+            ctx.fillText(d.str, getX(d.idx), h - 6);
         });
 
-        activeMats.forEach(m => {
-            const base = filteredDataset[0][m.id] || 1;
-            ctx.strokeStyle = m.color;
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
+        // Area Gradient Fill
+        const grad = ctx.createLinearGradient(0, pad.top, 0, h - pad.bottom);
+        grad.addColorStop(0, m.color + (m.isKeyFocus ? "44" : "33"));
+        grad.addColorStop(1, m.color + "03");
 
-            filteredDataset.forEach((row, idx) => {
-                const rawV = row[m.id];
-                const v = normalize ? (rawV / base) * 100 : rawV;
-                const px = getX(idx);
-                const py = getY(v);
-                if (idx === 0) ctx.moveTo(px, py);
-                else ctx.lineTo(px, py);
-            });
-            ctx.stroke();
+        ctx.beginPath();
+        filteredDataset.forEach((r, idx) => {
+            const px = getX(idx);
+            const py = getY(r[m.id]);
+            if (idx === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
         });
+        ctx.lineTo(getX(filteredDataset.length - 1), h - pad.bottom);
+        ctx.lineTo(getX(0), h - pad.bottom);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
 
-        if (mousePos && mousePos.x >= pad.left && mousePos.x <= w - pad.right) {
-            const ratio = (mousePos.x - pad.left) / chartW;
-            const nearestIdx = Math.round(ratio * (filteredDataset.length - 1));
-            const clampedIdx = Math.max(0, Math.min(filteredDataset.length - 1, nearestIdx));
-            const hoverX = getX(clampedIdx);
-            const rowData = filteredDataset[clampedIdx];
+        // Line
+        ctx.strokeStyle = m.color;
+        ctx.lineWidth = m.isKeyFocus ? 3.0 : 2.2;
+        ctx.beginPath();
+        filteredDataset.forEach((r, idx) => {
+            const px = getX(idx);
+            const py = getY(r[m.id]);
+            if (idx === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        });
+        ctx.stroke();
 
+        // Hover Tooltip
+        const mouse = subplotHovers[m.id];
+        if (mouse && mouse.x >= pad.left && mouse.x <= w - pad.right) {
+            const ratio = (mouse.x - pad.left) / chartW;
+            const nearestIdx = Math.max(0, Math.min(filteredDataset.length - 1, Math.round(ratio * (filteredDataset.length - 1))));
+            const hoverX = getX(nearestIdx);
+            const rowData = filteredDataset[nearestIdx];
+            const hoverVal = rowData[m.id];
+            const hoverY = getY(hoverVal);
+
+            // Crosshair vertical
             ctx.strokeStyle = "#94a3b8";
+            ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(hoverX, pad.top);
             ctx.lineTo(hoverX, h - pad.bottom);
             ctx.stroke();
 
-            activeMats.forEach(m => {
-                const base = filteredDataset[0][m.id] || 1;
-                const v = normalize ? (rowData[m.id] / base) * 100 : rowData[m.id];
-                const py = getY(v);
-                ctx.fillStyle = "#ffffff";
-                ctx.strokeStyle = m.color;
-                ctx.lineWidth = 2.5;
-                ctx.beginPath();
-                ctx.arc(hoverX, py, 4.5, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.stroke();
-            });
-
-            const boxW = 200, boxH = 26 + activeMats.length * 20;
-            let tipX = hoverX + 12;
-            if (tipX + boxW > w - 10) tipX = hoverX - boxW - 12;
-            let tipY = pad.top + 10;
-
-            ctx.fillStyle = "rgba(15, 23, 42, 0.94)";
-            ctx.fillRect(tipX, tipY, boxW, boxH);
-            ctx.strokeStyle = "#334155";
-            ctx.strokeRect(tipX, tipY, boxW, boxH);
-
+            // Point circle
             ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 12px sans-serif";
-            ctx.textAlign = "left";
-            ctx.fillText(`Period: ${rowData.date}`, tipX + 10, tipY + 18);
+            ctx.strokeStyle = m.color;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(hoverX, hoverY, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
 
-            ctx.font = "11px sans-serif";
-            activeMats.forEach((m, i) => {
-                ctx.fillStyle = m.color;
-                const base = filteredDataset[0][m.id] || 1;
-                const showVal = normalize ? ((rowData[m.id] / base) * 100).toFixed(1) + '%' : fmtVal(rowData[m.id]);
-                ctx.fillText(`${m.name}: ${showVal}`, tipX + 10, tipY + 36 + i * 19);
-            });
+            // Floating Badge
+            const tipText = `${rowData.date}: ${fmtVal(hoverVal)}`;
+            ctx.font = "bold 10.5px sans-serif";
+            const textW = ctx.measureText(tipText).width + 12;
+            let tipX = hoverX - textW / 2;
+            if (tipX < pad.left) tipX = pad.left;
+            if (tipX + textW > w - pad.right) tipX = w - pad.right - textW;
+            const tipY = pad.top + 6;
+
+            ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+            ctx.fillRect(tipX, tipY, textW, 18);
+            ctx.fillStyle = "#ffffff";
+            ctx.textAlign = "left";
+            ctx.fillText(tipText, tipX + 6, tipY + 13);
         }
+    }
+
+    function drawAllSubplots() {
+        materials.forEach(m => drawSingleSubplot(m));
     }
 
     function renderTable() {
@@ -1258,16 +1450,13 @@
             return yr >= startY && yr <= endY;
         });
 
-        drawChart();
+        drawAllSubplots();
         renderTable();
     }
 
     function resetFilters() {
         document.getElementById('start-year').value = "2024";
         document.getElementById('end-year').value = "2026";
-        document.getElementById('normalize-check').checked = false;
-        materials.forEach(m => m.active = true);
-        renderLegend();
         updateView();
     }
 
@@ -1294,20 +1483,9 @@
         URL.revokeObjectURL(url);
     }
 
-    const canvas = document.getElementById('chart-canvas');
-    canvas.addEventListener('mousemove', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        mousePos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-        drawChart();
-    });
-    canvas.addEventListener('mouseleave', () => {
-        mousePos = null;
-        drawChart();
-    });
-    window.addEventListener('resize', () => drawChart());
+    window.addEventListener('resize', () => drawAllSubplots());
 
-    renderCards();
-    renderLegend();
+    buildSubplotsDom();
     updateView();
     syncLatestData();
     setInterval(() => fetchRealTimeSameDayFX(false), 60000);
