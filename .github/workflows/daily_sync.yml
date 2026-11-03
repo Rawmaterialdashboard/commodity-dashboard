@@ -41,7 +41,7 @@ jobs:
           today_str_slash = now_cn.strftime("%d/%m/%Y")
           today_str_dash = now_cn.strftime("%Y-%m-%d")
 
-          def get_previous_working_days(ref_dt, max_lookback=7):
+          def get_previous_working_days(ref_dt, max_lookback=25):
               candidates = []
               cur = ref_dt - timedelta(days=1)
               while len(candidates) < max_lookback:
@@ -50,7 +50,7 @@ jobs:
                   cur -= timedelta(days=1)
               return candidates
 
-          prev_workdays = get_previous_working_days(now_cn, 7)
+          prev_workdays = get_previous_working_days(now_cn, 25)
           current_delivery_code = now_cn.strftime("%y%m")
 
           baseline_history = {}
@@ -82,18 +82,38 @@ jobs:
               b_al = base_al_list[idx % len(base_al_list)]
 
               pt_entry = {
-                  "trading_date": d_str, "contract": "Pt99.95",
-                  "open": b_pt[0], "high": b_pt, "low": b_pt, "close": b_pt,
-                  "change": b_pt, "change_pct": b_pt, "weighted_avg": b_pt,
-                  "volume_kg": b_pt, "turnover": b_pt, "open_interest": b_pt,
-                  "delivery_dir": b_pt, "delivery_vol": b_pt,
+                  "trading_date": d_str,
+                  "contract": "Pt99.95",
+                  "open": b_pt[0],
+                  "high": b_pt[1],
+                  "low": b_pt[2],
+                  "close": b_pt[3],
+                  "change": b_pt[4],
+                  "change_pct": b_pt[5],
+                  "weighted_avg": b_pt[6],
+                  "volume_kg": b_pt[7],
+                  "turnover": b_pt[8],
+                  "open_interest": b_pt[9],
+                  "delivery_dir": b_pt[10],
+                  "delivery_vol": b_pt[11],
                   "source_url": f"https://www.sge.com.cn/sjzx/quotation_daily_new?start_date={d_str}&end_date={d_str}&inst_ids=Pt99.95"
               }
               al_entry = {
-                  "product": "铝 (Aluminium)", "trading_date": d_str, "delivery_month": current_delivery_code,
-                  "pre_settle": b_al[0], "open": b_al, "high": b_al, "low": b_al,
-                  "close": b_al, "settle": b_al, "change_1": b_al, "change_2": b_al,
-                  "volume": b_al, "turnover": b_al, "open_interest": b_al, "oi_change": b_al,
+                  "product": "铝 (Aluminium)",
+                  "trading_date": d_str,
+                  "delivery_month": current_delivery_code,
+                  "pre_settle": b_al[0],
+                  "open": b_al[1],
+                  "high": b_al[2],
+                  "low": b_al[3],
+                  "close": b_al[4],
+                  "settle": b_al[5],
+                  "change_1": b_al[6],
+                  "change_2": b_al[7],
+                  "volume": b_al[8],
+                  "turnover": b_al[9],
+                  "open_interest": b_al[10],
+                  "oi_change": b_al[11],
                   "source_url": "https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/"
               }
 
@@ -103,15 +123,22 @@ jobs:
                       soup = BeautifulSoup(r_sge.text, "lxml")
                       for tr in soup.find_all("tr"):
                           tds = [td.get_text(strip=True) for td in tr.find_all("td")]
-                          if len(tds) >= 11 and "Pt99.95" in tds:
+                          if len(tds) >= 11 and "Pt99.95" in tds[1]:
                               pt_entry.update({
-                                  "trading_date": tds[0] or d_str, "contract": tds,
-                                  "open": tds, "high": tds, "low": tds, "close": tds,
-                                  "change": tds, "change_pct": tds, "weighted_avg": tds,
-                                  "volume_kg": tds, "turnover": tds,
-                                  "open_interest": tds if len(tds) > 11 else "-",
-                                  "delivery_dir": tds if len(tds) > 12 else "",
-                                  "delivery_vol": tds if len(tds) > 13 else ""
+                                  "trading_date": tds[0] or d_str,
+                                  "contract": tds[1],
+                                  "open": tds[2],
+                                  "high": tds[3],
+                                  "low": tds[4],
+                                  "close": tds[5],
+                                  "change": tds[6],
+                                  "change_pct": tds[7],
+                                  "weighted_avg": tds[8],
+                                  "volume_kg": tds[9],
+                                  "turnover": tds[10],
+                                  "open_interest": tds[11] if len(tds) > 11 else "-",
+                                  "delivery_dir": tds[12] if len(tds) > 12 else "",
+                                  "delivery_vol": tds[13] if len(tds) > 13 else ""
                               })
                               break
               except Exception:
@@ -125,6 +152,7 @@ jobs:
                           x for x in items
                           if (str(x.get("PRODUCTID", "")).strip().lower() == "al_f" or "al" in str(x.get("PRODUCTID", "")).strip().lower() or "铝" in str(x.get("PRODUCTNAME", "")))
                           and str(x.get("DELIVERYMONTH", "")).strip().isdigit()
+                          and len(str(x.get("DELIVERYMONTH", "")).strip()) == 4
                       ]
                       if al_rows:
                           matched = next((x for x in al_rows if str(x.get("DELIVERYMONTH", "")).strip() == current_delivery_code), al_rows[0])
@@ -173,7 +201,6 @@ jobs:
                   pass
               return fx
 
-          # Fetch Module 3 Energy Data (EastMoney Official Diesel API + JinLianChuang LNG + Beijing 0# Diesel 8.65)
           def fetch_energy_section():
               energy = {
                   "national_diesel": {
@@ -205,7 +232,6 @@ jobs:
                   }
               }
 
-              # 1. EastMoney Official Datacenter JSON API for Diesel (RPTA_WEB_YJ_JH -> CYJG & CYZD)
               try:
                   em_api = "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPTA_WEB_YJ_JH&columns=ALL&sortColumns=DIM_DATE&sortTypes=-1&pageNumber=1&pageSize=2&source=WEB"
                   r_em = requests.get(em_api, headers=headers, timeout=10)
@@ -229,7 +255,6 @@ jobs:
               except Exception:
                   pass
 
-              # 2. Scrape Beijing 0# Diesel from youjia.abapi.cn
               try:
                   r_yj = requests.get("https://youjia.abapi.cn/", headers=headers, timeout=10)
                   if r_yj.status_code == 200:
@@ -241,7 +266,6 @@ jobs:
               except Exception:
                   pass
 
-              # 3. Scrape JinLianChuang LNG dynamically
               try:
                   jlc_url = "https://zhis.315i.com/exponent/main/002?productClassId=002001&columnClassId=002001001&priceIndexClassId=002001001001"
                   r_jlc = requests.get(jlc_url, headers=headers, timeout=10)
@@ -251,13 +275,13 @@ jobs:
                       if table:
                           rows = table.find_all("tr")
                           if len(rows) > 1:
-                              tds = [td.get_text(strip=True) for td in rows.find_all("td")]
+                              tds = [td.get_text(strip=True) for td in rows[1].find_all("td")]
                               if len(tds) >= 4:
                                   energy["jinlianchuang_lng"]["date"] = tds[0]
-                                  energy["jinlianchuang_lng"]["price"] = float(re.sub(r"[^\d.]", "", tds))
-                                  raw_chg = tds.replace("↓", "").replace("↑", "").strip()
+                                  energy["jinlianchuang_lng"]["price"] = float(re.sub(r"[^\d.]", "", tds[1]))
+                                  raw_chg = tds[2].replace("↓", "").replace("↑", "").strip()
                                   energy["jinlianchuang_lng"]["change"] = float(raw_chg)
-                                  raw_pct = tds.replace("%", "").strip()
+                                  raw_pct = tds[3].replace("%", "").strip()
                                   energy["jinlianchuang_lng"]["change_pct"] = float(raw_pct)
               except Exception:
                   pass
