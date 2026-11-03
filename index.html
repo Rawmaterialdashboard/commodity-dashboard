@@ -212,7 +212,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
             gap: 16px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .fx-card {
@@ -230,31 +230,21 @@
             color: #0f172a;
         }
 
-        .fx-time-badge {
-            display: inline-block;
-            background: #eff6ff;
-            color: #1e40af;
-            border: 1px solid #bfdbfe;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
         .delta-up { color: var(--danger); font-weight: 700; }
         .delta-down { color: var(--success); font-weight: 700; }
 
-        .workday-bar {
+        .prev-workday-header {
             background: #ffffff;
-            border: 2px solid #93c5fd;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid #334155;
             border-radius: 8px;
-            padding: 12px 18px;
-            margin-bottom: 16px;
+            padding: 10px 18px;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
         }
 
         .table-wrap {
@@ -463,7 +453,7 @@
             <p>Module 1: Real-Time FX & SGE/SHFE | Module 2: World Bank Metals (2016–2026) | Module 3: National Diesel, LNG & Beijing 0# Diesel</p>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button class="btn btn-fx-live" onclick="fetchRealTimeSameDayFX(true)">
+            <button class="btn btn-fx-live" onclick="fetchRealTimeSameDayFX()">
                 <span>⚡ Refresh Live FX</span>
             </button>
             <a class="btn btn-wb-pdf" href="https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Pink-Sheet-July-2026.pdf" target="_blank" rel="noopener noreferrer">
@@ -488,7 +478,7 @@
             </div>
         </div>
 
-        <!-- FX Grid -->
+        <!-- FX Grid (Only single rate number & official link; no duplicate Live Spot or duplicate timestamps) -->
         <div class="fx-grid">
             <div class="fx-card">
                 <div style="display: flex; justify-content: space-between; font-weight: 700; color: #1e293b;">
@@ -499,9 +489,7 @@
                     <div class="fx-rate" id="usd-rate">6.7138</div>
                     <span class="delta-down" id="usd-bps" style="font-size: 13px;">9.00 ▼ (Bps)</span>
                 </div>
-                <div style="font-size: 12px; color: #475569; display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px; flex-wrap: wrap; gap: 6px;">
-                    <span id="usd-live-spot" style="color: #059669; font-weight: 700;">● Live Spot: 6.7138</span>
-                    <span class="fx-time-badge" id="usd-pub-time">🕒 Real-Time: --</span>
+                <div style="font-size: 12px; color: #475569; display: flex; justify-content: flex-end; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px;">
                     <a href="http://www.chinamoney.com.cn/english/bmkcpr/" target="_blank" rel="noopener noreferrer" style="color: #1e40af; text-decoration: underline; font-weight: 700;">CFETS Official ↗</a>
                 </div>
             </div>
@@ -515,30 +503,23 @@
                     <div class="fx-rate" id="eur-rate">7.4792</div>
                     <span class="delta-up" id="eur-bps" style="font-size: 13px;">222.00 ▲ (Bps)</span>
                 </div>
-                <div style="font-size: 12px; color: #475569; display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px; flex-wrap: wrap; gap: 6px;">
-                    <span id="eur-live-spot" style="color: #059669; font-weight: 700;">● Live Spot: 7.4792</span>
-                    <span class="fx-time-badge" id="eur-pub-time" style="color: #0284c7; border-color: #bae6fd; background: #f0f9ff;">🕒 Real-Time: --</span>
+                <div style="font-size: 12px; color: #475569; display: flex; justify-content: flex-end; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px;">
                     <a href="http://m.safe.gov.cn/safe/rmbhlzjj/index.html" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: underline; font-weight: 700;">SAFE Official ↗</a>
                 </div>
             </div>
         </div>
 
-        <!-- Interactive Workday Selector -->
-        <div class="workday-bar">
-            <div style="display: flex; align-items: center; gap: 12px; font-size: 13.5px; font-weight: 700; flex-wrap: wrap;">
-                <span>📅 选择查询工作日 (Select Working Day):</span>
-                <select id="workday-select" onchange="applyWorkdayQuery(this.value)" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #2563eb; font-weight: 700; color: #1e3a8a; background: #eff6ff; cursor: pointer;"></select>
-                <span style="color: #64748b; font-weight: 500;">or pick date:</span>
-                <input type="date" id="custom-workday-input" onchange="applyWorkdayQuery(this.value)" style="padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 600;">
-            </div>
-            <span id="prev-workday-badge" style="font-size: 12.5px; background: #dbeafe; color: #1e3a8a; padding: 5px 12px; border-radius: 6px; font-weight: 800;">Showing Trading Date: --</span>
+        <!-- Clean Previous Working Day Banner (No Date Picker Dropdown/Input) -->
+        <div class="prev-workday-header">
+            <span style="font-size: 13.5px; font-weight: 800; color: #0f172a;">📅 国内交易所行情 — 上一个工作日结算数据 (Previous Working Day Official Records)</span>
+            <span id="prev-workday-badge" style="font-size: 13px; background: #dbeafe; color: #1e3a8a; padding: 4px 12px; border-radius: 6px; font-weight: 800;">Previous Working Day: --</span>
         </div>
 
         <!-- SGE Pt99.95 Complete 14-Column Official Table -->
         <div class="table-wrap">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <span style="font-size: 14px; font-weight: 800; color: #334155;">⚪ 上海黄金交易所每日交易行情 (SGE Pt99.95 | Unit: RMB/g)</span>
-                <a id="sge-link" href="#" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: #b45309; text-decoration: underline; font-weight: 700;">Open SGE Official Page for Selected Date ↗</a>
+                <a id="sge-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: #b45309; text-decoration: underline; font-weight: 700;">Open SGE Official Quotation ↗</a>
             </div>
             <table class="exchange-table sge-theme">
                 <thead>
@@ -633,14 +614,28 @@
             <div style="display: flex; gap: 12px; align-items: center;">
                 <label style="font-size: 12px; font-weight: 700;">Start Year:</label>
                 <select id="start-year" onchange="updateView()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 12px;">
-                    <option value="2016" selected>2016 (Full 2016–2026)</option>
+                    <option value="2016" selected>2016</option>
+                    <option value="2017">2017</option>
                     <option value="2018">2018</option>
+                    <option value="2019">2019</option>
                     <option value="2020">2020</option>
+                    <option value="2021">2021</option>
                     <option value="2022">2022</option>
-                    <option value="2024">2024 (Monthly Only)</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
                 </select>
                 <label style="font-size: 12px; font-weight: 700;">End Year:</label>
                 <select id="end-year" onchange="updateView()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 12px;">
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
                     <option value="2024">2024</option>
                     <option value="2025">2025</option>
                     <option value="2026" selected>2026</option>
@@ -758,7 +753,7 @@
 </div>
 
 <script>
-    // 1. REAL-TIME FX CLOCK (Runs every second, updates header AND both FX cards)
+    // 1. REAL-TIME FX CLOCK (Only updates the single top-right header pill)
     function updateLiveClock() {
         const now = new Date();
         const yr = now.getFullYear();
@@ -771,79 +766,27 @@
 
         const bannerEl = document.getElementById("live-fx-timestamp");
         if (bannerEl) bannerEl.innerText = `🕒 Real-Time FX Clock: ${fullTimeStr}`;
-
-        const uPub = document.getElementById("usd-pub-time");
-        if (uPub) uPub.innerText = `🕒 Real-Time: ${fullTimeStr}`;
-
-        const ePub = document.getElementById("eur-pub-time");
-        if (ePub) ePub.innerText = `🕒 Real-Time: ${fullTimeStr}`;
     }
     updateLiveClock();
     setInterval(updateLiveClock, 1000);
 
-    // 2. MULTI-WORKING-DAY HISTORICAL DATABASE (Fixed array bug & expanded 25 working days)
-    const workdayHistoryMap = {};
-
-    function buildInitialWorkdayHistory() {
+    // 2. PREVIOUS WORKING DAY CALCULATOR & LIVE EXCHANGE SCRAPER
+    function getPreviousWorkingDayList(count = 7) {
         const now = new Date();
-        const days = [];
+        const list = [];
         let cur = new Date(now.getTime());
         cur.setDate(cur.getDate() - 1);
-
-        while (days.length < 25) {
+        while (list.length < count) {
             const dow = cur.getDay();
             if (dow !== 0 && dow !== 6) {
                 const yr = cur.getFullYear();
                 const mo = String(cur.getMonth() + 1).padStart(2, '0');
                 const da = String(cur.getDate()).padStart(2, '0');
-                days.push(`${yr}-${mo}-${da}`);
+                list.push({ dash: `${yr}-${mo}-${da}`, ymd: `${yr}${mo}${da}`, ym: `${String(yr).slice(-2)}${mo}` });
             }
             cur.setDate(cur.getDate() - 1);
         }
-
-        const ptSnapshots = [
-            { open: "362.23", high: "362.23", low: "355.94", close: "356.89", change: "-16.64", change_pct: "-4.45%", weighted_avg: "360.13", volume_kg: "82.00", turnover: "29,531,300.00", open_interest: "-", delivery_dir: "", delivery_vol: "" },
-            { open: "374.50", high: "375.80", low: "371.00", close: "373.53", change: "+2.15", change_pct: "+0.58%", weighted_avg: "373.40", volume_kg: "114.00", turnover: "42,567,600.00", open_interest: "-", delivery_dir: "", delivery_vol: "" },
-            { open: "370.80", high: "373.20", low: "369.50", close: "371.38", change: "+1.48", change_pct: "+0.40%", weighted_avg: "371.15", volume_kg: "96.00", turnover: "35,630,400.00", open_interest: "-", delivery_dir: "", delivery_vol: "" },
-            { open: "368.00", high: "370.50", low: "367.20", close: "369.90", change: "-1.10", change_pct: "-0.30%", weighted_avg: "369.05", volume_kg: "78.00", turnover: "28,785,900.00", open_interest: "-", delivery_dir: "", delivery_vol: "" },
-            { open: "371.20", high: "372.60", low: "369.80", close: "371.00", change: "+0.85", change_pct: "+0.23%", weighted_avg: "371.02", volume_kg: "88.00", turnover: "32,649,760.00", open_interest: "-", delivery_dir: "", delivery_vol: "" },
-            { open: "369.50", high: "371.00", low: "368.10", close: "370.15", change: "+1.25", change_pct: "+0.34%", weighted_avg: "369.88", volume_kg: "92.00", turnover: "34,028,960.00", open_interest: "-", delivery_dir: "", delivery_vol: "" },
-            { open: "367.80", high: "369.40", low: "366.50", close: "368.90", change: "-0.60", change_pct: "-0.16%", weighted_avg: "368.45", volume_kg: "70.00", turnover: "25,791,500.00", open_interest: "-", delivery_dir: "", delivery_vol: "" }
-        ];
-
-        const alSnapshots = [
-            { delivery_month: "2611", pre_settle: "23590", open: "23550", high: "23850", low: "23520", close: "23775", settle: "23670", change_1: "185", change_2: "80", volume: "44875", turnover: "531194.75", open_interest: "47795", oi_change: "-26217" },
-            { delivery_month: "2611", pre_settle: "23480", open: "23510", high: "23660", low: "23420", close: "23590", settle: "23590", change_1: "110", change_2: "110", volume: "51240", turnover: "604375.80", open_interest: "74012", oi_change: "-14320" },
-            { delivery_month: "2611", pre_settle: "23620", open: "23600", high: "23680", low: "23410", close: "23480", settle: "23480", change_1: "-140", change_2: "-140", volume: "48910", turnover: "574203.40", open_interest: "88332", oi_change: "-9850" },
-            { delivery_month: "2611", pre_settle: "23510", open: "23540", high: "23710", low: "23490", close: "23620", settle: "23620", change_1: "110", change_2: "110", volume: "53600", turnover: "633016.00", open_interest: "98182", oi_change: "-11200" },
-            { delivery_month: "2611", pre_settle: "23390", open: "23400", high: "23580", low: "23350", close: "23510", settle: "23510", change_1: "120", change_2: "120", volume: "46720", turnover: "549193.60", open_interest: "109382", oi_change: "-8430" },
-            { delivery_month: "2611", pre_settle: "23310", open: "23330", high: "23450", low: "23280", close: "23390", settle: "23390", change_1: "80", change_2: "80", volume: "42150", turnover: "492944.25", open_interest: "117812", oi_change: "-6120" },
-            { delivery_month: "2611", pre_settle: "23400", open: "23380", high: "23440", low: "23250", close: "23310", settle: "23310", change_1: "-90", change_2: "-90", volume: "39800", turnover: "463869.00", open_interest: "123932", oi_change: "-5300" }
-        ];
-
-        days.forEach((d, idx) => {
-            workdayHistoryMap[d] = {
-                sge: ptSnapshots[idx % ptSnapshots.length],
-                shfe: alSnapshots[idx % alSnapshots.length]
-            };
-        });
-        workdayHistoryMap["2026-10-30"] = {
-            sge: ptSnapshots[0],
-            shfe: alSnapshots[0]
-        };
-
-        const sel = document.getElementById("workday-select");
-        sel.innerHTML = "";
-        days.forEach((d, idx) => {
-            const opt = document.createElement("option");
-            opt.value = d;
-            opt.innerText = `${d} (${idx === 0 ? 'Previous Working Day' : 'Working Day'})`;
-            if (idx === 0) opt.selected = true;
-            sel.appendChild(opt);
-        });
-
-        document.getElementById("custom-workday-input").value = days[0];
-        applyWorkdayQuery(days[0]);
+        return list;
     }
 
     function sanitizeVal(v, fallback) {
@@ -852,73 +795,149 @@
         return String(v);
     }
 
-    function applyWorkdayQuery(dateStr) {
-        if (!dateStr) return;
-        document.getElementById("sge-td-date").innerText = dateStr;
-        document.getElementById("prev-workday-badge").innerText = `Showing Trading Date: ${dateStr}`;
-        document.getElementById("custom-workday-input").value = dateStr;
+    function renderSgeRow(pt, dateFallback) {
+        const dStr = sanitizeVal(pt.trading_date, dateFallback);
+        document.getElementById("sge-td-date").innerText = dStr;
+        document.getElementById("prev-workday-badge").innerText = `Previous Working Day: ${dStr}`;
+        document.getElementById("sge-link").href = `https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=${dStr}&end_date=${dStr}&inst_ids=Pt99.95`;
 
-        const sel = document.getElementById("workday-select");
-        if ([...sel.options].some(o => o.value === dateStr)) {
-            sel.value = dateStr;
+        document.getElementById("sge-open").innerText = sanitizeVal(pt.open, "362.23");
+        document.getElementById("sge-high").innerText = sanitizeVal(pt.high, "362.23");
+        document.getElementById("sge-low").innerText = sanitizeVal(pt.low, "355.94");
+        document.getElementById("sge-close").innerText = sanitizeVal(pt.close, "356.89");
+        const chgStr = sanitizeVal(pt.change, "-16.64");
+        const chgEl = document.getElementById("sge-chg");
+        chgEl.innerText = chgStr;
+        chgEl.className = chgStr.includes("-") ? "delta-down" : "delta-up";
+        const pctStr = sanitizeVal(pt.change_pct, "-4.45%");
+        const pctEl = document.getElementById("sge-pct");
+        pctEl.innerText = pctStr;
+        pctEl.className = pctStr.includes("-") ? "delta-down" : "delta-up";
+        document.getElementById("sge-wavg").innerText = sanitizeVal(pt.weighted_avg, "360.13");
+        document.getElementById("sge-vol").innerText = sanitizeVal(pt.volume_kg, "82.00");
+        document.getElementById("sge-turn").innerText = sanitizeVal(pt.turnover, "29,531,300.00");
+        document.getElementById("sge-oi").innerText = sanitizeVal(pt.open_interest, "-");
+        document.getElementById("sge-ddir").innerText = sanitizeVal(pt.delivery_dir, "");
+        document.getElementById("sge-dvol").innerText = sanitizeVal(pt.delivery_vol, "");
+    }
+
+    function renderShfeRow(al) {
+        const dm = sanitizeVal(al.delivery_month, "2611");
+        document.getElementById("shfe-deliv").innerText = dm;
+        document.getElementById("shfe-dm").innerText = dm;
+        document.getElementById("shfe-ps").innerText = sanitizeVal(al.pre_settle, "23590");
+        document.getElementById("shfe-op").innerText = sanitizeVal(al.open, "23550");
+        document.getElementById("shfe-hi").innerText = sanitizeVal(al.high, "23850");
+        document.getElementById("shfe-lo").innerText = sanitizeVal(al.low, "23520");
+        document.getElementById("shfe-cl").innerText = sanitizeVal(al.close, "23775");
+        document.getElementById("shfe-sr").innerText = sanitizeVal(al.settle, "23670");
+        const c1Str = sanitizeVal(al.change_1, "185");
+        const c1El = document.getElementById("shfe-c1");
+        c1El.innerText = c1Str;
+        c1El.className = c1Str.includes("-") ? "delta-down" : "delta-up";
+        const c2Str = sanitizeVal(al.change_2, "80");
+        const c2El = document.getElementById("shfe-c2");
+        c2El.innerText = c2Str;
+        c2El.className = c2Str.includes("-") ? "delta-down" : "delta-up";
+        document.getElementById("shfe-vl").innerText = sanitizeVal(al.volume, "44875");
+        document.getElementById("shfe-to").innerText = sanitizeVal(al.turnover, "531194.75");
+        document.getElementById("shfe-oi").innerText = sanitizeVal(al.open_interest, "47795");
+        const oicStr = sanitizeVal(al.oi_change, "-26217");
+        const oicEl = document.getElementById("shfe-oichg");
+        oicEl.innerText = oicStr;
+        oicEl.className = oicStr.includes("-") ? "delta-down" : "delta-up";
+    }
+
+    async function fetchPreviousWorkdayExchangeLive() {
+        const workdays = getPreviousWorkingDayList(5);
+        const prevDay = workdays[0];
+        document.getElementById("sge-td-date").innerText = prevDay.dash;
+        document.getElementById("prev-workday-badge").innerText = `Previous Working Day: ${prevDay.dash}`;
+        document.getElementById("sge-link").href = `https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=${prevDay.dash}&end_date=${prevDay.dash}&inst_ids=Pt99.95`;
+
+        // Try direct or CORS-proxied live fetch from SHFE official JSON for previous working day
+        for (const wd of workdays) {
+            const shfeTarget = `https://www.shfe.com.cn/data/dailydata/kx/kx${wd.ymd}.dat`;
+            const urlsToTry = [
+                shfeTarget,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(shfeTarget)}`
+            ];
+            let shfeDone = false;
+            for (const u of urlsToTry) {
+                try {
+                    const r = await fetch(u);
+                    if (r.ok) {
+                        const j = await r.json();
+                        const items = j.o_curinstrument || [];
+                        const alRows = items.filter(x => {
+                            const pid = String(x.PRODUCTID || "").trim().toLowerCase();
+                            const pname = String(x.PRODUCTNAME || "").trim();
+                            const dm = String(x.DELIVERYMONTH || "").trim();
+                            return (pid.startsWith("al") || pname.includes("铝")) && /^\d{4}$/.test(dm);
+                        });
+                        if (alRows.length > 0) {
+                            const matched = alRows.find(x => String(x.DELIVERYMONTH).trim() === wd.ym) || alRows[0];
+                            renderShfeRow({
+                                delivery_month: matched.DELIVERYMONTH,
+                                pre_settle: matched.PRESETTLEMENTPRICE,
+                                open: matched.OPENPRICE,
+                                high: matched.HIGHESTPRICE,
+                                low: matched.LOWESTPRICE,
+                                close: matched.CLOSEPRICE,
+                                settle: matched.SETTLEMENTPRICE,
+                                change_1: matched.ZD1_CHG,
+                                change_2: matched.ZD2_CHG,
+                                volume: matched.VOLUME,
+                                turnover: matched.TURNOVER,
+                                open_interest: matched.OPENINTEREST,
+                                oi_change: matched.OPENINTERESTCHG
+                            });
+                            shfeDone = true;
+                            break;
+                        }
+                    }
+                } catch (e) {}
+            }
+            if (shfeDone) break;
         }
 
-        const dynamicUrl = `https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=${dateStr}&end_date=${dateStr}&inst_ids=Pt99.95`;
-        document.getElementById("sge-link").href = dynamicUrl;
-
-        let rec = workdayHistoryMap[dateStr];
-        if (!rec) {
-            rec = workdayHistoryMap["2026-10-30"] || Object.values(workdayHistoryMap)[0];
-        }
-
-        if (rec && rec.sge) {
-            const pt = rec.sge;
-            document.getElementById("sge-open").innerText = sanitizeVal(pt.open, "362.23");
-            document.getElementById("sge-high").innerText = sanitizeVal(pt.high, "362.23");
-            document.getElementById("sge-low").innerText = sanitizeVal(pt.low, "355.94");
-            document.getElementById("sge-close").innerText = sanitizeVal(pt.close, "356.89");
-            const chgStr = sanitizeVal(pt.change, "-16.64");
-            const chgEl = document.getElementById("sge-chg");
-            chgEl.innerText = chgStr;
-            chgEl.className = chgStr.includes("-") ? "delta-down" : "delta-up";
-            const pctStr = sanitizeVal(pt.change_pct, "-4.45%");
-            const pctEl = document.getElementById("sge-pct");
-            pctEl.innerText = pctStr;
-            pctEl.className = pctStr.includes("-") ? "delta-down" : "delta-up";
-            document.getElementById("sge-wavg").innerText = sanitizeVal(pt.weighted_avg, "360.13");
-            document.getElementById("sge-vol").innerText = sanitizeVal(pt.volume_kg, "82.00");
-            document.getElementById("sge-turn").innerText = sanitizeVal(pt.turnover, "29,531,300.00");
-            document.getElementById("sge-oi").innerText = sanitizeVal(pt.open_interest, "-");
-            document.getElementById("sge-ddir").innerText = sanitizeVal(pt.delivery_dir, "");
-            document.getElementById("sge-dvol").innerText = sanitizeVal(pt.delivery_vol, "");
-        }
-
-        if (rec && rec.shfe) {
-            const al = rec.shfe;
-            const dm = sanitizeVal(al.delivery_month, "2611");
-            document.getElementById("shfe-deliv").innerText = dm;
-            document.getElementById("shfe-dm").innerText = dm;
-            document.getElementById("shfe-ps").innerText = sanitizeVal(al.pre_settle, "23590");
-            document.getElementById("shfe-op").innerText = sanitizeVal(al.open, "23550");
-            document.getElementById("shfe-hi").innerText = sanitizeVal(al.high, "23850");
-            document.getElementById("shfe-lo").innerText = sanitizeVal(al.low, "23520");
-            document.getElementById("shfe-cl").innerText = sanitizeVal(al.close, "23775");
-            document.getElementById("shfe-sr").innerText = sanitizeVal(al.settle, "23670");
-            const c1Str = sanitizeVal(al.change_1, "185");
-            const c1El = document.getElementById("shfe-c1");
-            c1El.innerText = c1Str;
-            c1El.className = c1Str.includes("-") ? "delta-down" : "delta-up";
-            const c2Str = sanitizeVal(al.change_2, "80");
-            const c2El = document.getElementById("shfe-c2");
-            c2El.innerText = c2Str;
-            c2El.className = c2Str.includes("-") ? "delta-down" : "delta-up";
-            document.getElementById("shfe-vl").innerText = sanitizeVal(al.volume, "44875");
-            document.getElementById("shfe-to").innerText = sanitizeVal(al.turnover, "531194.75");
-            document.getElementById("shfe-oi").innerText = sanitizeVal(al.open_interest, "47795");
-            const oicStr = sanitizeVal(al.oi_change, "-26217");
-            const oicEl = document.getElementById("shfe-oichg");
-            oicEl.innerText = oicStr;
-            oicEl.className = oicStr.includes("-") ? "delta-down" : "delta-up";
+        // Try CORS-proxied live fetch from SGE official page for previous working day
+        for (const wd of workdays) {
+            const sgeTarget = `https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=${wd.dash}&end_date=${wd.dash}&inst_ids=Pt99.95`;
+            try {
+                const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(sgeTarget)}`);
+                if (r.ok) {
+                    const html = await r.text();
+                    if (html.includes("Pt99.95")) {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, "text/html");
+                        const trs = doc.querySelectorAll("tr");
+                        let sgeDone = false;
+                        trs.forEach(tr => {
+                            const tds = Array.from(tr.querySelectorAll("td")).map(td => td.textContent.trim());
+                            if (tds.length >= 11 && tds[1].includes("Pt99.95")) {
+                                renderSgeRow({
+                                    trading_date: tds[0] || wd.dash,
+                                    open: tds[2],
+                                    high: tds[3],
+                                    low: tds[4],
+                                    close: tds[5],
+                                    change: tds[6],
+                                    change_pct: tds[7],
+                                    weighted_avg: tds[8],
+                                    volume_kg: tds[9],
+                                    turnover: tds[10],
+                                    open_interest: tds[11] || "-",
+                                    delivery_dir: tds[12] || "",
+                                    delivery_vol: tds[13] || ""
+                                }, wd.dash);
+                                sgeDone = true;
+                            }
+                        });
+                        if (sgeDone) break;
+                    }
+                }
+            } catch (e) {}
         }
     }
 
@@ -950,7 +969,7 @@
         } catch (e) {}
     }
 
-    // 3. MATERIALS LIST (Removed ★ KEY FOCUS from Aluminium A00)
+    // 3. MATERIALS LIST
     const materials = [
         { id: "gold", name: "Gold", unit: "$/toz", color: "#eab308" },
         { id: "aluminium", name: "Aluminium A00", unit: "$/mt", color: "#2563eb" },
@@ -1025,7 +1044,7 @@
         el.classList.add('active');
     }
 
-    async function fetchRealTimeSameDayFX(updateMain = false) {
+    async function fetchRealTimeSameDayFX() {
         updateLiveClock();
         try {
             const [ru, re] = await Promise.all([
@@ -1037,19 +1056,13 @@
                 const de = await re.json();
                 if (du.rates && du.rates.CNY) {
                     const u = Number(du.rates.CNY).toFixed(4);
-                    document.getElementById("usd-live-spot").innerText = `● Live Spot: ${u}`;
-                    if (updateMain) {
-                        document.getElementById("usd-rate").innerText = u;
-                        document.getElementById("usd-100").innerText = (du.rates.CNY * 100).toFixed(2);
-                    }
+                    document.getElementById("usd-rate").innerText = u;
+                    document.getElementById("usd-100").innerText = (du.rates.CNY * 100).toFixed(2);
                 }
                 if (de.rates && de.rates.CNY) {
                     const e = Number(de.rates.CNY).toFixed(4);
-                    document.getElementById("eur-live-spot").innerText = `● Live Spot: ${e}`;
-                    if (updateMain) {
-                        document.getElementById("eur-rate").innerText = e;
-                        document.getElementById("eur-100").innerText = (de.rates.CNY * 100).toFixed(2);
-                    }
+                    document.getElementById("eur-rate").innerText = e;
+                    document.getElementById("eur-100").innerText = (de.rates.CNY * 100).toFixed(2);
                 }
             }
         } catch (e) {}
@@ -1188,26 +1201,22 @@
     }
 
     async function syncData() {
-        buildInitialWorkdayHistory();
         buildSubplotsDom();
         updateView();
-        fetchRealTimeSameDayFX(false);
+        fetchRealTimeSameDayFX();
+        fetchPreviousWorkdayExchangeLive();
         fetchEastMoneyDieselLive();
-        setInterval(() => fetchRealTimeSameDayFX(false), 60000);
+        setInterval(() => fetchRealTimeSameDayFX(), 60000);
 
         try {
             const res = await fetch("data/commodities.json?t=" + new Date().getTime());
             if (res.ok) {
                 const d = await res.json();
-                if (d.workday_history) {
-                    Object.keys(d.workday_history).forEach(k => {
-                        const dayObj = d.workday_history[k];
-                        if (dayObj && dayObj.sge && !Array.isArray(dayObj.sge.high)) {
-                            workdayHistoryMap[k] = dayObj;
-                        }
-                    });
-                    const curSelected = document.getElementById("workday-select").value;
-                    applyWorkdayQuery(curSelected);
+                if (d.sge_pt9995 && !Array.isArray(d.sge_pt9995.high)) {
+                    renderSgeRow(d.sge_pt9995, d.previous_working_day || "--");
+                }
+                if (d.shfe_aluminium && !Array.isArray(d.shfe_aluminium.high)) {
+                    renderShfeRow(d.shfe_aluminium);
                 }
                 if (d.energy_fuels) {
                     const ef = d.energy_fuels;
