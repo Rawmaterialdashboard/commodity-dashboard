@@ -67,7 +67,7 @@ jobs:
                   "delivery_dir": "", "delivery_vol": "",
                   "source_url": f"https://www.sge.com.cn/sjzx/quotation_daily_new?start_date={default_date}&end_date={default_date}&inst_ids=Pt99.95"
               }
-              headers = {"User-Agent": "Mozilla/5.0"}
+              headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
               for dt in prev_workdays:
                   d = dt.strftime("%Y-%m-%d")
                   url = f"https://www.sge.com.cn/sjzx/quotation_daily_new?start_date={d}&end_date={d}&inst_ids=Pt99.95"
@@ -87,7 +87,7 @@ jobs:
                                       "source_url": url
                                   })
                                   return info
-                  except Exception as e:
+                  except Exception:
                       pass
               return info
 
@@ -100,7 +100,7 @@ jobs:
                   "settle": "23670", "change_1": "185", "change_2": "80", "volume": "44875", "turnover": "531194.75",
                   "open_interest": "47795", "oi_change": "-26217", "source_url": "https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/"
               }
-              headers = {"User-Agent": "Mozilla/5.0"}
+              headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
               for dt in prev_workdays:
                   ymd = dt.strftime("%Y%m%d")
                   try:
@@ -127,7 +127,7 @@ jobs:
                                   "oi_change": str(matched.get("OPENINTERESTCHG", info["oi_change"])).strip()
                               })
                               return info
-                  except Exception as e:
+                  except Exception:
                       pass
               return info
 
@@ -155,7 +155,7 @@ jobs:
                   pass
               return fx
 
-          # 4. Fetch Section 3 Energy Data
+          # 4. Fetch Module 3 Energy Data (Strictly Gasoline Only for National; Pure Diesel for Beijing)
           def fetch_energy_section():
               energy = {
                   "national_gasoline": {
@@ -190,9 +190,9 @@ jobs:
                   }
               }
 
-              # Dynamic EastMoney fetch
+              # Dynamic EastMoney fetch (Gasoline ONLY)
               try:
-                  em_url = "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_ECONOMY_OIL_ADJUST&columns=REPORT_DATE,ADJUST_DATE,GASOLINE_ADJUST,DIESEL_ADJUST&sortColumns=ADJUST_DATE&sortTypes=-1&pageSize=2&pageNumber=1"
+                  em_url = "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_ECONOMY_OIL_ADJUST&columns=REPORT_DATE,ADJUST_DATE,GASOLINE_ADJUST&sortColumns=ADJUST_DATE&sortTypes=-1&pageSize=2&pageNumber=1"
                   r = requests.get(em_url, timeout=10)
                   if r.status_code == 200:
                       d = r.json()
@@ -206,10 +206,10 @@ jobs:
               except Exception:
                   pass
 
-              # Dynamic JinLianChuang fetch
+              # Dynamic JinLianChuang fetch (Pure dynamic scraping, no hardcoding)
               try:
                   jlc_url = "https://zhis.315i.com/exponent/main/002?productClassId=002001&columnClassId=002001001&priceIndexClassId=002001001001"
-                  headers = {"User-Agent": "Mozilla/5.0"}
+                  headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
                   r = requests.get(jlc_url, headers=headers, timeout=10)
                   if r.status_code == 200 and "LNG全国价格指数" in r.text:
                       soup = BeautifulSoup(r.text, "lxml")
@@ -246,7 +246,7 @@ jobs:
                   "shfe_aluminium": shfe_al,
                   "energy_fuels": energy_data
               }, f, indent=2, ensure_ascii=False)
-          print("Auto-sync completed successfully.")
+          print("Daily Auto-sync finished successfully.")
 
       - name: Commit and Push if updated
         run: |
