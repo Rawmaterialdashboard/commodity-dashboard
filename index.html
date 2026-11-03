@@ -339,26 +339,17 @@
             color: #9a3412;
         }
 
-        .energy-cycle-tag {
-            font-size: 11px;
-            font-weight: 700;
-            background: #ffedd5;
-            color: #c2410c;
-            padding: 3px 8px;
-            border-radius: 4px;
-        }
-
         .energy-price-row {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            margin: 10px 0;
+            margin: 8px 0;
             flex-wrap: wrap;
             gap: 8px;
         }
 
         .energy-val {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 900;
             color: #0f172a;
             letter-spacing: -0.5px;
@@ -370,7 +361,7 @@
             padding: 10px 12px;
             font-size: 12.5px;
             color: #431407;
-            margin-top: 10px;
+            margin-top: 12px;
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -473,8 +464,12 @@
     <!-- ========================================== -->
     <section class="dashboard-section" id="module-1">
         <div class="section-header-banner" style="border-left-color: #1e40af;">
-            <h2><span>💱</span> Module 1: Exchange Rates (USD/EUR) & Benchmark Metals (Pt99.95 / Aluminium)</h2>
-            <span style="font-size: 12px; color: #64748b; font-weight: 600;">Daily Official Fixing & Previous Workday Exchanges</span>
+            <h2>
+                <span>💱</span> Module 1: Exchange Rates (USD/EUR) & Benchmark Metals (Pt99.95 / Aluminium)
+            </h2>
+            <div style="font-size: 13px; font-weight: 700; color: #1e3a8a; background: #e0f2fe; padding: 4px 10px; border-radius: 6px;">
+                <span id="live-fx-timestamp">🕒 Live Real-Time FX: Loading...</span>
+            </div>
         </div>
 
         <!-- FX Grid -->
@@ -489,7 +484,7 @@
                     <span class="delta-down" id="usd-bps" style="font-size: 13px;">9.00 ▼ (Bps)</span>
                 </div>
                 <div style="font-size: 12px; color: #64748b; display: flex; justify-content: space-between;">
-                    <span id="usd-live-spot">● Live Today: 6.7138</span>
+                    <span id="usd-live-spot">● Live Spot: 6.7138</span>
                     <a href="http://www.chinamoney.com.cn/english/bmkcpr/" target="_blank" rel="noopener noreferrer" style="color: #1e40af; text-decoration: underline;">CFETS Official ↗</a>
                 </div>
             </div>
@@ -504,7 +499,7 @@
                     <span class="delta-up" id="eur-bps" style="font-size: 13px;">222.00 ▲ (Bps)</span>
                 </div>
                 <div style="font-size: 12px; color: #64748b; display: flex; justify-content: space-between;">
-                    <span id="eur-live-spot">● Live Today: 7.4792</span>
+                    <span id="eur-live-spot">● Live Spot: 7.4792</span>
                     <a href="http://m.safe.gov.cn/safe/rmbhlzjj/index.html" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: underline;">SAFE Official ↗</a>
                 </div>
             </div>
@@ -514,20 +509,16 @@
         <div class="workday-bar">
             <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700;">
                 <span>📅 Select Working Day:</span>
-                <select id="workday-select" onchange="applyWorkdayQuery(this.value)" style="padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
-                    <option value="2026-10-30" selected>2026-10-30 (Previous Working Day / Friday)</option>
-                    <option value="2026-10-29">2026-10-29 (Thursday)</option>
-                    <option value="2026-10-28">2026-10-28 (Wednesday)</option>
-                </select>
+                <select id="workday-select" onchange="applyWorkdayQuery(this.value)" style="padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1;"></select>
             </div>
-            <span id="prev-workday-badge" style="font-size: 12px; background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 4px; font-weight: 700;">Trading Date: 2026-10-30</span>
+            <span id="prev-workday-badge" style="font-size: 12px; background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 4px; font-weight: 700;">Trading Date: Initializing...</span>
         </div>
 
         <!-- SGE Pt99.95 Table -->
         <div class="table-wrap">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <span style="font-size: 14px; font-weight: 800; color: #334155;">⚪ 上海黄金交易所每日交易行情 (SGE Pt99.95 | Unit: RMB/g)</span>
-                <a id="sge-link" href="https://www.sge.com.cn/sjzx/quotation_daily_new?start_date=2026-10-30&end_date=2026-10-30&inst_ids=Pt99.95" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: #b45309; text-decoration: underline; font-weight: 700;">Open SGE Official Page ↗</a>
+                <a id="sge-link" href="#" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: #b45309; text-decoration: underline; font-weight: 700;">Open SGE Official Page ↗</a>
             </div>
             <table class="exchange-table sge-theme">
                 <thead>
@@ -538,11 +529,11 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td id="sge-td-date">2026-10-30</td>
+                        <td id="sge-td-date">Loading...</td>
                         <td style="color: #b45309; font-weight: 800;">Pt99.95</td>
-                        <td>362.23</td><td>362.23</td><td>355.94</td><td>356.89</td>
-                        <td class="delta-down">-16.64</td><td class="delta-down">-4.45%</td>
-                        <td style="color: #b45309; font-weight: 800;">360.13</td><td>82.00</td><td>29,531,300.00</td>
+                        <td id="sge-open">362.23</td><td id="sge-high">362.23</td><td id="sge-low">355.94</td><td id="sge-close">356.89</td>
+                        <td class="delta-down" id="sge-chg">-16.64</td><td class="delta-down" id="sge-pct">-4.45%</td>
+                        <td style="color: #b45309; font-weight: 800;" id="sge-wavg">360.13</td><td id="sge-vol">82.00</td><td id="sge-turn">29,531,300.00</td>
                     </tr>
                 </tbody>
             </table>
@@ -563,10 +554,10 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="color: #1e3a8a; font-weight: 800;">2611</td>
-                        <td>23590</td><td>23550</td><td>23850</td><td>23520</td><td>23775</td>
-                        <td style="color: #b91c1c; font-weight: 800; font-size: 14px;">23670</td>
-                        <td class="delta-up">185</td><td class="delta-up">80</td><td>44875</td><td>531194.75</td>
+                        <td style="color: #1e3a8a; font-weight: 800;" id="shfe-dm">2611</td>
+                        <td id="shfe-ps">23590</td><td id="shfe-op">23550</td><td id="shfe-hi">23850</td><td id="shfe-lo">23520</td><td id="shfe-cl">23775</td>
+                        <td style="color: #b91c1c; font-weight: 800; font-size: 14px;" id="shfe-sr">23670</td>
+                        <td class="delta-up" id="shfe-c1">185</td><td class="delta-up" id="shfe-c2">80</td><td id="shfe-vl">44875</td><td id="shfe-to">531194.75</td>
                     </tr>
                 </tbody>
             </table>
@@ -610,36 +601,33 @@
     <!-- ========================================== -->
     <section class="dashboard-section" id="module-3">
         <div class="section-header-banner" style="border-left-color: var(--energy-accent);">
-            <h2><span>⛽</span> Module 3: Domestic Fuel & Energy Prices (0# Diesel, LNG & National Fuel Adjustments)</h2>
-            <span style="font-size: 12px; color: #64748b; font-weight: 600;">EastMoney + JinLianChuang LNG + YouJia Beijing</span>
+            <h2><span>⛽</span> Module 3: Domestic Fuel & Energy Prices</h2>
+            <span style="font-size: 12px; color: #64748b; font-weight: 600;">EastMoney Gasoline + JinLianChuang LNG + Beijing 0# Diesel</span>
         </div>
 
         <div class="energy-grid">
-            <!-- 3A. EastMoney Gasoline & Diesel Adjustments -->
+            <!-- 3A. National Gasoline Price & Adjustments (EastMoney) -->
             <div class="energy-card">
                 <div>
                     <div class="energy-card-header">
-                        <span class="energy-title">🚗 全国汽柴油调价 (发改委调价窗口)</span>
-                        <span class="energy-cycle-tag">约 10–15 天更新</span>
+                        <span class="energy-title">🚗 全国汽油价格与调价</span>
                     </div>
                     <div class="energy-price-row">
                         <div>
-                            <span style="font-size: 12px; color: #64748b;">汽油调价 (Gasoline):</span>
-                            <div class="energy-val" id="em-gas-val">+345 <span style="font-size: 14px; font-weight: 600;">元/吨</span></div>
-                        </div>
-                        <div style="text-align: right;">
-                            <span class="delta-up" id="em-gas-pct" style="font-size: 15px;">▲ +3.78%</span>
-                            <div style="font-size: 11.5px; color: #64748b;">约 +0.27 元/升</div>
+                            <span style="font-size: 12px; color: #64748b;">汽油现价 (Gasoline Price):</span>
+                            <div class="energy-val" id="em-gas-price">8,920 <span style="font-size: 14px; font-weight: 600;">元/吨</span></div>
+                            <div style="font-size: 12px; color: #475569; font-weight: 700; margin-top: 2px;">折合约 <span id="em-gas-price-liter">7.66</span> 元/升</div>
                         </div>
                     </div>
-                    <div class="energy-price-row" style="border-top: 1px dashed #fed7aa; padding-top: 8px;">
+                    <div class="energy-price-row" style="border-top: 1px dashed #fed7aa; padding-top: 10px; margin-top: 8px;">
                         <div>
-                            <span style="font-size: 12px; color: #64748b;">柴油调价 (Diesel):</span>
-                            <div class="energy-val" id="em-die-val">+335 <span style="font-size: 14px; font-weight: 600;">元/吨</span></div>
+                            <span style="font-size: 12px; color: #64748b;">汽油调价 (Adjustment):</span>
+                            <div style="font-size: 20px; font-weight: 800; color: #0f172a;" id="em-gas-chg">+345 <span style="font-size: 13px; font-weight: 600;">元/吨</span></div>
+                            <div style="font-size: 11.5px; color: #64748b;">约 <span id="em-gas-chg-liter">+0.27</span> 元/升</div>
                         </div>
                         <div style="text-align: right;">
-                            <span class="delta-up" id="em-die-pct" style="font-size: 15px;">▲ +3.92%</span>
-                            <div style="font-size: 11.5px; color: #64748b;">约 +0.28 元/升</div>
+                            <span style="font-size: 12px; color: #64748b;">调价百分比:</span>
+                            <div class="delta-up" id="em-gas-pct" style="font-size: 18px; font-weight: 900;">▲ +3.78%</div>
                         </div>
                     </div>
                 </div>
@@ -654,16 +642,15 @@
                 <div>
                     <div class="energy-card-header">
                         <span class="energy-title" style="color: #0369a1;">❄️ 液化天然气 (LNG 全国出厂均价)</span>
-                        <span class="energy-cycle-tag" style="background: #e0f2fe; color: #0369a1;">每日更新前一自然日</span>
                     </div>
                     <div class="energy-price-row">
                         <div>
                             <span style="font-size: 12px; color: #64748b;">全国综合参考价:</span>
-                            <div class="energy-val" id="jlc-lng-val">5,301 <span style="font-size: 14px; font-weight: 600;">元/吨</span></div>
+                            <div class="energy-val" id="jlc-lng-val">7,624 <span style="font-size: 14px; font-weight: 600;">元/吨</span></div>
                         </div>
                         <div style="text-align: right;">
-                            <span class="delta-down" id="jlc-lng-chg" style="font-size: 15px;">▼ -25 元/吨</span>
-                            <div class="delta-down" id="jlc-lng-pct" style="font-size: 13px;">(-0.47%)</div>
+                            <span class="delta-down" id="jlc-lng-chg" style="font-size: 15px;">▼ -59 元/吨</span>
+                            <div class="delta-down" id="jlc-lng-pct" style="font-size: 13px;">(-0.77%)</div>
                         </div>
                     </div>
                     <div style="font-size: 12px; color: #475569; margin-top: 6px;">
@@ -671,7 +658,7 @@
                     </div>
                 </div>
                 <div class="energy-meta" style="background: #f0f9ff; color: #082f49;">
-                    <span><strong>基准自然日:</strong> <span id="jlc-date">2026-11-01 (前一自然日)</span></span>
+                    <span><strong>基准自然日:</strong> <span id="jlc-date">2026-11-02</span></span>
                     <span><strong>官方来源:</strong> <a href="https://zhis.315i.com/exponent/main/002?productClassId=002001&columnClassId=002001001&priceIndexClassId=002001001001" target="_blank" rel="noopener noreferrer" style="color: #0284c7;">金联创指数中心 ↗</a></span>
                 </div>
             </div>
@@ -680,17 +667,18 @@
             <div class="energy-card" style="border-top-color: #16a34a; border-color: #bbf7d0;">
                 <div>
                     <div class="energy-card-header">
-                        <span class="energy-title" style="color: #15803d;">🛢️ 0号柴油 (北京今日零售指导价)</span>
-                        <span class="energy-cycle-tag" style="background: #dcfce7; color: #166534;">每日实时更新</span>
+                        <span class="energy-title" style="color: #15803d;">🛢️ 0号柴油 (北京地区零售现价)</span>
                     </div>
                     <div class="energy-price-row">
                         <div>
-                            <span style="font-size: 12px; color: #64748b;">北京地区现价 (Beijing):</span>
-                            <div class="energy-val" id="bj-diesel-val">8.02 <span style="font-size: 14px; font-weight: 600;">元/升</span></div>
+                            <span style="font-size: 12px; color: #64748b;">北京现行价格 (Price):</span>
+                            <div class="energy-val" id="bj-diesel-val">7.66 <span style="font-size: 14px; font-weight: 600;">元/升</span></div>
+                            <div style="font-size: 12px; color: #475569; font-weight: 700; margin-top: 2px;">折合约 <span id="bj-diesel-ton">8,900</span> 元/吨</div>
                         </div>
                         <div style="text-align: right;">
-                            <span class="delta-up" id="bj-diesel-chg" style="font-size: 15px;">▲ +0.28 元/升</span>
-                            <div class="delta-up" id="bj-diesel-pct" style="font-size: 13px;">(+3.62%)</div>
+                            <span style="font-size: 12px; color: #64748b;">近期微调:</span>
+                            <div class="delta-down" id="bj-diesel-chg" style="font-size: 15px;">▼ -0.05 元/升</div>
+                            <div class="delta-down" id="bj-diesel-pct" style="font-size: 13px;">(-0.65%)</div>
                         </div>
                     </div>
                     <div style="font-size: 12px; color: #475569; margin-top: 6px;">
@@ -698,7 +686,7 @@
                     </div>
                 </div>
                 <div class="energy-meta" style="background: #f0fdf4; color: #052e16;">
-                    <span><strong>更新状态:</strong> <span id="bj-date">今日实时生效</span></span>
+                    <span><strong>最新发布日期:</strong> <span id="bj-date">2026-11-03</span></span>
                     <span><strong>数据源:</strong> <a href="https://youjia.abapi.cn/" target="_blank" rel="noopener noreferrer" style="color: #16a34a;">今日全国油价查询 (北京) ↗</a></span>
                 </div>
             </div>
@@ -763,6 +751,36 @@
         el.classList.add('active');
     }
 
+    function initDynamicWorkdays() {
+        const sel = document.getElementById("workday-select");
+        sel.innerHTML = "";
+        const now = new Date();
+        const days = [];
+        let cur = new Date(now.getTime());
+        cur.setDate(cur.getDate() - 1);
+
+        while (days.length < 5) {
+            const dayOfWeek = cur.getDay();
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                const yr = cur.getFullYear();
+                const mo = String(cur.getMonth() + 1).padStart(2, '0');
+                const da = String(cur.getDate()).padStart(2, '0');
+                days.push(`${yr}-${mo}-${da}`);
+            }
+            cur.setDate(cur.getDate() - 1);
+        }
+
+        days.forEach((d, idx) => {
+            const opt = document.createElement("option");
+            opt.value = d;
+            opt.innerText = `${d} (${idx === 0 ? 'Previous Working Day' : 'Historical'})`;
+            if (idx === 0) opt.selected = true;
+            sel.appendChild(opt);
+        });
+
+        applyWorkdayQuery(days[0]);
+    }
+
     function applyWorkdayQuery(dateStr) {
         document.getElementById("sge-td-date").innerText = dateStr;
         document.getElementById("prev-workday-badge").innerText = `Trading Date: ${dateStr}`;
@@ -770,7 +788,19 @@
         document.getElementById("sge-link").href = dynamicUrl;
     }
 
+    function updateLiveClock() {
+        const now = new Date();
+        const yr = now.getFullYear();
+        const mo = String(now.getMonth() + 1).padStart(2, '0');
+        const da = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById("live-fx-timestamp").innerText = `🕒 Live Real-Time FX: ${yr}-${mo}-${da} ${hh}:${mm}:${ss} (CCT)`;
+    }
+
     async function fetchRealTimeSameDayFX(updateMain = false) {
+        updateLiveClock();
         try {
             const [ru, re] = await Promise.all([
                 fetch("https://open.er-api.com/v6/latest/USD"),
@@ -781,7 +811,7 @@
                 const de = await re.json();
                 if (du.rates && du.rates.CNY) {
                     const u = Number(du.rates.CNY).toFixed(4);
-                    document.getElementById("usd-live-spot").innerText = `● Live Today: ${u}`;
+                    document.getElementById("usd-live-spot").innerText = `● Live Spot: ${u}`;
                     if (updateMain) {
                         document.getElementById("usd-rate").innerText = u;
                         document.getElementById("usd-100").innerText = (du.rates.CNY * 100).toFixed(2);
@@ -789,7 +819,7 @@
                 }
                 if (de.rates && de.rates.CNY) {
                     const e = Number(de.rates.CNY).toFixed(4);
-                    document.getElementById("eur-live-spot").innerText = `● Live Today: ${e}`;
+                    document.getElementById("eur-live-spot").innerText = `● Live Spot: ${e}`;
                     if (updateMain) {
                         document.getElementById("eur-rate").innerText = e;
                         document.getElementById("eur-100").innerText = (de.rates.CNY * 100).toFixed(2);
@@ -936,30 +966,66 @@
             const res = await fetch("data/commodities.json?t=" + new Date().getTime());
             if (res.ok) {
                 const d = await res.json();
+                if (d.sge_pt9995) {
+                    const pt = d.sge_pt9995;
+                    document.getElementById("sge-open").innerText = pt.open;
+                    document.getElementById("sge-high").innerText = pt.high;
+                    document.getElementById("sge-low").innerText = pt.low;
+                    document.getElementById("sge-close").innerText = pt.close;
+                    document.getElementById("sge-chg").innerText = pt.change;
+                    document.getElementById("sge-pct").innerText = pt.change_pct;
+                    document.getElementById("sge-wavg").innerText = pt.weighted_avg;
+                    document.getElementById("sge-vol").innerText = pt.volume_kg;
+                    document.getElementById("sge-turn").innerText = pt.turnover;
+                }
+                if (d.shfe_aluminium) {
+                    const al = d.shfe_aluminium;
+                    document.getElementById("shfe-dm").innerText = al.delivery_month;
+                    document.getElementById("shfe-ps").innerText = al.pre_settle;
+                    document.getElementById("shfe-op").innerText = al.open;
+                    document.getElementById("shfe-hi").innerText = al.high;
+                    document.getElementById("shfe-lo").innerText = al.low;
+                    document.getElementById("shfe-cl").innerText = al.close;
+                    document.getElementById("shfe-sr").innerText = al.settle;
+                    document.getElementById("shfe-c1").innerText = al.change_1;
+                    document.getElementById("shfe-c2").innerText = al.change_2;
+                    document.getElementById("shfe-vl").innerText = al.volume;
+                    document.getElementById("shfe-to").innerText = al.turnover;
+                }
                 if (d.energy_fuels) {
                     const ef = d.energy_fuels;
-                    if (ef.eastmoney_fuel) {
-                        document.getElementById("em-date").innerText = ef.eastmoney_fuel.update_date || "2026-10-29";
-                        document.getElementById("em-gas-val").innerHTML = `+${ef.eastmoney_fuel.gasoline_change_ton} <span style="font-size:14px; font-weight:600;">元/吨</span>`;
-                        document.getElementById("em-die-val").innerHTML = `+${ef.eastmoney_fuel.diesel_change_ton} <span style="font-size:14px; font-weight:600;">元/吨</span>`;
-                        document.getElementById("em-gas-pct").innerText = `▲ +${ef.eastmoney_fuel.gasoline_pct}%`;
-                        document.getElementById("em-die-pct").innerText = `▲ +${ef.eastmoney_fuel.diesel_pct}%`;
+                    if (ef.national_gasoline) {
+                        const g = ef.national_gasoline;
+                        document.getElementById("em-date").innerText = g.update_date || "2026-10-29 24:00";
+                        document.getElementById("em-gas-price").innerHTML = `${g.price_ton.toLocaleString()} <span style="font-size:14px; font-weight:600;">元/吨</span>`;
+                        document.getElementById("em-gas-price-liter").innerText = g.price_liter;
+                        document.getElementById("em-gas-chg").innerHTML = `+${g.change_ton} <span style="font-size:13px; font-weight:600;">元/吨</span>`;
+                        document.getElementById("em-gas-chg-liter").innerText = `+${g.change_liter}`;
+                        document.getElementById("em-gas-pct").innerText = `▲ +${g.change_pct}%`;
                     }
                     if (ef.jinlianchuang_lng) {
-                        document.getElementById("jlc-date").innerText = `${ef.jinlianchuang_lng.date} (前一自然日)`;
-                        document.getElementById("jlc-lng-val").innerHTML = `${ef.jinlianchuang_lng.price.toLocaleString()} <span style="font-size:14px; font-weight:600;">元/吨</span>`;
-                        document.getElementById("jlc-lng-chg").innerText = `${ef.jinlianchuang_lng.change} 元/吨`;
-                        document.getElementById("jlc-lng-pct").innerText = `(${ef.jinlianchuang_lng.change_pct}%)`;
+                        const lng = ef.jinlianchuang_lng;
+                        document.getElementById("jlc-date").innerText = lng.date;
+                        document.getElementById("jlc-lng-val").innerHTML = `${lng.price.toLocaleString()} <span style="font-size:14px; font-weight:600;">元/吨</span>`;
+                        document.getElementById("jlc-lng-chg").innerText = `${lng.change > 0 ? '+' : ''}${lng.change} 元/吨`;
+                        document.getElementById("jlc-lng-pct").innerText = `(${lng.change_pct}%)`;
                     }
                     if (ef.beijing_diesel_0) {
-                        document.getElementById("bj-diesel-val").innerHTML = `${ef.beijing_diesel_0.price.toFixed(2)} <span style="font-size:14px; font-weight:600;">元/升</span>`;
-                        document.getElementById("bj-diesel-chg").innerText = `▲ +${ef.beijing_diesel_0.change} 元/升`;
-                        document.getElementById("bj-diesel-pct").innerText = `(+${ef.beijing_diesel_0.change_pct}%)`;
+                        const d0 = ef.beijing_diesel_0;
+                        document.getElementById("bj-date").innerText = d0.date;
+                        document.getElementById("bj-diesel-val").innerHTML = `${d0.price_liter.toFixed(2)} <span style="font-size:14px; font-weight:600;">元/升</span>`;
+                        document.getElementById("bj-diesel-ton").innerText = d0.price_ton.toLocaleString();
+                        document.getElementById("bj-diesel-chg").innerText = `${d0.change_liter > 0 ? '▲ +' : '▼ '}${d0.change_liter} 元/升`;
+                        document.getElementById("bj-diesel-pct").innerText = `(${d0.change_pct}%)`;
                     }
                 }
             }
         } catch (e) {}
+
+        initDynamicWorkdays();
         fetchRealTimeSameDayFX(false);
+        setInterval(updateLiveClock, 1000);
+        setInterval(() => fetchRealTimeSameDayFX(false), 60000);
         buildSubplotsDom();
         updateView();
     }
