@@ -198,7 +198,6 @@ jobs:
                   "eur_cny": 7.4792,
                   "eur_change_bps": 222.00
               }
-              # Channel A: CFETS Official API
               try:
                   cfets_url = "https://www.chinamoney.com.cn/ags/ms/cm-u-bk-ccpr/CprRecSumDaily"
                   headers = {
@@ -227,7 +226,6 @@ jobs:
               except Exception as e:
                   print("CFETS direct connection skipped:", e)
 
-              # Channel B: Real-Time Market Feed if CFETS blocked overseas IP
               try:
                   rt_usd = requests.get("https://open.er-api.com/v6/latest/USD", timeout=10).json()
                   rt_eur = requests.get("https://open.er-api.com/v6/latest/EUR", timeout=10).json()
